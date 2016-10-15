@@ -1,11 +1,13 @@
 * Mathics (Simplex) Numeric Manipulation Specification
 ** Integers
-   -> Integers in Mathics are of arbitrary precision
-   -> In[1] := 1 + 1 
-   -> Out[1] = 2
+   Integers in Mathics are of arbitrary precision
+
+   In[1] := 1 + 1 
+
+   Out[1] = 2
    
 *** Implementation
-    -> Implementation of Integers of arbirary precision shall be
+    Implementation of Integers of arbirary precision shall be
     done by using a generic numeric data structure that holds either
     a i64, or a Num (Rust library) BigInt type. Either the structure
     will be held by the whole 64 bit unsigned integer, or a pointer
