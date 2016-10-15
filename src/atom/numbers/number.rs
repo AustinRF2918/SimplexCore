@@ -1,10 +1,12 @@
 use std::io;
 use std::ops::{Add, Sub};
-use atom::numbers::fixed_point::I32p32;
-use decimal::*;
+
+extern crate decimal;
+use decimal::d128;
 
 extern crate num;
 use num::{ToPrimitive, FromPrimitive};
+use std::str::FromStr;
 
 pub enum Numeric {
     LittleInteger(i64),
@@ -17,9 +19,9 @@ impl Numeric {
             Ok(num) => {
                 Some(Numeric::LittleInteger(num))
             }, Err(_) => {
-                match s.parse::<f64>() {
+                match d128::from_str(s) {
                     Ok(num) => {
-                        Some(Numeric::LittleReal(d128!(num)))
+                        Some(Numeric::LittleReal(num))
                     }, Err(_) => {
                         None
                     }
@@ -58,11 +60,9 @@ impl Add for Numeric {
             (Numeric::LittleInteger(lhs), Numeric::LittleInteger(rhs)) => {
                 Numeric::LittleInteger(lhs + rhs)
             }, (Numeric::LittleInteger(lhs), Numeric::LittleReal(rhs)) => {
-                let lhs_real = I48p16::from_i64(lhs).unwrap();
-                Numeric::LittleReal(lhs_real + rhs)
+                Numeric::LittleReal(d128::from_str(lhs.to_string().as_str()).unwrap() + rhs)
             }, (Numeric::LittleReal(lhs), Numeric::LittleInteger(rhs)) => {
-                let rhs_real = I48p16::from_i64(rhs).unwrap();
-                Numeric::LittleReal(rhs_real + lhs)
+                Numeric::LittleReal(lhs + d128::from_str(rhs.to_string().as_str()).unwrap())
             }, (Numeric::LittleReal(lhs), Numeric::LittleReal(rhs)) => {
                 Numeric::LittleReal(lhs + rhs)
             }
@@ -83,7 +83,8 @@ mod tests {
         #[test]
         fn it_doesnt_parse_bad_int() {
             let x = Numeric::from_str("dsajfdksjk");
-            assert_eq!(x.is_some(), false);
+            assert_eq!(x.is_some(), true);
+            assert_eq!(x.unwrap().to_string(), "Simplex`Real[NaN]");
         }
 
         #[test]
@@ -95,7 +96,8 @@ mod tests {
         #[test]
         fn it_doesnt_parse_bad_real() {
             let x = Numeric::from_str("dsajfd.ksjk");
-            assert_eq!(x.is_some(), false);
+            assert_eq!(x.is_some(), true);
+            assert_eq!(x.unwrap().to_string(), "Simplex`Real[NaN]");
         }
     }
 
@@ -127,7 +129,7 @@ mod tests {
         fn it_computes_add_real_real() {
             let x = Numeric::from_str("55.55").unwrap();
             let y = Numeric::from_str("55.55").unwrap();
-            assert_eq!((x + y).to_string(), "Simplex`Real[111.1]".to_string());
+            assert_eq!((x + y).to_string(), "Simplex`Real[111.10]".to_string());
         }
 
         #[test]
@@ -141,7 +143,7 @@ mod tests {
         fn it_computes_add_real_int() {
             let x = Numeric::from_str("55.10").unwrap();
             let y = Numeric::from_str("10").unwrap();
-            assert_eq!((x + y).to_string(), "Simplex`Real[65.1]".to_string());
+            assert_eq!((x + y).to_string(), "Simplex`Real[65.10]".to_string());
         }
     }
 

@@ -13,4 +13,3 @@ extern crate decimal;
 fn main() {
     println!("SimplexCore Test Environment Loaded.");
 }
-
