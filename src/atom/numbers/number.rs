@@ -1,5 +1,5 @@
 use std::io;
-use std::ops::{Add, Sub};
+use std::ops::{Add, Sub, Mul, Div};
 
 extern crate decimal;
 use decimal::d128;
@@ -65,6 +65,61 @@ impl Add for Numeric {
                 Numeric::LittleReal(lhs + d128::from_str(rhs.to_string().as_str()).unwrap())
             }, (Numeric::LittleReal(lhs), Numeric::LittleReal(rhs)) => {
                 Numeric::LittleReal(lhs + rhs)
+            }
+        }
+    }
+}
+
+impl Sub for Numeric {
+    type Output = Numeric;
+
+    fn sub(self, other: Numeric) -> Numeric {
+        match (self, other) {
+            (Numeric::LittleInteger(lhs), Numeric::LittleInteger(rhs)) => {
+                Numeric::LittleInteger(lhs - rhs)
+            }, (Numeric::LittleInteger(lhs), Numeric::LittleReal(rhs)) => {
+                Numeric::LittleReal(d128::from_str(lhs.to_string().as_str()).unwrap() - rhs)
+            }, (Numeric::LittleReal(lhs), Numeric::LittleInteger(rhs)) => {
+                Numeric::LittleReal(lhs - d128::from_str(rhs.to_string().as_str()).unwrap())
+            }, (Numeric::LittleReal(lhs), Numeric::LittleReal(rhs)) => {
+                Numeric::LittleReal(lhs - rhs)
+            }
+        }
+    }
+}
+
+impl Mul for Numeric {
+    type Output = Numeric;
+
+    fn mul(self, other: Numeric) -> Numeric {
+        match (self, other) {
+            (Numeric::LittleInteger(lhs), Numeric::LittleInteger(rhs)) => {
+                Numeric::LittleInteger(lhs * rhs)
+            }, (Numeric::LittleInteger(lhs), Numeric::LittleReal(rhs)) => {
+                Numeric::LittleReal(d128::from_str(lhs.to_string().as_str()).unwrap() * rhs)
+            }, (Numeric::LittleReal(lhs), Numeric::LittleInteger(rhs)) => {
+                Numeric::LittleReal(lhs * d128::from_str(rhs.to_string().as_str()).unwrap())
+            }, (Numeric::LittleReal(lhs), Numeric::LittleReal(rhs)) => {
+                Numeric::LittleReal(lhs * rhs)
+            }
+        }
+    }
+}
+
+impl Div for Numeric {
+    type Output = Numeric;
+
+    fn div(self, other: Numeric) -> Numeric {
+        match (self, other) {
+            (Numeric::LittleInteger(lhs), Numeric::LittleInteger(rhs)) => {
+                //Unsafe, very very unsafe.
+                Numeric::LittleReal(d128::from_str((lhs as f64 / rhs as f64).to_string().as_str()).unwrap())
+            }, (Numeric::LittleInteger(lhs), Numeric::LittleReal(rhs)) => {
+                Numeric::LittleReal(d128::from_str(lhs.to_string().as_str()).unwrap() / rhs)
+            }, (Numeric::LittleReal(lhs), Numeric::LittleInteger(rhs)) => {
+                Numeric::LittleReal(lhs / d128::from_str(rhs.to_string().as_str()).unwrap())
+            }, (Numeric::LittleReal(lhs), Numeric::LittleReal(rhs)) => {
+                Numeric::LittleReal(lhs / rhs)
             }
         }
     }
@@ -148,5 +203,95 @@ mod tests {
     }
 
     mod low_sized_subtraction {
+        use atom::numbers::number::Numeric;
+        #[test]
+        fn it_computes_add_int_int() {
+            let x = Numeric::from_str("55").unwrap();
+            let y = Numeric::from_str("55").unwrap();
+            assert_eq!((x - y).to_string(), "Simplex`Integer[0]".to_string());
+        }
+
+        #[test]
+        fn it_computes_add_real_real() {
+            let x = Numeric::from_str("55.55").unwrap();
+            let y = Numeric::from_str("45.55").unwrap();
+            assert_eq!((x - y).to_string(), "Simplex`Real[10.00]".to_string());
+        }
+
+        #[test]
+        fn it_computes_add_int_real() {
+            let x = Numeric::from_str("55").unwrap();
+            let y = Numeric::from_str("55.55").unwrap();
+            assert_eq!((x - y).to_string(), "Simplex`Real[-0.55]".to_string());
+        }
+
+        #[test]
+        fn it_computes_add_real_int() {
+            let x = Numeric::from_str("55.10").unwrap();
+            let y = Numeric::from_str("10").unwrap();
+            assert_eq!((x - y).to_string(), "Simplex`Real[45.10]".to_string());
+        }
+    }
+
+    mod low_sized_multiplication {
+        use atom::numbers::number::Numeric;
+        #[test]
+        fn it_computes_mul_int_int() {
+            let x = Numeric::from_str("50").unwrap();
+            let y = Numeric::from_str("50").unwrap();
+            assert_eq!((x * y).to_string(), "Simplex`Integer[2500]".to_string());
+        }
+
+        #[test]
+        fn it_computes_mul_real_real() {
+            let x = Numeric::from_str("0.5").unwrap();
+            let y = Numeric::from_str("0.5").unwrap();
+            assert_eq!((x * y).to_string(), "Simplex`Real[0.25]".to_string());
+        }
+
+        #[test]
+        fn it_computes_mul_int_real() {
+            let x = Numeric::from_str("50").unwrap();
+            let y = Numeric::from_str(".5").unwrap();
+            assert_eq!((x * y).to_string(), "Simplex`Real[25.0]".to_string());
+        }
+
+        #[test]
+        fn it_computes_add_real_int() {
+            let x = Numeric::from_str("55.10").unwrap();
+            let y = Numeric::from_str("10").unwrap();
+            assert_eq!((x * y).to_string(), "Simplex`Real[551.00]".to_string());
+        }
+    }
+
+    mod low_sized_division {
+        use atom::numbers::number::Numeric;
+        #[test]
+        fn it_computes_mul_int_int() {
+            let x = Numeric::from_str("50").unwrap();
+            let y = Numeric::from_str("50").unwrap();
+            assert_eq!((x / y).to_string(), "Simplex`Real[1]".to_string());
+        }
+
+        #[test]
+        fn it_computes_mul_real_real() {
+            let x = Numeric::from_str("4.4").unwrap();
+            let y = Numeric::from_str("4").unwrap();
+            assert_eq!((x / y).to_string(), "Simplex`Real[1.1]".to_string());
+        }
+
+        #[test]
+        fn it_computes_mul_int_real() {
+            let x = Numeric::from_str("60").unwrap();
+            let y = Numeric::from_str("2.5").unwrap();
+            assert_eq!((x / y).to_string(), "Simplex`Real[24]".to_string());
+        }
+
+        #[test]
+        fn it_computes_add_real_int() {
+            let x = Numeric::from_str("55.10").unwrap();
+            let y = Numeric::from_str("5").unwrap();
+            assert_eq!((x / y).to_string(), "Simplex`Real[11.02]".to_string());
+        }
     }
 }
