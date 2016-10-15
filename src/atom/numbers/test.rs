@@ -16,6 +16,13 @@ mod tests {
         }
 
         #[test]
+        fn it_says_NaN() {
+            let x = Numeric::from_str("dsajfdksjk");
+            assert_eq!(x.is_some(), true);
+            assert_eq!(x.unwrap().is_nan(), true);
+        }
+
+        #[test]
         fn it_parses_real() {
             let x = Numeric::from_str("55.552").unwrap();
             assert_eq!(x.head(), "Simplex`Real");
@@ -149,15 +156,15 @@ mod tests {
         #[test]
         fn it_computes_mul_real_real() {
             let x = Numeric::from_str("4.4").unwrap();
-            let y = Numeric::from_str("4").unwrap();
-            assert_eq!((x / y).to_string(), "Simplex`Real[1.1]".to_string());
+            let y = Numeric::from_str("2.2").unwrap();
+            assert_eq!((x / y).to_string(), "Simplex`Integer[2]".to_string());
         }
 
         #[test]
         fn it_computes_mul_int_real() {
             let x = Numeric::from_str("60").unwrap();
             let y = Numeric::from_str("2.5").unwrap();
-            assert_eq!((x / y).to_string(), "Simplex`Real[24]".to_string());
+            assert_eq!((x / y).to_string(), "Simplex`Integer[24]".to_string());
         }
 
         #[test]
@@ -165,6 +172,17 @@ mod tests {
             let x = Numeric::from_str("55.10").unwrap();
             let y = Numeric::from_str("5").unwrap();
             assert_eq!((x / y).to_string(), "Simplex`Real[11.02]".to_string());
+        }
+    }
+
+    mod larger_sized_tests {
+        use atom::numbers::number::Numeric;
+
+        #[test]
+        fn it_computes_big_mul_real_real() {
+            let x = Numeric::from_str("25.5").unwrap();
+            let y = Numeric::from_str("200.0").unwrap();
+            assert_eq!((x * y).to_string(), "Simplex`Real[5100.00]".to_string());
         }
     }
 }

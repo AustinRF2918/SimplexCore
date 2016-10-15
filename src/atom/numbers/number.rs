@@ -35,8 +35,34 @@ impl Numeric {
             &Numeric::LittleInteger(i) => {
                 format!("Simplex`Integer[{}]", i)
             }, &Numeric::LittleReal(ref r) => {
-                // Unsafe.
                 format!("Simplex`Real[{}]", r)
+            }
+        }
+    }
+
+    pub fn simplify(self) -> Numeric {
+        match self {
+            Numeric::LittleReal(r) => {
+                if r.is_integer() {
+                    let new_integer = (r.to_string().as_str()).parse::<i64>().unwrap();
+                    let mut new_self = Numeric::LittleInteger(new_integer);
+                    new_self
+                } else {
+                    self
+                }
+            }
+            _ => {
+                self
+            }
+        }
+    }
+
+    pub fn is_nan(&self) -> bool {
+        match self {
+            &Numeric::LittleInteger(_) => {
+                false
+            }, &Numeric::LittleReal(ref r) => {
+                r.to_string() == "NaN" 
             }
         }
     }
@@ -51,7 +77,6 @@ impl Numeric {
         }
     }
 }
-
 impl Add for Numeric {
     type Output = Numeric;
 
@@ -61,11 +86,11 @@ impl Add for Numeric {
             (Numeric::LittleInteger(lhs), Numeric::LittleInteger(rhs)) => {
                 Numeric::LittleInteger(lhs + rhs)
             }, (Numeric::LittleInteger(lhs), Numeric::LittleReal(rhs)) => {
-                Numeric::LittleReal(d128::from_str(lhs.to_string().as_str()).unwrap() + rhs)
+                Numeric::LittleReal(d128::from_str(lhs.to_string().as_str()).unwrap() + rhs).simplify()
             }, (Numeric::LittleReal(lhs), Numeric::LittleInteger(rhs)) => {
-                Numeric::LittleReal(lhs + d128::from_str(rhs.to_string().as_str()).unwrap())
+                Numeric::LittleReal(lhs + d128::from_str(rhs.to_string().as_str()).unwrap()).simplify()
             }, (Numeric::LittleReal(lhs), Numeric::LittleReal(rhs)) => {
-                Numeric::LittleReal(lhs + rhs)
+                Numeric::LittleReal(lhs + rhs).simplify()
             }
         }
     }
@@ -76,15 +101,14 @@ impl Sub for Numeric {
 
     fn sub(self, other: Numeric) -> Numeric {
         match (self, other) {
-        //TODO: Use d128 constructor more intellegently: This is extremely slow.
             (Numeric::LittleInteger(lhs), Numeric::LittleInteger(rhs)) => {
                 Numeric::LittleInteger(lhs - rhs)
             }, (Numeric::LittleInteger(lhs), Numeric::LittleReal(rhs)) => {
-                Numeric::LittleReal(d128::from_str(lhs.to_string().as_str()).unwrap() - rhs)
+                Numeric::LittleReal(d128::from_str(lhs.to_string().as_str()).unwrap() - rhs).simplify()
             }, (Numeric::LittleReal(lhs), Numeric::LittleInteger(rhs)) => {
-                Numeric::LittleReal(lhs - d128::from_str(rhs.to_string().as_str()).unwrap())
+                Numeric::LittleReal(lhs - d128::from_str(rhs.to_string().as_str()).unwrap()).simplify()
             }, (Numeric::LittleReal(lhs), Numeric::LittleReal(rhs)) => {
-                Numeric::LittleReal(lhs - rhs)
+                Numeric::LittleReal(lhs - rhs).simplify()
             }
         }
     }
@@ -99,11 +123,11 @@ impl Mul for Numeric {
             (Numeric::LittleInteger(lhs), Numeric::LittleInteger(rhs)) => {
                 Numeric::LittleInteger(lhs * rhs)
             }, (Numeric::LittleInteger(lhs), Numeric::LittleReal(rhs)) => {
-                Numeric::LittleReal(d128::from_str(lhs.to_string().as_str()).unwrap() * rhs)
+                Numeric::LittleReal(d128::from_str(lhs.to_string().as_str()).unwrap() * rhs).simplify()
             }, (Numeric::LittleReal(lhs), Numeric::LittleInteger(rhs)) => {
-                Numeric::LittleReal(lhs * d128::from_str(rhs.to_string().as_str()).unwrap())
+                Numeric::LittleReal(lhs * d128::from_str(rhs.to_string().as_str()).unwrap()).simplify()
             }, (Numeric::LittleReal(lhs), Numeric::LittleReal(rhs)) => {
-                Numeric::LittleReal(lhs * rhs)
+                Numeric::LittleReal(lhs * rhs).simplify()
             }
         }
     }
@@ -120,11 +144,11 @@ impl Div for Numeric {
                 // This should use two d128s wrapped from lhs and rhs as division.
                 Numeric::LittleReal(d128::from_str((lhs as f64 / rhs as f64).to_string().as_str()).unwrap())
             }, (Numeric::LittleInteger(lhs), Numeric::LittleReal(rhs)) => {
-                Numeric::LittleReal(d128::from_str(lhs.to_string().as_str()).unwrap() / rhs)
+                Numeric::LittleReal(d128::from_str(lhs.to_string().as_str()).unwrap() / rhs).simplify()
             }, (Numeric::LittleReal(lhs), Numeric::LittleInteger(rhs)) => {
-                Numeric::LittleReal(lhs / d128::from_str(rhs.to_string().as_str()).unwrap())
+                Numeric::LittleReal(lhs / d128::from_str(rhs.to_string().as_str()).unwrap()).simplify()
             }, (Numeric::LittleReal(lhs), Numeric::LittleReal(rhs)) => {
-                Numeric::LittleReal(lhs / rhs)
+                Numeric::LittleReal(lhs / rhs).simplify()
             }
         }
     }

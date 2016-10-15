@@ -1,0 +1,113 @@
+* Mathics (Simplex) Numeric Manipulation Specification
+** Integers
+   -> Integers in Mathics are of arbitrary precision
+   -> In[1] := 1 + 1 
+   -> Out[1] = 2
+   
+*** Implementation
+    -> Implementation of Integers of arbirary precision shall be
+    done by using a generic numeric data structure that holds either
+    a i64, or a Num (Rust library) BigInt type. Either the structure
+    will be held by the whole 64 bit unsigned integer, or a pointer
+    to a heap allocated big int will  be used in the case that a parsed
+    str overflows it.
+
+** Reals
+   -> Reals, like Integers are of arbitrary precision.
+
+   -> In[1]:= 1.2 + 2.2
+   -> Out[1]= 3.4
+
+   -> In[2]:= 1.234 + 2.2
+   -> Out[2]= 3.4345
+   
+   -> In[3]:= 1.2345 + 2
+   -> Out[3]= 3.2345
+
+*** Notes
+    -> Note how addition of reals actually has no floating point 
+    error (for the most part, this may occur in a couple of cases
+    that I will discuess later). This is done via two techinques.
+
+**** Technique 1: Fixed Point Arithmetic
+     -> For smaller numbers, fixed point arithmetic is an excellent
+     choice to remove floating point error: There is a trade-off, 
+     however: Fixed point requires a 128 bit allocation to allow
+     nonlossy conversions from f64: This means that we will have
+     a significant slow down because current processor function
+     on 64 bit arithmetic. It is, however, significantly faster
+     than technique 2, which is progressively expanding floating
+     point precision.
+     
+**** Technique 2: Arbitrary Floating Point Expansion
+     -> For larger (and quite frankly, not often used) numerics, 
+     it would be a better choice to simply use the library Rust 
+     provides for allowing a big floating point number: The way 
+     this would function is by performing simple operations on 
+     the data structure provided and expanding decimals as needed
+     on the heap: this is, however, much slower than even fixed
+     point arithmetic, which gives us, albeit not accessable on
+     an x86 asembler, a statically sized data structure.
+
+*** Implementation
+    -> Implementation of real arithmetic shall be done in much the 
+    same way integers are to be implemented: Have a static 128 bit
+    data structure to represent smaller, more realistic real numbers,
+    and in the case that a numeric is either designated to be past
+    machine precision or expanded past such via some arbitrary operation,
+    we will reallocate to an arbitrary floating point number that 
+    expands as needed: Much like before our raw data structure will
+    be much faster as the 128 bit structure.
+    
+** Rational
+   -> Rationals are internally exactly the same as reals: there semantics
+   are simply different: We can use a 128 bit real data structure 
+   to represent rationals and either reimplement it (*hard*) or 
+   utilize a wrapper around it to reorganize the semantics to represent
+   a rational instead, this is shown in *schema*.
+   
+*** Schema
+    -> In[1]:= Rational[2, 3]
+    -> Out[1]= (2 / 3)
+    -> In[2]:= DecimalImplementation[ % ]
+    -> Out[2]= 2.3
+    -> In[3]:= Reify[Rational[2, 3]] ;; == N[Rational[2, 3], MachinePrecision]
+    -> Out[3]= 0.666666666666666667
+    
+*** Implementation
+    -> As a prototype implementation, the creation of a wrapper around d128 
+    would be neccessary. We would create a parse_left(num: d128) and a 
+    parse_right(num: d128) which would receieve the integers of arbitrary
+    length from both sides of our data structure. Following this we would
+    use a GCD algorithm to reduce the fraction. Finally, in the case that
+    a reification is desired, we would use our d128 to get an approximation
+    of machine precision lenght by default: In the case that we need more,
+    a N function would exist to extract a specific amount of digits.
+   
+**** Schema
+     -> x = parse_left( d )
+     -> y = parse_right( d )
+     -> g = gcd( x, y )
+     -> z = Fraction( x / g, g )
+     -> Reify(z) => Machine precision number.
+     -> N(z, 40) => Number with length 40
+     
+** Imaginary Atom
+   -> I have to figure out how to implement this: I'm not sure if it 
+   should be a numeric type or if it should be an abstraction on 
+   rationals, reals, and integers.
+    
+** Instantiation
+     -> The easiest way to instantiate a numeric type  would be via the 
+     from_str( s: &str ) method: This will returns an option of a numeric
+     type: In the case that a parse error occurs, a None type will be 
+     returned, otherwise a Some(Numeric) type will be returned.
+     
+     -> We can also skip any checks and much speed up our data structure
+     by using a from primitive type: This is mentioned in the following
+     node.
+
+** FromPrimitive trait
+   -> The Numeric data structure is to be implemented with a from_u64, 
+   from_i64, and from_f64. This means that doing checks is not neccessary
+   and we could immediately instantiate our type.
