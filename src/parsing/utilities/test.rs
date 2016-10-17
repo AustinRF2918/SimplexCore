@@ -129,6 +129,47 @@ mod tests {
     mod numeric_tests {
         mod integer_parse_tests {
             use parsing::utilities::numerics::representable_integer;
+            use parsing::utilities::numerics::get_point_location;
+            use parsing::utilities::numerics::get_plus_location;
+
+            #[test]
+            fn it_finds_no_point() {
+                assert_eq!(None, get_point_location("1"));
+            }
+
+            #[test]
+            fn it_finds_a_point() {
+                assert_eq!(Some(1), get_point_location("1.0"));
+            }
+
+            #[test]
+            fn it_finds_a_more_complex_point() {
+                assert_eq!(Some(6), get_point_location("123456.043143"));
+            }
+
+            #[test]
+            fn it_finds_a_more_complex_point_where_multiple_points() {
+                assert_eq!(Some(6), get_point_location("123456.0431.43"));
+            }
+#[test]
+            fn it_finds_no_plus() {
+                assert_eq!(None, get_point_location("1"));
+            }
+
+            #[test]
+            fn it_finds_a_plus() {
+                assert_eq!(Some(1), get_plus_location("1+0"));
+            }
+
+            #[test]
+            fn it_finds_a_more_complex_plus() {
+                assert_eq!(Some(6), get_plus_location("123456+043143"));
+            }
+
+            #[test]
+            fn it_finds_a_more_complex_plus_where_multiple_plus() {
+                assert_eq!(Some(6), get_plus_location("123456+0431+43"));
+            }
 
             #[test]
             fn it_works_with_regular_integer() {
@@ -222,6 +263,46 @@ mod tests {
             #[test]
             fn it_converts_from_zero_decimals_000000() {
                 assert_eq!(Some(50), get_representable_integer("50.0000000"));
+            }
+
+            #[test]
+            fn it_converts_from_exponent_notation_0() {
+                assert_eq!(Some(1), get_representable_integer("1.00E+0"));
+            }
+
+            #[test]
+            fn it_converts_from_exponent_notation_1() {
+                assert_eq!(Some(10), get_representable_integer("1.00E+1"));
+            }
+
+            #[test]
+            fn it_converts_from_exponent_notation_2() {
+                assert_eq!(Some(100), get_representable_integer("1.00E+2"));
+            }
+
+            #[test]
+            fn it_converts_from_exponent_notation_3() {
+                assert_eq!(Some(1000), get_representable_integer("1.00E+3"));
+            }
+            
+            #[test]
+            fn it_converts_from_exponent_notation_8() {
+                assert_eq!(Some(100000000), get_representable_integer("1.00E+8"));
+            }
+
+            #[test]
+            fn it_converts_from_exponent_notation_9() {
+                assert_eq!(Some(1000000000), get_representable_integer("1.00E+9"));
+            }
+
+            #[test]
+            fn it_doesnt_convert_from_exponent_notation_10() {
+                assert_eq!(Some(10000000000), get_representable_integer("1.00E+10"));
+            }
+
+            #[test]
+            fn it_doesnt_convert_bad_decimal_from_exponent_notation() {
+                assert_eq!(None, get_representable_integer("1.0220E+2"));
             }
 
             #[test]

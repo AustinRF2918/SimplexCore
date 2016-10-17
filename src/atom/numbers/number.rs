@@ -33,6 +33,8 @@ impl Numeric {
                           Numeric::NaN
                         }
                     }, Err(_) => {
+                        // In reality, this should be offloaded to
+                        // arbitrary precision structure.
                         Numeric::NaN
                     }
                 }

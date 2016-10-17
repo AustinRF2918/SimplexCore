@@ -181,5 +181,25 @@ mod tests {
             let y = Numeric::from_str("200.0");
             assert_eq!((x * y).as_str(), "5100");
         }
+
+        #[test]
+        fn it_doesnt_cast_gt_ten_lhs() {
+            let x = Numeric::from_str("210000000000.0");
+            let y = Numeric::from_str("2000000000000000000000000000.0");
+            let z = Numeric::from_str("2000000000000000000000000000.0");
+            let a = x * y;
+            let b = a / z;
+            assert_eq!((b).as_str(), "2.10000E+11");
+        }
+
+        #[test]
+        fn it_casts_lte_ten_lhs() {
+            let x = Numeric::from_str("2100000000.0");
+            let y = Numeric::from_str("2000000000000000000000000000.0");
+            let z = Numeric::from_str("2000000000000000000000000000.0");
+            let a = x * y;
+            let b = a / z;
+            assert_eq!((b).as_str(), "2100000000");
+        }
     }
 }
