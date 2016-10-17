@@ -11,7 +11,7 @@ mod tests {
         #[test]
         fn it_doesnt_parse_bad_int() {
             let x = Numeric::from_str("dsajfdksjk");
-            assert_eq!(x.simplify().to_string(), "NaN");
+            assert_eq!(x.simplify().as_str(), "NaN");
         }
 
         #[test]
@@ -29,7 +29,7 @@ mod tests {
         #[test]
         fn it_doesnt_parse_bad_real() {
             let x = Numeric::from_str("dsajfd.ksjk");
-            assert_eq!(x.to_string(), "NaN");
+            assert_eq!(x.as_str(), "NaN");
         }
     }
 
@@ -38,13 +38,13 @@ mod tests {
         #[test]
         fn it_shows_int() {
             let x = Numeric::from_str("55");
-            assert_eq!(x.to_string(), "55".to_string());
+            assert_eq!(x.as_str(), "55");
         }
 
         #[test]
         fn it_shows_real() {
             let x = Numeric::from_str("55.55");
-            assert_eq!(x.to_string(), "55.55".to_string());
+            assert_eq!(x.as_str(), "55.55");
         }
     }
 
@@ -54,28 +54,28 @@ mod tests {
         fn it_computes_add_int_int() {
             let x = Numeric::from_str("55");
             let y = Numeric::from_str("55");
-            assert_eq!((x + y).to_string(), "110".to_string());
+            assert_eq!((x + y).as_str(), "110");
         }
 
         #[test]
         fn it_computes_add_real_real() {
             let x = Numeric::from_str("55.55");
             let y = Numeric::from_str("55.55");
-            assert_eq!((x + y).to_string(), "111.10".to_string());
+            assert_eq!((x + y).as_str(), "111.10");
         }
 
         #[test]
         fn it_computes_add_int_real() {
             let x = Numeric::from_str("55");
             let y = Numeric::from_str("55.55");
-            assert_eq!((x + y).to_string(), "110.55".to_string());
+            assert_eq!((x + y).as_str(), "110.55");
         }
 
         #[test]
         fn it_computes_add_real_int() {
             let x = Numeric::from_str("55.10");
             let y = Numeric::from_str("10");
-            assert_eq!((x + y).to_string(), "65.10".to_string());
+            assert_eq!((x + y).as_str(), "65.10");
         }
     }
 
@@ -85,28 +85,28 @@ mod tests {
         fn it_computes_add_int_int() {
             let x = Numeric::from_str("55");
             let y = Numeric::from_str("55");
-            assert_eq!((x - y).to_string(), "0".to_string());
+            assert_eq!((x - y).as_str(), "0");
         }
 
         #[test]
         fn it_computes_add_real_real() {
             let x = Numeric::from_str("55.55");
             let y = Numeric::from_str("45.55");
-            assert_eq!((x - y).to_string(), "10".to_string());
+            assert_eq!((x - y).as_str(), "10");
         }
 
         #[test]
         fn it_computes_add_int_real() {
             let x = Numeric::from_str("55");
             let y = Numeric::from_str("55.55");
-            assert_eq!((x - y).to_string(), "-0.55".to_string());
+            assert_eq!((x - y).as_str(), "-0.55");
         }
 
         #[test]
         fn it_computes_add_real_int() {
             let x = Numeric::from_str("55.10");
             let y = Numeric::from_str("10");
-            assert_eq!((x - y).to_string(), "45.10".to_string());
+            assert_eq!((x - y).as_str(), "45.10");
         }
     }
 
@@ -116,28 +116,28 @@ mod tests {
         fn it_computes_mul_int_int() {
             let x = Numeric::from_str("50");
             let y = Numeric::from_str("50");
-            assert_eq!((x * y).to_string(), "2500".to_string());
+            assert_eq!((x * y).as_str(), "2500");
         }
 
         #[test]
         fn it_computes_mul_real_real() {
             let x = Numeric::from_str("0.5");
             let y = Numeric::from_str("0.5");
-            assert_eq!((x * y).to_string(), "0.25".to_string());
+            assert_eq!((x * y).as_str(), "0.25");
         }
 
         #[test]
         fn it_computes_mul_int_real() {
             let x = Numeric::from_str("50");
             let y = Numeric::from_str(".5");
-            assert_eq!((x * y).to_string(), "25".to_string());
+            assert_eq!((x * y).as_str(), "25");
         }
 
         #[test]
         fn it_computes_mul_real_int() {
             let x = Numeric::from_str("55.10");
             let y = Numeric::from_str("10");
-            assert_eq!((x * y).to_string(), "551".to_string());
+            assert_eq!((x * y).as_str(), "551");
         }
     }
 
@@ -147,28 +147,28 @@ mod tests {
         fn it_computes_mul_int_int() {
             let x = Numeric::from_str("50");
             let y = Numeric::from_str("50");
-            assert_eq!((x / y).to_string(), "1".to_string());
+            assert_eq!((x / y).as_str(), "1");
         }
 
         #[test]
         fn it_computes_mul_real_real() {
             let x = Numeric::from_str("4.4");
             let y = Numeric::from_str("2.2");
-            assert_eq!((x / y).to_string(), "2".to_string());
+            assert_eq!((x / y).as_str(), "2");
         }
 
         #[test]
         fn it_computes_mul_int_real() {
             let x = Numeric::from_str("60");
             let y = Numeric::from_str("2.5");
-            assert_eq!((x / y).to_string(), "24".to_string());
+            assert_eq!((x / y).as_str(), "24");
         }
 
         #[test]
         fn it_computes_add_real_int() {
             let x = Numeric::from_str("55.10");
             let y = Numeric::from_str("5");
-            assert_eq!((x / y).to_string(), "11.02".to_string());
+            assert_eq!((x / y).as_str(), "11.02");
         }
     }
 
@@ -179,7 +179,7 @@ mod tests {
         fn it_computes_big_mul_real_real() {
             let x = Numeric::from_str("25.5");
             let y = Numeric::from_str("200.0");
-            assert_eq!((x * y).to_string(), "5100".to_string());
+            assert_eq!((x * y).as_str(), "5100");
         }
     }
 }

@@ -2,6 +2,7 @@ use std::io;
 use std::ops::{Add, Sub, Mul, Div};
 use std::cmp::PartialEq;
 use std::fmt::Debug;
+use std::borrow::Cow;
 use parsing::utilities::numerics::get_representable_integer;
 
 extern crate decimal;
@@ -35,6 +36,18 @@ impl Numeric {
                         Numeric::NaN
                     }
                 }
+            }
+        }
+    }
+
+    pub fn as_str<'a>(&'a self) -> Cow<'a, str> {
+        match self {
+            &Numeric::LittleInteger(i) => {
+                Cow::Owned(i.clone().to_string())
+            }, &Numeric::LittleReal(ref r) => {
+                Cow::Owned(r.clone().to_string())
+            }, &Numeric::NaN => {
+                Cow::Borrowed("NaN")
             }
         }
     }
