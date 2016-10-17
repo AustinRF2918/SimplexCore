@@ -130,7 +130,7 @@ mod tests {
         fn it_computes_mul_int_real() {
             let x = Numeric::from_str("50");
             let y = Numeric::from_str(".5");
-            assert_eq!((x * y).simplify().to_string(), "25".to_string());
+            assert_eq!((x * y).to_string(), "25".to_string());
         }
 
         #[test]

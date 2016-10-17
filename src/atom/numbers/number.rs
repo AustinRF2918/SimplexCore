@@ -25,7 +25,11 @@ impl Numeric {
             }, Err(_) => {
                 match d128::from_str(s) {
                     Ok(num) => {
-                        Numeric::LittleReal(num)
+                        if num.to_string() != "NaN" {
+                          Numeric::LittleReal(num)
+                        } else {
+                          Numeric::NaN
+                        }
                     }, Err(_) => {
                         Numeric::NaN
                     }
@@ -49,7 +53,6 @@ impl Numeric {
     pub fn simplify(self) -> Numeric {
         match self {
             Numeric::LittleReal(r) => {
-                print!("Numeric: {}/n", r.is_integer());
                 if r.is_integer() {
                     match r.to_string().as_str().parse::<i64>() {
                         Ok(num) => {
@@ -58,13 +61,27 @@ impl Numeric {
                             Numeric::NaN
                         }
                     }
-                } else if r.to_string().as_str() == "NaN" {
+                } else if r.to_string().contains("NaN") {
                        Numeric::NaN
                 } else {
                     self
                 }
             }, _ => {
                self
+            }
+        }
+    }
+
+    pub fn capacity(&self) -> usize {
+        match self {
+            &Numeric::LittleInteger(_) => {
+                64
+            },
+            &Numeric::LittleReal(_) => {
+                128
+            },
+            &Numeric::NaN => {
+                8
             }
         }
     }
