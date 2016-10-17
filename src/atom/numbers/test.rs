@@ -92,7 +92,7 @@ mod tests {
         fn it_computes_add_real_real() {
             let x = Numeric::from_str("55.55");
             let y = Numeric::from_str("45.55");
-            assert_eq!((x - y).to_string(), "10.00".to_string());
+            assert_eq!((x - y).to_string(), "10".to_string());
         }
 
         #[test]
@@ -179,7 +179,7 @@ mod tests {
         fn it_computes_big_mul_real_real() {
             let x = Numeric::from_str("25.5");
             let y = Numeric::from_str("200.0");
-            assert_eq!((x * y).to_string(), "5100.00".to_string());
+            assert_eq!((x * y).to_string(), "5100".to_string());
         }
     }
 }

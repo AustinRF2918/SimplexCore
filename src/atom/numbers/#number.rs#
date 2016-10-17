@@ -60,12 +60,12 @@ impl Numeric {
                     },
 
                     None => {
-                        if r.to_string().contains("NaN") {
-                            Numeric::NaN
-                        } else {
-                            self
-                        }
+                        self
                     }
+                } 
+                       Numeric::NaN
+                } else {
+                    self
                 }
             }, _ => {
                self
