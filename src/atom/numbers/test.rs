@@ -5,7 +5,7 @@ mod tests {
         #[test]
         fn it_parses_int() {
             let x = Numeric::from_str("55");
-            assert_eq!(x.head(), "Simplex`Integer");
+            assert_eq!(x, Numeric::LittleInteger(55));
         }
 
         #[test]
@@ -23,7 +23,7 @@ mod tests {
         #[test]
         fn it_parses_real() {
             let x = Numeric::from_str("55.552");
-            assert_eq!(x.head(), "Simplex`Real");
+            assert_eq!(x.simplify().as_str(), "55.552");
         }
 
         #[test]
@@ -169,6 +169,68 @@ mod tests {
             let x = Numeric::from_str("55.10");
             let y = Numeric::from_str("5");
             assert_eq!((x / y).as_str(), "11.02");
+        }
+    }
+
+    mod low_sized_equality {
+        use atom::numbers::number::Numeric;
+        #[test]
+        fn it_computes_eq_int_int() {
+            let x = Numeric::from_str("50");
+            let y = Numeric::from_str("50");
+            assert_eq!((x == y), true);
+        }
+
+        #[test]
+        fn it_computes_eq_real_real() {
+            let x = Numeric::from_str("4.4");
+            let y = Numeric::from_str("4.4");
+            assert_eq!((x == y), true);
+        }
+
+        #[test]
+        fn it_computes_eq_int_real() {
+            let x = Numeric::from_str("60");
+            let y = Numeric::from_str("60.0");
+            assert_eq!((x == y), true);
+        }
+
+        #[test]
+        fn it_computes_eq_real_int() {
+            let x = Numeric::from_str("5.0");
+            let y = Numeric::from_str("5");
+            assert_eq!((x == y), true);
+        }
+    }
+
+    mod low_sized_inequality {
+        use atom::numbers::number::Numeric;
+        #[test]
+        fn it_computes_eq_int_int() {
+            let x = Numeric::from_str("50");
+            let y = Numeric::from_str("51");
+            assert_eq!((x != y), true);
+        }
+
+        #[test]
+        fn it_computes_eq_real_real() {
+            let x = Numeric::from_str("4.4");
+            let y = Numeric::from_str("2.4");
+            assert_eq!((x != y), true);
+        }
+
+        #[test]
+        fn it_computes_eq_int_real() {
+            let x = Numeric::from_str("60");
+            let y = Numeric::from_str("20.0");
+            assert_eq!((x != y), true);
+        }
+
+        #[test]
+        fn it_computes_eq_real_int() {
+            let x = Numeric::from_str("5.0");
+            let y = Numeric::from_str("2");
+            assert_eq!((x != y), true);
         }
     }
 

@@ -40,20 +40,20 @@ fn evaluate(line: String, state: &mut State) {
     match assignment(&line, state) {
         Some((x, y)) => {
             state.num_map.insert(x.clone(), y);
-            println!("Out[{}]= {} == {}", state.current_input, x.clone(), y.as_str());
+            println!("Out[{}]= {} == {} [Assignment]", state.current_input, x.clone(), y.as_str());
         },
         None => {
             match operator(&line, state) {
                 Some(s) => {
-                    println!("Out[{}]= {}", state.current_input, s.as_str());
+                    println!("Out[{}]= {} [Operator]", state.current_input, s.as_str());
                 }
                 None => {
                         match parse_v_name(&line, state) {
                         Some(x) => {
-                            println!("Out[{}]= {}", state.current_input, x.as_str());
+                            println!("Out[{}]= {} [VName Lookup]", state.current_input, x.as_str());
                         }
                         None => {
-                            println!("Out[{}]= {}", state.current_input, line);
+                            println!("Out[{}]= {} [Unknown Op]", state.current_input, line);
                         }
                     }
                 }
@@ -68,7 +68,7 @@ fn evaluate(line: String, state: &mut State) {
 
 fn assignment(line: &String, state: &mut State) -> Option<(String, Numeric)> {
     lazy_static! {
-        static ref RE : Regex = Regex::new(r"\s*(?P<lhs>[a-zA-Z]*)\s*=\s*(?P<rhs>.*)\s*$").unwrap();
+        static ref RE : Regex = Regex::new(r"\s*(?P<lhs>[a-zA-Z]+)\s*=\s*(?P<rhs>[a-zA-Z0-9|.]*)\s*$").unwrap();
     }
 
     let captures = RE.captures(line.as_str());
@@ -106,7 +106,7 @@ fn assignment(line: &String, state: &mut State) -> Option<(String, Numeric)> {
 
 fn operator(line: &String, state: &mut State) -> Option<String> {
     lazy_static! {
-        static ref RE : Regex = Regex::new(r"\s*(?P<lhs>[a-zA-Z0-9]*)\s*(?P<op>[+-/*])\s*(?P<rhs>[a-zA-Z0-9]*)\s*$").unwrap();
+        static ref RE : Regex = Regex::new(r"\s*(?P<lhs>[a-zA-Z0-9\.]*)\s*(?P<op>[+-/*]|==)\s*(?P<rhs>[a-zA-Z0-9\.]*)\s*$").unwrap();
     }
 
     let captures = RE.captures(line.as_str());
@@ -219,6 +219,32 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                         }
                         (None, None) => {
                             Some((Numeric::from_str(lhs) * Numeric::from_str(rhs)).to_string())
+                        }
+                    }
+                }
+                "==" => {
+                    match (state.num_map.get(lhs), state.num_map.get(rhs)) {
+                        (Some(x), Some(y)) => {
+                            Some((*x == *y).to_string())
+                        }
+                        (Some(x), None) => {
+                            let y = Numeric::from_str(rhs);
+                            if y.simplify() == Numeric::NaN {
+                                Some((x.to_string() == rhs).to_string())
+                            } else {
+                                Some((*x == y).to_string())
+                            }
+                        }
+                        (None, Some(x)) => {
+                            let y = Numeric::from_str(lhs);
+                            if y.simplify() == Numeric::NaN {
+                                Some((y.to_string() == lhs).to_string())
+                            } else {
+                                Some((*x == y).to_string())
+                            }
+                        }
+                        (None, None) => {
+                            Some((Numeric::from_str(lhs) == Numeric::from_str(rhs)).to_string())
                         }
                     }
                 }

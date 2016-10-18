@@ -13,7 +13,7 @@ use num::{ToPrimitive, FromPrimitive};
 use std::str::FromStr;
 
 // TODO: Make emulated integer using d128.
-#[derive(PartialEq, Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub enum Numeric {
     LittleInteger(i64),
     LittleReal(d128),
@@ -104,20 +104,26 @@ impl Numeric {
             }
         }
     }
+}
 
-    pub fn head(&self) -> &str {
-        match self {
-            &Numeric::LittleInteger(_) => {
-                "Simplex`Integer"
-            }, &Numeric::LittleReal(_) => {
-                "Simplex`Real"
-            }, &Numeric::NaN => {
-                "Simplex`NaN"
-            }
+impl PartialEq for Numeric {
+    fn eq(&self, other: &Numeric) -> bool {
+        match (self, other) {
+            (&Numeric::NaN, &Numeric::NaN ) => true,
+            (&Numeric::NaN, _ ) => false,
+            (_, &Numeric::NaN) => false,
+            (&Numeric::LittleInteger(lhs), &Numeric::LittleInteger(rhs)) => lhs == rhs,
+            (&Numeric::LittleInteger(lhs), &Numeric::LittleReal(rhs)) => {
+                *self  == other.simplify()
+            },
+            (&Numeric::LittleReal(lhs), &Numeric::LittleInteger(rhs)) => {
+                other.simplify() == *self
+            },
+            (&Numeric::LittleReal(lhs), &Numeric::LittleReal(rhs)) => lhs == rhs
+            
         }
     }
 }
-
 impl Add for Numeric {
     type Output = Numeric;
 
