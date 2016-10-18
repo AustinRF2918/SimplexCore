@@ -65,3 +65,30 @@ pub fn has_notation_character( snp: StringNotationPattern, c: char, s: &str) -> 
         }
     }
 }
+
+// TODO: Make tests
+pub fn representable_string(s: &str) -> bool {
+    let mut begin_flag = false;
+    let mut end_flag = false;
+    let mut error_flag = false;
+
+    for letter in s.chars() {
+        if !begin_flag {
+            if letter == '"' {
+                begin_flag = true;
+            } else if letter != ' ' {
+                error_flag = true;
+            }
+        } else if !end_flag {
+            if letter == '"' {
+                end_flag = true;
+            } 
+        } else {
+            if letter != ' ' {
+                error_flag = true;
+            }
+        }
+    } 
+
+    !error_flag
+}

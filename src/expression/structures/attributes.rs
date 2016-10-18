@@ -1,47 +1,25 @@
-// This API must be Rustified: It is way to Pythonic and because
-// Rust can automatically implemenet comparables and keys, we
-// should do it idiomatically instead... 
+extern crate decimal;
+use decimal::d128;
 
-// As a result, I have developed no test cases.
-
-#[allow(dead_code)]
-pub trait KeyGenerator {
-    fn get_sort_key(&self) -> u64;
+pub trait BaseExpression {
+    fn get_expression_name(&self) -> &str;
+    fn get_head_name(&self) -> &str;
 }
 
-#[allow(dead_code)]
-pub trait KeyComparable {
-    fn greater_than(&self, other: &Self) -> bool;
-    fn greater_equal(&self, other: &Self) -> bool;
-    fn less_than(&self, other: &Self) -> bool;
-    fn less_equal(&self, other: &Self) -> bool;
-    fn equal(&self, other: &Self) -> bool;
-    fn not_equal(&self, other: &Self) -> bool;
+pub trait PrimitiveConverter {
+    fn get_int_value(&self) -> Option<i64>;
+    fn get_float_value(&self) -> Option<d128>;
+    fn get_string_value(&self) -> Option<&String>;
 }
 
-impl <T> KeyComparable for T
-    where T: KeyGenerator  {
-    fn less_than(&self, other: &Self) -> bool {
-        self.get_sort_key() < other.get_sort_key()
-    }
+pub trait ComposableExpression<T: BaseExpression>{
+    fn get_head(&self) -> Option<T>;
+    fn get_leaves(&self) -> Vec<T>;
+}
 
-    fn less_equal(&self, other: &Self) -> bool{
-        self.get_sort_key() <= other.get_sort_key()
-    }
-
-    fn greater_than(&self, other: &Self) -> bool{
-        self.get_sort_key() > other.get_sort_key()
-    }
-
-    fn greater_equal(&self, other: &Self) -> bool{
-        self.get_sort_key() >= other.get_sort_key()
-    }
-
-    fn equal(&self, other: &Self) -> bool {
-        self.get_sort_key() == other.get_sort_key()
-    }
-
-    fn not_equal(&self, other: &Self) -> bool {
-        self.get_sort_key() != other.get_sort_key()
-    }
+pub trait ExpressionSequencable<T: BaseExpression>{
+    fn sequences(self) -> Option<Vec<T>>;
+    fn flatten(self) -> Self;
+    fn flatten_sequence(self) -> Self;
+    fn flatten_pattern_sequence(self) -> Self;
 }

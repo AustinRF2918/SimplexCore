@@ -24,7 +24,6 @@ use regex::Regex;
 struct State {
     num_map: HashMap<String, Numeric>,
     current_input: usize
-       
 }
 
 impl State {
@@ -58,7 +57,7 @@ fn evaluate(line: String, state: &mut State) {
                     }
                 }
             }
-            
+
         }
     }
 
@@ -87,7 +86,7 @@ fn assignment(line: &String, state: &mut State) -> Option<(String, Numeric)> {
                         }
                         None => {
                             None
-                                
+
                         }
                     }
                 }
