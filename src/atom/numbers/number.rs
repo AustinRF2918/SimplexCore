@@ -12,7 +12,8 @@ extern crate num;
 use num::{ToPrimitive, FromPrimitive};
 use std::str::FromStr;
 
-#[derive(PartialEq, Debug)]
+// TODO: Make emulated integer using d128.
+#[derive(PartialEq, Debug, Copy, Clone)]
 pub enum Numeric {
     LittleInteger(i64),
     LittleReal(d128),
@@ -45,9 +46,9 @@ impl Numeric {
     pub fn as_str<'a>(&'a self) -> Cow<'a, str> {
         match self {
             &Numeric::LittleInteger(i) => {
-                Cow::Owned(i.clone().to_string())
+                Cow::Owned(i.to_string())
             }, &Numeric::LittleReal(ref r) => {
-                Cow::Owned(r.clone().to_string())
+                Cow::Owned(r.to_string())
             }, &Numeric::NaN => {
                 Cow::Borrowed("NaN")
             }
@@ -69,13 +70,15 @@ impl Numeric {
     pub fn simplify(self) -> Numeric {
         match self {
             Numeric::LittleReal(r) => {
-                match get_representable_integer(r.to_string().as_str()) {
+                let real_number = r.to_string();
+
+                match get_representable_integer(real_number.as_str()) {
                     Some(num) => {
                         Numeric::LittleInteger(num)
                     },
 
                     None => {
-                        if r.to_string().contains("NaN") {
+                        if real_number.contains("NaN") {
                             Numeric::NaN
                         } else {
                             self

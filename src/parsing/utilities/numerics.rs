@@ -1,8 +1,27 @@
 use regex::Regex;
 
-pub fn representable_integer( s: &str ) -> bool {
+pub fn representable_integer(s: &str) -> bool {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"^[+-]?[0-9]*(\.?)([0]*)$").unwrap();
+    }
+
+    let captures = RE.captures(s);
+
+    match captures {
+        Some(c) => {
+            let res = c.iter().map(|x| x == Some(s)).fold(false, |acc, i| acc || i);
+            res
+        }
+
+        None => {
+            false
+        }
+    }
+}
+
+pub fn representable_numeric(s: &str) -> bool {
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r"^[+-]?[0-9]*(\.?)([0-9]*)$").unwrap();
     }
 
     let captures = RE.captures(s);
@@ -36,6 +55,9 @@ pub fn get_representable_integer(s: &str) -> Option<i64> {
         }
 
         None => {
+            // Refactor this a bit: We could use closures
+            // and unwrap_or_else to make this less "callback hell
+            // eque"
             let other_captures = EXP_NOTATION.captures(s);
             match other_captures {
                 Some(c) => {
