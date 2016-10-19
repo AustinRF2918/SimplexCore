@@ -139,7 +139,7 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                             }
                         }
                         (None, None) => {
-                            Some((Numeric::from_str(lhs) + Numeric::from_str(rhs)).to_string())
+                            Some((lhs.to_string() + " + " + rhs))
                         }
                     }
                 }

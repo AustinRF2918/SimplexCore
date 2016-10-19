@@ -27,8 +27,8 @@ pub fn representable_numeric(s: &str) -> bool {
     let captures = RE.captures(s);
 
     match captures {
-        Some(c) => {
-            let res = c.iter().map(|x| x == Some(s)).fold(false, |acc, i| acc || i);
+        Some(num) => {
+            let res = num.iter().map(|x| x == Some(s)).fold(false, |acc, i| acc || i);
             res
         }
 
@@ -129,7 +129,7 @@ pub fn get_representable_integer(s: &str) -> Option<i64> {
     }
 }
 
-fn get_location(s: &str, letter: char) -> Option<usize> {
+fn first_location(s: &str, letter: char) -> Option<usize> {
     let mut pos: Option<usize> = None;
 
     for (num, item) in s.chars().enumerate() {
@@ -143,9 +143,9 @@ fn get_location(s: &str, letter: char) -> Option<usize> {
 }
 
 pub fn get_point_location(s: &str) -> Option<usize> {
-    get_location(s, '.')
+    first_location(s, '.')
 }
 
 pub fn get_plus_location(s: &str) -> Option<usize> {
-    get_location(s, '+')
+    first_location(s, '+')
 }

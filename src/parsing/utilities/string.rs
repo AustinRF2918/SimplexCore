@@ -1,3 +1,5 @@
+use regex::{Regex, RegexBuilder};
+
 #[allow(dead_code)]
 pub enum StringNotationPattern {
     First,
@@ -11,37 +13,23 @@ pub enum StringNotationPattern {
 pub fn has_notation_character( snp: StringNotationPattern, c: char, s: &str) -> bool {
     match snp {
         StringNotationPattern::First => {
-            match s.chars().nth(0) {
-                Some(ch) => {
-                    if ch == c {
-                        true
-                    } else {
-                        false
-                    }
-                },
-                _ => false
+            let f_regex: Regex = Regex::new(("^".to_string() + c.to_string().as_str() + ".*$").as_str()).unwrap();
+            let captures = f_regex.captures(s);
+            match captures {
+                Some(c) => true,
+                None => false
             }
         }, StringNotationPattern::Last => {
-            match s.chars().nth(s.len() - 1) {
-                Some(ch) => {
-                    if ch == c {
-                        true
-                    } else {
-                        false
-                    }
-                },
-                _ => false
+            let l_regex: Regex = Regex::new(("^".to_string() + ".*" + c.to_string().as_str() + "$").as_str()).unwrap();
+            let captures = l_regex.captures(s);
+            match captures {
+                Some(c) => true,
+                None => false
             }
         }, StringNotationPattern::External => {
-            match (s.chars().nth(s.len() - 1), s.chars().nth(0)) {
-                (Some(cha), Some(chb)) => {
-                    cha == c || chb == c
-                },  (None, Some(cha)) => {
-                    cha == c
-                }, (Some(cha), None) => {
-                    cha == c
-                }, _ => false
-            }
+            has_notation_character(StringNotationPattern::First, c, s) ||
+            has_notation_character(StringNotationPattern::Last, c, s)
+                
         }, StringNotationPattern::Internal => {
             let mut num = 0;
             let mut flag = false;
@@ -55,13 +43,12 @@ pub fn has_notation_character( snp: StringNotationPattern, c: char, s: &str) -> 
             }
             flag
         }, StringNotationPattern::Contains => {
-            let mut flag = false;
-            for i in s.chars() {
-                if i == c {
-                    flag = true;
-                }
+            let l_regex: Regex = Regex::new(("^".to_string() + ".*" + c.to_string().as_str() + ".*" + "$").as_str()).unwrap();
+            let captures = l_regex.captures(s);
+            match captures {
+                Some(c) => true,
+                None => false
             }
-            flag
         }
     }
 }
