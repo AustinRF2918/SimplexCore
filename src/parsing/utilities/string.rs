@@ -1,4 +1,4 @@
-use regex::{Regex, RegexBuilder};
+use regex::{Regex, RegexBuilder, Captures};
 
 #[allow(dead_code)]
 pub enum StringNotationPattern {
@@ -9,23 +9,24 @@ pub enum StringNotationPattern {
     Contains
 }
 
+// TODO: Make tests.
+fn captures_exist(captures: Option<Captures>) -> bool {
+    match captures {
+        Some(c) => true,
+        None => false
+    }
+}
+
 #[allow(dead_code)]
 pub fn has_notation_character( snp: StringNotationPattern, c: char, s: &str) -> bool {
     match snp {
         StringNotationPattern::First => {
             let f_regex: Regex = Regex::new(("^".to_string() + c.to_string().as_str() + ".*$").as_str()).unwrap();
-            let captures = f_regex.captures(s);
-            match captures {
-                Some(c) => true,
-                None => false
-            }
-        }, StringNotationPattern::Last => {
+            captures_exist(f_regex.captures(s))
+        },
+        StringNotationPattern::Last => {
             let l_regex: Regex = Regex::new(("^".to_string() + ".*" + c.to_string().as_str() + "$").as_str()).unwrap();
-            let captures = l_regex.captures(s);
-            match captures {
-                Some(c) => true,
-                None => false
-            }
+            captures_exist(l_regex.captures(s))
         }, StringNotationPattern::External => {
             has_notation_character(StringNotationPattern::First, c, s) ||
             has_notation_character(StringNotationPattern::Last, c, s)
@@ -43,39 +44,14 @@ pub fn has_notation_character( snp: StringNotationPattern, c: char, s: &str) -> 
             }
             flag
         }, StringNotationPattern::Contains => {
-            let l_regex: Regex = Regex::new(("^".to_string() + ".*" + c.to_string().as_str() + ".*" + "$").as_str()).unwrap();
-            let captures = l_regex.captures(s);
-            match captures {
-                Some(c) => true,
-                None => false
-            }
+            let i_regex: Regex = Regex::new(("^".to_string() + ".*" + c.to_string().as_str() + ".*" + "$").as_str()).unwrap();
+            captures_exist(i_regex.captures(s))
         }
     }
 }
 
 // TODO: Make tests
 pub fn representable_string(s: &str) -> bool {
-    let mut begin_flag = false;
-    let mut end_flag = false;
-    let mut error_flag = false;
-
-    for letter in s.chars() {
-        if !begin_flag {
-            if letter == '"' {
-                begin_flag = true;
-            } else if letter != ' ' {
-                error_flag = true;
-            }
-        } else if !end_flag {
-            if letter == '"' {
-                end_flag = true;
-            } 
-        } else {
-            if letter != ' ' {
-                error_flag = true;
-            }
-        }
-    } 
-
-    !error_flag
+    let f_regex: Regex = Regex::new(("^".to_string() + "\"" + ".*" + "\"" + "$").as_str()).unwrap();
+    captures_exist(f_regex.captures(s))
 }
