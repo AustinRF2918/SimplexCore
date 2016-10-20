@@ -105,7 +105,7 @@ fn assignment(line: &String, state: &mut State) -> Option<(String, Numeric)> {
 
 fn operator(line: &String, state: &mut State) -> Option<String> {
     lazy_static! {
-        static ref RE : Regex = Regex::new(r"\s*(?P<lhs>[a-zA-Z0-9\.]*)\s*(?P<op>[+-/*]|==)\s*(?P<rhs>[a-zA-Z0-9\.]*)\s*$").unwrap();
+        static ref RE : Regex = Regex::new(r"\s*(?P<lhs>[a-zA-Z0-9\.]*)\s*(?P<op>[+-/*])\s*(?P<rhs>[a-zA-Z0-9\.]*)\s*$").unwrap();
     }
 
     let captures = RE.captures(line.as_str());
@@ -169,6 +169,7 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                         }
                     }
                 }
+
                 "/" => {
                     match (state.num_map.get(lhs), state.num_map.get(rhs)) {
                         (Some(x), Some(y)) => {
@@ -195,6 +196,7 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                         }
                     }
                 }
+
                 "*" => {
                     match (state.num_map.get(lhs), state.num_map.get(rhs)) {
                         (Some(x), Some(y)) => {
@@ -221,6 +223,7 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                         }
                     }
                 }
+
                 "==" => {
                     match (state.num_map.get(lhs), state.num_map.get(rhs)) {
                         (Some(x), Some(y)) => {

@@ -39,7 +39,14 @@ impl BaseExpression for SimplexAtom {
 
     fn get_head_name(&self) -> &str {
         match self {
-            &SimplexAtom::SimplexNumeric(_) => "Numeric",
+            &SimplexAtom::SimplexNumeric(num) => {
+                match num.simplify() {
+                    Numeric::LittleInteger(_) => "Integer",
+                    Numeric::LittleReal(_) => "Real",
+                    Numeric::NaN => "Symbol"
+
+                }
+            },
             &SimplexAtom::SimplexString(_) => "String",
             &SimplexAtom::SimplexSymbol(_) => "Symbol"
         }
@@ -68,6 +75,7 @@ impl PrimitiveConverter for SimplexAtom {
                     _ => None
                 }
             },
+
             &SimplexAtom::SimplexString(_) => None,
             &SimplexAtom::SimplexSymbol(_) => None 
         }
