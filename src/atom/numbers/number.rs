@@ -21,26 +21,6 @@ pub enum Numeric {
 }
 
 impl Numeric {
-    pub fn from_str(s: &str) -> Option<Numeric> {
-        match s.parse::<i64>() {
-            Ok(num) => {
-                Some(Numeric::LittleInteger(num))
-            }, Err(_) => {
-                match d128::from_str(s) {
-                    Ok(num) => {
-                        if num.to_string() != "NaN" {
-                          Some(Numeric::LittleReal(num))
-                        } else {
-                            None
-                        }
-                    }, Err(_) => {
-                        None
-                    }
-                }
-            }
-        }
-    }
-
     pub fn as_str<'a>(&'a self) -> Cow<'a, str> {
         match self {
             &Numeric::LittleInteger(i) => {

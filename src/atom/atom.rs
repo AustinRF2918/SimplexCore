@@ -5,103 +5,15 @@ use atom::strings::string::SString;
 use expression::structures::attributes::BaseExpression;
 use expression::structures::attributes::PrimitiveConverter;
 
-use parsing::utilities::numerics::representable_numeric;
-use parsing::utilities::string::representable_string;
-use parsing::utilities::symbols::representable_symbol;
-
-use  atom::conversion_traits;
+use atom::traits;
 
 extern crate decimal;
 use decimal::d128;
-
-extern crate num;
-use num::{ToPrimitive, FromPrimitive};
-use std::str::FromStr;
 
 pub enum SimplexAtom {
     SimplexNumeric(Numeric),
     SimplexString(SString),
     SimplexSymbol(Symbol)
-}
-
-impl From<i32> for SimplexAtom {
-    fn from(num: i32) -> SimplexAtom {
-        SimplexAtom::SimplexNumeric(Numeric::LittleInteger(num as i64))
-    }
-}
-
-impl From<u32> for SimplexAtom {
-    fn from(num: u32) -> SimplexAtom {
-        SimplexAtom::SimplexNumeric(Numeric::LittleInteger(num as i64))
-    }
-}
-
-impl From<i64> for SimplexAtom {
-    fn from(num: i64) -> SimplexAtom {
-        SimplexAtom::SimplexNumeric(Numeric::LittleInteger(num))
-    }
-}
-
-impl From<f32> for SimplexAtom {
-    fn from(num: f32) -> SimplexAtom {
-        SimplexAtom::SimplexNumeric(Numeric::from_str(num.to_string().as_str()).unwrap())
-    }
-}
-
-impl From<f64> for SimplexAtom {
-    fn from(num: f64) -> SimplexAtom {
-        SimplexAtom::SimplexNumeric(Numeric::from_str(num.to_string().as_str()).unwrap())
-    }
-}
-
-impl <'a> From<&'a str> for SimplexAtom {
-    fn from(s: &str) -> SimplexAtom {
-        match (representable_numeric(s), representable_string(s), representable_symbol(s)) {
-            (true, _, _) => {
-                match Numeric::from_str(s) {
-                    Some(num) => {
-                        SimplexAtom::SimplexNumeric(num)
-                    }
-
-                    None => {
-                        panic!(r#"An internal error in the SimplexCore library occured: representable_numeric(s) 
-                        in the parsing library returned true, ensuring that our numeric is parseable, however 
-                        Numeric::from_str(s) returned None."#);
-                    }
-                }
-            }
-
-            (_, true, _) =>  {
-                match SString::from_str(s) {
-                    Some(s) => {
-                        SimplexAtom::SimplexString(s)
-                    }
-
-                    None => {
-                        panic!(r#"An internal error in the SimplexCore library occured: representable_string(s) 
-                        in the parsing library returned true, ensuring that our numeric is parseable, however 
-                        SString::from_str(s) returned None."#);
-                    }
-                }
-            }
-
-            (_, _, true) => {
-                match Symbol::from_str(s) {
-                    Some(s) => {
-                        SimplexAtom::SimplexSymbol(s)
-                    }
-
-                    None => {
-                        panic!(r#"An internal error in the SimplexCore library occured: representable_symbol(s) 
-                        in the parsing library returned true, ensuring that our numeric is parseable, however 
-                        Symbol::from_str(s) returned None."#);
-                    }
-                }
-            }
-
-            _ => SimplexAtom::SimplexSymbol(Symbol::from_str("Simplex`UnknownParse").unwrap())
-        }
-    }
 }
 
 impl BaseExpression for SimplexAtom {
@@ -115,10 +27,10 @@ impl BaseExpression for SimplexAtom {
                 match num.simplify() {
                     Numeric::LittleInteger(_) => "Integer",
                     Numeric::LittleReal(_) => "Real",
-                    Numeric::NaN => "Symbol"
-
+                    Numeric::NaN => "Symbol",
                 }
             },
+
             &SimplexAtom::SimplexString(_) => "String",
             &SimplexAtom::SimplexSymbol(_) => "Symbol"
         }
@@ -134,6 +46,7 @@ impl PrimitiveConverter for SimplexAtom {
                     _ => None
                 }
             },
+
             &SimplexAtom::SimplexString(_) => None,
             &SimplexAtom::SimplexSymbol(_) => None 
         }
@@ -142,7 +55,7 @@ impl PrimitiveConverter for SimplexAtom {
     fn get_float_value(&self) -> Option<d128>{
         match self {
             &SimplexAtom::SimplexNumeric(numeric) => {
-                match numeric.simplify() {
+                match numeric {
                     Numeric::LittleReal(i) => Some(i),
                     _ => None
                 }

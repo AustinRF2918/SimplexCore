@@ -46,6 +46,7 @@ fn evaluate(line: String, state: &mut State) {
                 Some(s) => {
                     println!("Out[{}]= {} [Operator]", state.current_input, s.as_str());
                 }
+
                 None => {
                         match parse_v_name(&line, state) {
                         Some(x) => {
@@ -77,12 +78,12 @@ fn assignment(line: &String, state: &mut State) -> Option<(String, Numeric)> {
             let lhs = c.name("lhs").unwrap();
             let rhs = c.name("rhs").unwrap();
 
-            match Numeric::from_str(rhs).unwrap().to_string().as_str() {
+            match Numeric::from(rhs).to_string().as_str() {
                 "NaN" => {
                     println!("{}", rhs.to_string());
                     match operator(&rhs.to_string(), state) {
                         Some(x) => {
-                            Some((lhs.to_string(), Numeric::from_str(x.as_str()).unwrap()))
+                            Some((lhs.to_string(), Numeric::from(x.as_str())))
                         }
                         None => {
                             None
@@ -91,7 +92,7 @@ fn assignment(line: &String, state: &mut State) -> Option<(String, Numeric)> {
                     }
                 }
                 _ => {
-                    Some((lhs.to_string(), Numeric::from_str(rhs).unwrap()))
+                    Some((lhs.to_string(), Numeric::from(rhs)))
                 }
             }
 
@@ -123,7 +124,7 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                             Some((*x + *y).to_string())
                         }
                         (Some(x), None) => {
-                            let y = Numeric::from_str(rhs).unwrap();
+                            let y = Numeric::from(rhs);
                             if y.simplify() == Numeric::NaN {
                                 Some((x.to_string() + " + " + rhs).to_string())
                             } else {
@@ -131,7 +132,7 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                             }
                         }
                         (None, Some(x)) => {
-                            let y = Numeric::from_str(lhs).unwrap();
+                            let y = Numeric::from(lhs);
                             if y.simplify() == Numeric::NaN {
                                 Some((y.to_string() + " + " + lhs).to_string())
                             } else {
@@ -149,7 +150,7 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                             Some((*x - *y).to_string())
                         }
                         (Some(x), None) => {
-                            let y = Numeric::from_str(rhs).unwrap();
+                            let y = Numeric::from(rhs);
                             if y.simplify() == Numeric::NaN {
                                 Some((x.to_string() + " - " + rhs).to_string())
                             } else {
@@ -157,7 +158,7 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                             }
                         }
                         (None, Some(x)) => {
-                            let y = Numeric::from_str(lhs).unwrap();
+                            let y = Numeric::from(lhs);
                             if y.simplify() == Numeric::NaN {
                                 Some((y.to_string() + " - " + lhs).to_string())
                             } else {
@@ -165,7 +166,7 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                             }
                         }
                         (None, None) => {
-                            Some((Numeric::from_str(lhs).unwrap() - Numeric::from_str(rhs).unwrap()).to_string())
+                            Some((Numeric::from(lhs) - Numeric::from(rhs)).to_string())
                         }
                     }
                 }
@@ -176,7 +177,7 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                             Some((*x / *y).to_string())
                         }
                         (Some(x), None) => {
-                            let y = Numeric::from_str(rhs).unwrap();
+                            let y = Numeric::from(rhs);
                             if y.simplify() == Numeric::NaN {
                                 Some((x.to_string() + " / " + rhs).to_string())
                             } else {
@@ -184,7 +185,7 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                             }
                         }
                         (None, Some(x)) => {
-                            let y = Numeric::from_str(lhs).unwrap();
+                            let y = Numeric::from(lhs);
                             if y.simplify() == Numeric::NaN {
                                 Some((y.to_string() + " / " + lhs).to_string())
                             } else {
@@ -192,7 +193,7 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                             }
                         }
                         (None, None) => {
-                            Some((Numeric::from_str(lhs).unwrap() / Numeric::from_str(rhs).unwrap()).to_string())
+                            Some((Numeric::from(lhs) / Numeric::from(rhs)).to_string())
                         }
                     }
                 }
@@ -203,7 +204,7 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                             Some((*x * *y).to_string())
                         }
                         (Some(x), None) => {
-                            let y = Numeric::from_str(rhs).unwrap();
+                            let y = Numeric::from(rhs);
                             if y.simplify() == Numeric::NaN {
                                 Some((x.to_string() + " * " + rhs).to_string())
                             } else {
@@ -211,7 +212,7 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                             }
                         }
                         (None, Some(x)) => {
-                            let y = Numeric::from_str(lhs).unwrap();
+                            let y = Numeric::from(lhs);
                             if y.simplify() == Numeric::NaN {
                                 Some((y.to_string() + " * " + lhs).to_string())
                             } else {
@@ -219,7 +220,7 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                             }
                         }
                         (None, None) => {
-                            Some((Numeric::from_str(lhs).unwrap() * Numeric::from_str(rhs).unwrap()).to_string())
+                            Some((Numeric::from(lhs) * Numeric::from(rhs)).to_string())
                         }
                     }
                 }
@@ -230,7 +231,7 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                             Some((*x == *y).to_string())
                         }
                         (Some(x), None) => {
-                            let y = Numeric::from_str(rhs).unwrap();
+                            let y = Numeric::from(rhs);
                             if y.simplify() == Numeric::NaN {
                                 Some((x.to_string() == rhs).to_string())
                             } else {
@@ -238,7 +239,7 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                             }
                         }
                         (None, Some(x)) => {
-                            let y = Numeric::from_str(lhs).unwrap();
+                            let y = Numeric::from(lhs);
                             if y.simplify() == Numeric::NaN {
                                 Some((y.to_string() == lhs).to_string())
                             } else {
@@ -246,7 +247,7 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                             }
                         }
                         (None, None) => {
-                            Some((Numeric::from_str(lhs).unwrap() == Numeric::from_str(rhs).unwrap()).to_string())
+                            Some((Numeric::from(lhs) == Numeric::from(rhs)).to_string())
                         }
                     }
                 }
