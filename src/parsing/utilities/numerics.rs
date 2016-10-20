@@ -38,6 +38,24 @@ pub fn representable_numeric(s: &str) -> bool {
     }
 }
 
+pub fn get_representable_numeric(s: &str) -> Option<&str> {
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r"^(?P<numeric>[+-]?[0-9]*(\.?)([0-9]*))$").unwrap();
+    }
+
+    let captures = RE.captures(s);
+
+    match captures {
+        Some(c) => {
+            c.name("numeric")
+        }
+
+        None => {
+            None
+        }
+    }
+}
+
 pub fn get_representable_integer(s: &str) -> Option<i64> {
     lazy_static! {
         static ref REG_NOTATION: Regex = Regex::new(r"^(?P<digit>[+-]?([0-9]*))(\.?)([0]*)$").unwrap();

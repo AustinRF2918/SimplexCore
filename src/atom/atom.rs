@@ -23,15 +23,45 @@ pub enum SimplexAtom {
 }
 
 impl SimplexAtom {
-    pub fn from_str(s: &str) -> Option<SimplexAtom> {
-        if representable_numeric(s) {
-            Some(SimplexAtom::SimplexNumeric(Numeric::from_str(s).unwrap()))
-        } else if representable_string(s) {
-            Some(SimplexAtom::SimplexString(SString::from_str(s).unwrap()))
-        } else if representable_symbol(s) {
-            Some(SimplexAtom::SimplexSymbol(Symbol::from_str(s).unwrap()))
-        } else {
-            None
+    pub fn from_str(s: &str) -> SimplexAtom {
+        match (representable_numeric(s), representable_string(s), representable_symbol(s)) {
+            (true, _, _) => {
+                match Numeric::from_str(s) {
+                    Some(num) => {
+                        SimplexAtom::SimplexNumeric(num)
+                    }
+
+                    None => {
+                        panic!("An internal error in the SimplexCore library occured: representable_numeric(s) in the parsing library returned true, ensuring that our numeric is parseable, however Numeric::from_str(s) returned None.");
+                    }
+                }
+            }
+
+            (_, true, _) =>  {
+                match SString::from_str(s) {
+                    Some(s) => {
+                        SimplexAtom::SimplexString(s)
+                    }
+
+                    None => {
+                        panic!("An internal error in the SimplexCore library occured: representable_string(s) in the parsing library returned true, ensuring that our numeric is parseable, however SString::from_str(s) returned None.");
+                    }
+                }
+            }
+
+            (_, _, true) => {
+                match Symbol::from_str(s) {
+                    Some(s) => {
+                        SimplexAtom::SimplexSymbol(s)
+                    }
+
+                    None => {
+                        panic!("An internal error in the SimplexCore library occured: representable_symbol(s) in the parsing library returned true, ensuring that our numeric is parseable, however Symbol::from_str(s) returned None.");
+                    }
+                }
+            }
+
+            _ => SimplexAtom::SimplexSymbol(Symbol::from_str("Simplex`UnknownParse").unwrap())
         }
     }
 }
