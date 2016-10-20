@@ -6,6 +6,7 @@ use expression::structures::attributes::PrimitiveConverter;
 
 use parsing::utilities::numerics::representable_numeric;
 use parsing::utilities::string::representable_string;
+use parsing::utilities::symbols::representable_symbol;
 
 extern crate decimal;
 use decimal::d128;
@@ -21,13 +22,15 @@ pub enum SimplexAtom {
 }
 
 impl SimplexAtom {
-    pub fn from_str(s: &str) -> SimplexAtom {
+    pub fn from_str(s: &str) -> Option<SimplexAtom> {
         if representable_numeric(s) {
-            SimplexAtom::SimplexNumeric(Numeric::from_str(s))
+            Some(SimplexAtom::SimplexNumeric(Numeric::from_str(s).unwrap()))
         } else if representable_string(s) {
-            SimplexAtom::SimplexString(s.to_string())
+            Some(SimplexAtom::SimplexString(s.to_string()))
+        } else if representable_symbol(s) {
+            Some(SimplexAtom::SimplexSymbol(Symbol::from_str(s).unwrap()))
         } else {
-            SimplexAtom::SimplexSymbol(Symbol::new(s))
+            None
         }
     }
 }

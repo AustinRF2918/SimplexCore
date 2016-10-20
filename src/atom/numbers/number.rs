@@ -21,22 +21,20 @@ pub enum Numeric {
 }
 
 impl Numeric {
-    pub fn from_str(s: &str) -> Numeric {
+    pub fn from_str(s: &str) -> Option<Numeric> {
         match s.parse::<i64>() {
             Ok(num) => {
-                Numeric::LittleInteger(num)
+                Some(Numeric::LittleInteger(num))
             }, Err(_) => {
                 match d128::from_str(s) {
                     Ok(num) => {
                         if num.to_string() != "NaN" {
-                          Numeric::LittleReal(num)
+                          Some(Numeric::LittleReal(num))
                         } else {
-                          Numeric::NaN
+                            None
                         }
                     }, Err(_) => {
-                        // In reality, this should be offloaded to
-                        // arbitrary precision structure.
-                        Numeric::NaN
+                        None
                     }
                 }
             }

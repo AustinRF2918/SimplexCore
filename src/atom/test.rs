@@ -15,26 +15,26 @@ mod tests {
 
             #[test]
             fn it_instantiates() {
-                let s_atom = SimplexAtom::from_str("1.21");
+                let s_atom = SimplexAtom::from_str("1.21").unwrap();
                 assert_eq!(s_atom.get_expression_name(), "Simplex`Atom");
                 assert_eq!(s_atom.get_head_name(), "Real");
             }
 
             #[test]
             fn it_gets_float_value() {
-                let s_atom = SimplexAtom::from_str("100.201");
+                let s_atom = SimplexAtom::from_str("100.201").unwrap();
                 assert_eq!(s_atom.get_float_value(), Some(d128::from_str("100.201").unwrap()));
             }
 
             #[test]
             fn it_doesnt_get_int_value() {
-                let s_atom = SimplexAtom::from_str("100.201");
+                let s_atom = SimplexAtom::from_str("100.201").unwrap();
                 assert_eq!(s_atom.get_int_value(), None);
             }
 
             #[test]
             fn it_doesnt_get_string_value() {
-                let s_atom = SimplexAtom::from_str("100.201");
+                let s_atom = SimplexAtom::from_str("100.201").unwrap();
                 assert_eq!(s_atom.get_string_value(), None);
             }
         }
@@ -53,26 +53,26 @@ mod tests {
 
             #[test]
             fn it_instantiates() {
-                let s_atom = SimplexAtom::from_str("1.00");
+                let s_atom = SimplexAtom::from_str("1.00").unwrap();
                 assert_eq!(s_atom.get_expression_name(), "Simplex`Atom");
                 assert_eq!(s_atom.get_head_name(), "Integer");
             }
 
             #[test]
             fn it_gets_int_value() {
-                let s_atom = SimplexAtom::from_str("100.000");
+                let s_atom = SimplexAtom::from_str("100.000").unwrap();
                 assert_eq!(s_atom.get_int_value(), Some(100));
             }
 
             #[test]
             fn it_doesnt_get_float_value() {
-                let s_atom = SimplexAtom::from_str("100.000");
+                let s_atom = SimplexAtom::from_str("100.000").unwrap();
                 assert_eq!(s_atom.get_float_value(), None);
             }
 
             #[test]
             fn it_doesnt_get_string_value() {
-                let s_atom = SimplexAtom::from_str("100.00");
+                let s_atom = SimplexAtom::from_str("100.00").unwrap();
                 assert_eq!(s_atom.get_string_value(), None);
             }
         }
@@ -91,26 +91,26 @@ mod tests {
 
             #[test]
             fn it_instantiates() {
-                let s_atom = SimplexAtom::from_str("x");
+                let s_atom = SimplexAtom::from_str("x").unwrap();
                 assert_eq!(s_atom.get_expression_name(), "Simplex`Atom");
                 assert_eq!(s_atom.get_head_name(), "Symbol");
             }
 
             #[test]
             fn it_doesnt_get_int_value() {
-                let s_atom = SimplexAtom::from_str("x");
+                let s_atom = SimplexAtom::from_str("x").unwrap();
                 assert_eq!(s_atom.get_int_value(), None);
             }
 
             #[test]
             fn it_doesnt_get_float_value() {
-                let s_atom = SimplexAtom::from_str("Hello");
+                let s_atom = SimplexAtom::from_str("Hello").unwrap();
                 assert_eq!(s_atom.get_float_value(), None);
             }
 
             #[test]
             fn it_doesnt_get_string_value() {
-                let s_atom = SimplexAtom::from_str("World");
+                let s_atom = SimplexAtom::from_str("World").unwrap();
                 assert_eq!(s_atom.get_string_value(), None);
             }
         }

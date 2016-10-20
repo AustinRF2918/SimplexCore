@@ -6,9 +6,13 @@ pub struct Symbol {
 }
 
 impl Symbol {
-    pub fn new(n: &str) -> Symbol {
-        Symbol {
-            name: n.to_string(),
+    pub fn from_str(n: &str) -> Option<Symbol> {
+        if representable_symbol(n) {
+            Some(Symbol {
+                name: n.to_string(),
+            })
+        } else {
+            None
         }
     }
 

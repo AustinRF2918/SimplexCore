@@ -4,32 +4,32 @@ mod tests {
         use atom::numbers::number::Numeric;
         #[test]
         fn it_parses_int() {
-            let x = Numeric::from_str("55");
+            let x = Numeric::from_str("55").unwrap();
             assert_eq!(x, Numeric::LittleInteger(55));
         }
 
         #[test]
         fn it_doesnt_parse_bad_int() {
             let x = Numeric::from_str("dsajfdksjk");
-            assert_eq!(x.simplify().as_str(), "NaN");
+            assert_eq!(x, None);
         }
 
         #[test]
         fn it_says_NaN() {
             let x = Numeric::from_str("dsajfdksjk");
-            assert_eq!(x, Numeric::NaN);
+            assert_eq!(x, None);
         }
 
         #[test]
         fn it_parses_real() {
-            let x = Numeric::from_str("55.552");
+            let x = Numeric::from_str("55.552").unwrap();
             assert_eq!(x.simplify().as_str(), "55.552");
         }
 
         #[test]
         fn it_doesnt_parse_bad_real() {
             let x = Numeric::from_str("dsajfd.ksjk");
-            assert_eq!(x.as_str(), "NaN");
+            assert_eq!(x, None);
         }
     }
 
@@ -37,13 +37,13 @@ mod tests {
         use atom::numbers::number::Numeric;
         #[test]
         fn it_shows_int() {
-            let x = Numeric::from_str("55");
+            let x = Numeric::from_str("55").unwrap();
             assert_eq!(x.as_str(), "55");
         }
 
         #[test]
         fn it_shows_real() {
-            let x = Numeric::from_str("55.55");
+            let x = Numeric::from_str("55.55").unwrap();
             assert_eq!(x.as_str(), "55.55");
         }
     }
@@ -52,29 +52,29 @@ mod tests {
         use atom::numbers::number::Numeric;
         #[test]
         fn it_computes_add_int_int() {
-            let x = Numeric::from_str("55");
-            let y = Numeric::from_str("55");
+            let x = Numeric::from_str("55").unwrap();
+            let y = Numeric::from_str("55").unwrap();
             assert_eq!((x + y).as_str(), "110");
         }
 
         #[test]
         fn it_computes_add_real_real() {
-            let x = Numeric::from_str("55.55");
-            let y = Numeric::from_str("55.55");
+            let x = Numeric::from_str("55.55").unwrap();
+            let y = Numeric::from_str("55.55").unwrap();
             assert_eq!((x + y).as_str(), "111.10");
         }
 
         #[test]
         fn it_computes_add_int_real() {
-            let x = Numeric::from_str("55");
-            let y = Numeric::from_str("55.55");
+            let x = Numeric::from_str("55").unwrap();
+            let y = Numeric::from_str("55.55").unwrap();
             assert_eq!((x + y).as_str(), "110.55");
         }
 
         #[test]
         fn it_computes_add_real_int() {
-            let x = Numeric::from_str("55.10");
-            let y = Numeric::from_str("10");
+            let x = Numeric::from_str("55.10").unwrap();
+            let y = Numeric::from_str("10").unwrap();
             assert_eq!((x + y).as_str(), "65.10");
         }
     }
@@ -83,29 +83,29 @@ mod tests {
         use atom::numbers::number::Numeric;
         #[test]
         fn it_computes_add_int_int() {
-            let x = Numeric::from_str("55");
-            let y = Numeric::from_str("55");
+            let x = Numeric::from_str("55").unwrap();
+            let y = Numeric::from_str("55").unwrap();
             assert_eq!((x - y).as_str(), "0");
         }
 
         #[test]
         fn it_computes_add_real_real() {
-            let x = Numeric::from_str("55.55");
-            let y = Numeric::from_str("45.55");
+            let x = Numeric::from_str("55.55").unwrap();
+            let y = Numeric::from_str("45.55").unwrap();
             assert_eq!((x - y).as_str(), "10");
         }
 
         #[test]
         fn it_computes_add_int_real() {
-            let x = Numeric::from_str("55");
-            let y = Numeric::from_str("55.55");
+            let x = Numeric::from_str("55").unwrap();
+            let y = Numeric::from_str("55.55").unwrap();
             assert_eq!((x - y).as_str(), "-0.55");
         }
 
         #[test]
         fn it_computes_add_real_int() {
-            let x = Numeric::from_str("55.10");
-            let y = Numeric::from_str("10");
+            let x = Numeric::from_str("55.10").unwrap();
+            let y = Numeric::from_str("10").unwrap();
             assert_eq!((x - y).as_str(), "45.10");
         }
     }
@@ -114,29 +114,29 @@ mod tests {
         use atom::numbers::number::Numeric;
         #[test]
         fn it_computes_mul_int_int() {
-            let x = Numeric::from_str("50");
-            let y = Numeric::from_str("50");
+            let x = Numeric::from_str("50").unwrap();
+            let y = Numeric::from_str("50").unwrap();
             assert_eq!((x * y).as_str(), "2500");
         }
 
         #[test]
         fn it_computes_mul_real_real() {
-            let x = Numeric::from_str("0.5");
-            let y = Numeric::from_str("0.5");
+            let x = Numeric::from_str("0.5").unwrap();
+            let y = Numeric::from_str("0.5").unwrap();
             assert_eq!((x * y).as_str(), "0.25");
         }
 
         #[test]
         fn it_computes_mul_int_real() {
-            let x = Numeric::from_str("50");
-            let y = Numeric::from_str(".5");
+            let x = Numeric::from_str("50").unwrap();
+            let y = Numeric::from_str(".5").unwrap();
             assert_eq!((x * y).as_str(), "25");
         }
 
         #[test]
         fn it_computes_mul_real_int() {
-            let x = Numeric::from_str("55.10");
-            let y = Numeric::from_str("10");
+            let x = Numeric::from_str("55.10").unwrap();
+            let y = Numeric::from_str("10").unwrap();
             assert_eq!((x * y).as_str(), "551");
         }
     }
@@ -145,29 +145,29 @@ mod tests {
         use atom::numbers::number::Numeric;
         #[test]
         fn it_computes_mul_int_int() {
-            let x = Numeric::from_str("50");
-            let y = Numeric::from_str("50");
+            let x = Numeric::from_str("50").unwrap();
+            let y = Numeric::from_str("50").unwrap();
             assert_eq!((x / y).as_str(), "1");
         }
 
         #[test]
         fn it_computes_mul_real_real() {
-            let x = Numeric::from_str("4.4");
-            let y = Numeric::from_str("2.2");
+            let x = Numeric::from_str("4.4").unwrap();
+            let y = Numeric::from_str("2.2").unwrap();
             assert_eq!((x / y).as_str(), "2");
         }
 
         #[test]
         fn it_computes_mul_int_real() {
-            let x = Numeric::from_str("60");
-            let y = Numeric::from_str("2.5");
+            let x = Numeric::from_str("60").unwrap();
+            let y = Numeric::from_str("2.5").unwrap();
             assert_eq!((x / y).as_str(), "24");
         }
 
         #[test]
         fn it_computes_add_real_int() {
-            let x = Numeric::from_str("55.10");
-            let y = Numeric::from_str("5");
+            let x = Numeric::from_str("55.10").unwrap();
+            let y = Numeric::from_str("5").unwrap();
             assert_eq!((x / y).as_str(), "11.02");
         }
     }
@@ -176,29 +176,29 @@ mod tests {
         use atom::numbers::number::Numeric;
         #[test]
         fn it_computes_eq_int_int() {
-            let x = Numeric::from_str("50");
-            let y = Numeric::from_str("50");
+            let x = Numeric::from_str("50").unwrap();
+            let y = Numeric::from_str("50").unwrap();
             assert_eq!((x == y), true);
         }
 
         #[test]
         fn it_computes_eq_real_real() {
-            let x = Numeric::from_str("4.4");
-            let y = Numeric::from_str("4.4");
+            let x = Numeric::from_str("4.4").unwrap();
+            let y = Numeric::from_str("4.4").unwrap();
             assert_eq!((x == y), true);
         }
 
         #[test]
         fn it_computes_eq_int_real() {
-            let x = Numeric::from_str("60");
-            let y = Numeric::from_str("60.0");
+            let x = Numeric::from_str("60").unwrap();
+            let y = Numeric::from_str("60.0").unwrap();
             assert_eq!((x == y), true);
         }
 
         #[test]
         fn it_computes_eq_real_int() {
-            let x = Numeric::from_str("5.0");
-            let y = Numeric::from_str("5");
+            let x = Numeric::from_str("5.0").unwrap();
+            let y = Numeric::from_str("5").unwrap();
             assert_eq!((x == y), true);
         }
     }
@@ -207,29 +207,29 @@ mod tests {
         use atom::numbers::number::Numeric;
         #[test]
         fn it_computes_eq_int_int() {
-            let x = Numeric::from_str("50");
-            let y = Numeric::from_str("51");
+            let x = Numeric::from_str("50").unwrap();
+            let y = Numeric::from_str("51").unwrap();
             assert_eq!((x != y), true);
         }
 
         #[test]
         fn it_computes_eq_real_real() {
-            let x = Numeric::from_str("4.4");
-            let y = Numeric::from_str("2.4");
+            let x = Numeric::from_str("4.4").unwrap();
+            let y = Numeric::from_str("2.4").unwrap();
             assert_eq!((x != y), true);
         }
 
         #[test]
         fn it_computes_eq_int_real() {
-            let x = Numeric::from_str("60");
-            let y = Numeric::from_str("20.0");
+            let x = Numeric::from_str("60").unwrap();
+            let y = Numeric::from_str("20.0").unwrap();
             assert_eq!((x != y), true);
         }
 
         #[test]
         fn it_computes_eq_real_int() {
-            let x = Numeric::from_str("5.0");
-            let y = Numeric::from_str("2");
+            let x = Numeric::from_str("5.0").unwrap();
+            let y = Numeric::from_str("2").unwrap();
             assert_eq!((x != y), true);
         }
     }
@@ -239,16 +239,16 @@ mod tests {
 
         #[test]
         fn it_computes_big_mul_real_real() {
-            let x = Numeric::from_str("25.5");
-            let y = Numeric::from_str("200.0");
+            let x = Numeric::from_str("25.5").unwrap();
+            let y = Numeric::from_str("200.0").unwrap();
             assert_eq!((x * y).as_str(), "5100");
         }
 
         #[test]
         fn it_doesnt_cast_gt_ten_lhs() {
-            let x = Numeric::from_str("210000000000.0");
-            let y = Numeric::from_str("2000000000000000000000000000.0");
-            let z = Numeric::from_str("2000000000000000000000000000.0");
+            let x = Numeric::from_str("210000000000.0").unwrap();
+            let y = Numeric::from_str("2000000000000000000000000000.0").unwrap();
+            let z = Numeric::from_str("2000000000000000000000000000.0").unwrap();
             let a = x * y;
             let b = a / z;
             assert_eq!((b).as_str(), "2.10000E+11");
@@ -256,9 +256,9 @@ mod tests {
 
         #[test]
         fn it_casts_lte_ten_lhs() {
-            let x = Numeric::from_str("2100000000.0");
-            let y = Numeric::from_str("2000000000000000000000000000.0");
-            let z = Numeric::from_str("2000000000000000000000000000.0");
+            let x = Numeric::from_str("2100000000.0").unwrap();
+            let y = Numeric::from_str("2000000000000000000000000000.0").unwrap();
+            let z = Numeric::from_str("2000000000000000000000000000.0").unwrap();
             let a = x * y;
             let b = a / z;
             assert_eq!((b).as_str(), "2100000000");

@@ -6,3 +6,5 @@ authors = ["Austin Fell <austinrf2918@yahoo.com>"]
 [dependencies]
 num = "*"
 decimal = "*"
+lazy_static = "0.1.*"
+regex = "*"

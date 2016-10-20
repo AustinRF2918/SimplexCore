@@ -5,7 +5,7 @@ mod tests {
 
         #[test]
         fn it_instantiates() {
-            let symbol = Symbol::new("x");
+            let symbol = Symbol::from_str("x").unwrap();
             assert_eq!(symbol.to_string().as_str(), "x");
         }
     }
