@@ -1,5 +1,6 @@
 use atom::numbers::number::Numeric;
 use atom::symbols::symbol::Symbol;
+use atom::strings::string::SString;
 
 use expression::structures::attributes::BaseExpression;
 use expression::structures::attributes::PrimitiveConverter;
@@ -17,7 +18,7 @@ use std::str::FromStr;
 
 pub enum SimplexAtom {
     SimplexNumeric(Numeric),
-    SimplexString(String),
+    SimplexString(SString),
     SimplexSymbol(Symbol)
 }
 
@@ -26,7 +27,7 @@ impl SimplexAtom {
         if representable_numeric(s) {
             Some(SimplexAtom::SimplexNumeric(Numeric::from_str(s).unwrap()))
         } else if representable_string(s) {
-            Some(SimplexAtom::SimplexString(s.to_string()))
+            Some(SimplexAtom::SimplexString(SString::from_str(s).unwrap()))
         } else if representable_symbol(s) {
             Some(SimplexAtom::SimplexSymbol(Symbol::from_str(s).unwrap()))
         } else {
@@ -87,7 +88,7 @@ impl PrimitiveConverter for SimplexAtom {
     fn get_string_value(&self) -> Option<&String>{
         match self {
             &SimplexAtom::SimplexNumeric(_) => None,
-            &SimplexAtom::SimplexString(ref s) => Some(&s),
+            &SimplexAtom::SimplexString(ref s) => Some(&s.contents),
             &SimplexAtom::SimplexSymbol(_) => None 
         }
     }

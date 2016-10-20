@@ -20,4 +20,3 @@ impl Symbol {
         &self.name
     }
 }
-
