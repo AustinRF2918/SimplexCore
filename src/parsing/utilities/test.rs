@@ -336,4 +336,43 @@ mod tests {
             }
         }
     }
+    mod symbol_tests {
+        use parsing::utilities::symbols::representable_symbol;
+
+        #[test]
+        fn it_succeeds_on_a_simple_symbol() {
+            assert_eq!(true, representable_symbol("x"));
+            assert_eq!(true, representable_symbol("hello"));
+            assert_eq!(true, representable_symbol("HelloWorld"));
+            assert_eq!(true, representable_symbol("HelloWorldMe"));
+            assert_eq!(true, representable_symbol("ABCDEFGHI"));
+        }
+
+        #[test]
+        fn it_fails_on_a_numeric() {
+            assert_eq!(false, representable_symbol("0"));
+            assert_eq!(false, representable_symbol("2"));
+            assert_eq!(false, representable_symbol("22"));
+            assert_eq!(false, representable_symbol("22a"));
+            assert_eq!(false, representable_symbol("22a2a"));
+            assert_eq!(false, representable_symbol("22a2a1"));
+        }
+
+        #[test]
+        fn it_succeeds_on_characters_then_num() {
+            assert_eq!(true, representable_symbol("a2"));
+            assert_eq!(true, representable_symbol("ab2"));
+            assert_eq!(true, representable_symbol("BabZ2"));
+            assert_eq!(true, representable_symbol("BabZ2242"));
+        }
+
+        #[test]
+        fn it_fails_with_operators() {
+            assert_eq!(false, representable_symbol("a+2"));
+            assert_eq!(false, representable_symbol("ab-2"));
+            assert_eq!(false, representable_symbol("B*abZ2"));
+            assert_eq!(false, representable_symbol("BabZ/2242"));
+            assert_eq!(false, representable_symbol("Babl==242"));
+        }
+    }
 }
