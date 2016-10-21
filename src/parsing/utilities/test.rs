@@ -2,27 +2,47 @@
 mod tests {
     mod string_tests {
         mod first_tests {
-            use parsing::utilities::string::has_notation_character;
+            use parsing::utilities::string::representable_string;
             use parsing::utilities::string::StringNotationPattern;
 
             #[test]
-            fn it_works_with_tic_not_first() {
-                assert_eq!(false, has_notation_character( StringNotationPattern::First, '`', "Hello"));
+            fn it_fails_with_only_a_quote() {
+                assert_eq!(false, representable_string("\"Hello"));
             }
 
             #[test]
-            fn it_works_with_tic_first_and_last() {
-                assert_eq!(true, has_notation_character( StringNotationPattern::First, '`', "`Hello`"));
+            fn it_succeeds_with_two_quotes() {
+                assert_eq!(true, representable_string("\"Hello\""));
             }
 
             #[test]
-            fn it_doesnt_works_with_tic_and_last() {
-                assert_eq!(false, has_notation_character( StringNotationPattern::First, '`', "Hello`"));
+            fn it_fails_with_only_end_quote() {
+                assert_eq!(false, representable_string("Hello\""));
             }
 
             #[test]
-            fn it_doesnt_works_with_tic_middle() {
-                assert_eq!(false, has_notation_character( StringNotationPattern::First, '`', "He`llo"));
+            fn it_fails_with_quotes_in_middle() {
+                assert_eq!(false, representable_string("H\"el\"lo"));
+            }
+
+            #[test]
+            fn it_fails_a_quote_in_middle() {
+                assert_eq!(false, representable_string("H\"llo"));
+            }
+
+            #[test]
+            fn it_fails_when_only_quote() {
+                assert_eq!(false, representable_string("\""));
+            }
+
+            #[test]
+            fn it_fails_on_null() {
+                assert_eq!(false, representable_string(""));
+            }
+
+            #[test]
+            fn it_succeeds_on_null_string() {
+                assert_eq!(true, representable_string("\"\""));
             }
         }
 

@@ -5,18 +5,7 @@ pub fn representable_integer(s: &str) -> bool {
         static ref RE: Regex = Regex::new(r"^[+-]?[0-9]*(\.?)([0]*)$").unwrap();
     }
 
-    let captures = RE.captures(s);
-
-    match captures {
-        Some(c) => {
-            let res = c.iter().map(|x| x == Some(s)).fold(false, |acc, i| acc || i);
-            res
-        }
-
-        None => {
-            false
-        }
-    }
+    RE.is_match(s)
 }
 
 pub fn representable_numeric(s: &str) -> bool {
@@ -24,18 +13,7 @@ pub fn representable_numeric(s: &str) -> bool {
         static ref RE: Regex = Regex::new(r"^[+-]?[0-9]*(\.?)([0-9]*)$").unwrap();
     }
 
-    let captures = RE.captures(s);
-
-    match captures {
-        Some(num) => {
-            let res = num.iter().map(|x| x == Some(s)).fold(false, |acc, i| acc || i);
-            res
-        }
-
-        None => {
-            false
-        }
-    }
+    RE.is_match(s)
 }
 
 pub fn get_representable_numeric(s: &str) -> Option<&str> {
@@ -43,16 +21,10 @@ pub fn get_representable_numeric(s: &str) -> Option<&str> {
         static ref RE: Regex = Regex::new(r"^(?P<numeric>[+-]?[0-9]*(\.?)([0-9]*))$").unwrap();
     }
 
-    let captures = RE.captures(s);
-
-    match captures {
-        Some(c) => {
-            c.name("numeric")
-        }
-
-        None => {
-            None
-        }
+    if RE.is_match(s) {
+        Some(s)
+    } else {
+        None
     }
 }
 
@@ -147,6 +119,7 @@ pub fn get_representable_integer(s: &str) -> Option<i64> {
     }
 }
 
+#[inline]
 fn first_location(s: &str, letter: char) -> Option<usize> {
     let mut pos: Option<usize> = None;
 
