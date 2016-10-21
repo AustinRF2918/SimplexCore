@@ -8,6 +8,8 @@ pub fn representable_integer(s: &str) -> bool {
     RE.is_match(s)
 }
 
+// TODO: Fix bug that could occur during dynamic parsing with exponent d128
+// numbers.
 pub fn representable_numeric(s: &str) -> bool {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"^[+-]?[0-9]*(\.?)([0-9]*)$").unwrap();

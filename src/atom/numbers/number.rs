@@ -13,7 +13,7 @@ use num::{ToPrimitive, FromPrimitive};
 use std::str::FromStr;
 
 // TODO: Make emulated integer using d128.
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub enum Numeric {
     LittleInteger(i64),
     LittleReal(d128),
@@ -84,6 +84,9 @@ impl Numeric {
     }
 }
 
+impl Eq for Numeric {
+}
+
 impl PartialEq for Numeric {
     fn eq(&self, other: &Numeric) -> bool {
         match (self, other) {
@@ -102,6 +105,7 @@ impl PartialEq for Numeric {
         }
     }
 }
+
 impl Add for Numeric {
     type Output = Numeric;
 

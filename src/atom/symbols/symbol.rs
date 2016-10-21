@@ -1,5 +1,6 @@
 use parsing::utilities::symbols::representable_symbol;
 
+#[derive(Clone, Eq, PartialEq, Debug)]
 pub struct Symbol {
     name: String,
     // parent: SymbolTableDispatchee

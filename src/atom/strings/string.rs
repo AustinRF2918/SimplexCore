@@ -1,5 +1,6 @@
 use parsing::utilities::string::representable_string;
 
+#[derive(Clone, Eq, PartialEq, Debug)]
 pub struct SString {
     pub contents: String,
 }

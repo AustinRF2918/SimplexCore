@@ -23,7 +23,6 @@ pub mod checks {
         && !context.contains("``")
     }
 
-    #[allow(dead_code)]
     pub fn ensure_context(name: &str) -> String {
         if name.len() == 0 {
             "Error`Undefined".to_string()
@@ -34,7 +33,7 @@ pub mod checks {
                 "Error`Malformed".to_string()
             }
         } else {
-            "System`".to_string() + name
+            "Simplex`".to_string() + name
         }
     }
 
@@ -109,7 +108,7 @@ mod tests {
 
         #[test]
         fn it_accepts_good_name() {
-            assert_eq!(true, fully_qualified_symbol_name("System`Hello"));
+            assert_eq!(true, fully_qualified_symbol_name("Simplex`Hello"));
         }
     }
 
@@ -118,7 +117,7 @@ mod tests {
 
         #[test]
         fn it_denies_bad_context_name() {
-            assert_eq!(false, valid_context_name("System"));
+            assert_eq!(false, valid_context_name("Simplex"));
         }
 
         #[test]
@@ -128,22 +127,22 @@ mod tests {
 
         #[test]
         fn it_accepts_good_context_name() {
-            assert_eq!(true, valid_context_name("System`"));
+            assert_eq!(true, valid_context_name("Simplex`"));
         }
 
         #[test]
         fn it_denies_tic_front_when_not_toggled() {
-            assert_eq!(false, valid_context_name("`System`"));
+            assert_eq!(false, valid_context_name("`Simplex`"));
         }
 
         #[test]
         fn it_accepts_tic_front_when_toggled() {
-            assert_eq!(true, valid_context_name_initial_bq("`System`"));
+            assert_eq!(true, valid_context_name_initial_bq("`Simplex`"));
         }
 
         #[test]
         fn it_accepts_tic_not_front_when_toggled() {
-            assert_eq!(true, valid_context_name_initial_bq("System`"));
+            assert_eq!(true, valid_context_name_initial_bq("Simplex`"));
         }
 
         #[test]
@@ -162,7 +161,7 @@ mod tests {
 
         #[test]
         fn it_denies_bad_context_name() {
-            assert_eq!("System`Test", ensure_context("Test"));
+            assert_eq!("Simplex`Test", ensure_context("Test"));
         }
     }
 }

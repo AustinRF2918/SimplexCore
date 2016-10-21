@@ -10,10 +10,21 @@ use atom::traits;
 extern crate decimal;
 use decimal::d128;
 
+#[derive(Clone, Eq, PartialEq, Debug)]
 pub enum SimplexAtom {
     SimplexNumeric(Numeric),
     SimplexString(SString),
     SimplexSymbol(Symbol)
+}
+
+impl SimplexAtom {
+    pub fn to_string(&self) -> String {
+        match self {
+            &SimplexAtom::SimplexNumeric(ref n) => n.to_string().clone(),
+            &SimplexAtom::SimplexString(ref n) => n.to_string().clone(),
+            &SimplexAtom::SimplexSymbol(ref n) => n.to_string().clone()
+        }
+    }
 }
 
 impl BaseExpression for SimplexAtom {
