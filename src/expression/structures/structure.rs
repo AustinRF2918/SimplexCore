@@ -5,13 +5,15 @@ use parsing::utilities::numerics::representable_numeric;
 
 use expression::structures::integrity::checks::ensure_context;
 use expression::structures::attributes::BaseExpression;
+use expression::structures::attributes::SymbolicExpression;
+use expression::structures::attributes::MetaExpression;
 
-use std::collections::LinkedList;
-use std::sync::{Arc, Mutex};
-use std::rc::Rc;
 use atom::numbers::number::Numeric;
+use atom::symbols::symbol::Symbol;
+use atom::strings::string::SString;
 
-use std::borrow::Cow;
+extern crate decimal;
+use decimal::d128;
 
 /// BaseExpression
 ///
@@ -23,185 +25,59 @@ use std::borrow::Cow;
 /// in a linear evaluation.
 #[allow(dead_code)]
 #[derive(Clone, Eq, PartialEq, Debug)]
-pub struct CoreExpression {
-    //options: Option<Vec<Symbols>>,
+pub struct Plus {
     head: SimplexAtom,
-    leaves: LinkedList<Rc<CoreExpression>>
-    //pattern_sequence: bool,
-    // is_formatted: bool,
-    //last_evaluated: Option<Evaluation>
+    leaves: Vec<SimplexAtom>,
 }
 
-impl CoreExpression {
-    /// Constructs a new BaseExpression.
-    ///
-    /// Note that this basically sets our expression to be a
-    /// totally empty type: It is up to us to actually push
-    /// our various rules to this structure.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let mut BaseExpression = BaseExpression::new()
-    /// ```
-    pub fn new(head_name: &str) -> CoreExpression {
-        CoreExpression {
-            //options: None
-            head: SimplexAtom::from(head_name),
-            leaves: LinkedList::new(),
-            //pattern_sequence: false,
-            //is_formatted: true,
-            //last_evluated: None
+impl Plus {
+    fn new() -> Plus {
+        Plus {
+            head: SimplexAtom::SimplexSymbol(Symbol::from_str("Plus").unwrap()),
+            leaves: Vec::new(),
         }
     }
+}
+impl BaseExpression<SimplexAtom> for Plus {
+    fn get_expression_type(&self) -> &str {
+        "Simplex`MExpression"
+    }
 
-    pub fn get_head_name<'a>(&'a self) -> Cow<'a, str>{
+    fn get_head_name(&self) -> &str {
         match self.head {
-            SimplexAtom::SimplexSymbol(ref s) => {
-                Cow::Owned(ensure_context(s.to_string()).clone())
-            },
-            _ => Cow::Owned(ensure_context(self.head.get_head_name()))
+            SimplexAtom::SimplexNumeric(_) => "Simplex`Invalid",
+            SimplexAtom::SimplexString(_) => "Simplex`Invalid",
+            SimplexAtom::SimplexSymbol(ref s) => s.to_string().as_str(),
         }
     }
 
-    pub fn push_leave(&mut self, n: Rc<CoreExpression>) {
-        self.leaves.push_back(n.clone());
+    fn get_head(&self) -> &SimplexAtom {
+        &self.head
     }
 
-    pub fn eval(&self) -> CoreExpression {
-        match self.head {
-            SimplexAtom::SimplexSymbol(ref s) => {
-                if s.to_string().as_str() == "Plus" {
-                    let mut new_expr = CoreExpression::new("Plus");
-                    let mut last_evaluated = Numeric::from(0);
-                        for item in &self.leaves {
-                            match item.head {
-                                SimplexAtom::SimplexNumeric(x) => {
-                                    last_evaluated = last_evaluated + x
-                                }
-                                _ => {
-                                    new_expr.push_leave(Rc::new(CoreExpression::new(last_evaluated.to_string().as_str())));
-                                    last_evaluated = Numeric::from(0);
-                                }
-                            }
-                        }
-                    new_expr.push_leave(Rc::new(CoreExpression::new(last_evaluated.to_string().as_str())));
-                    new_expr
-                }
-                else {
-                    self.clone()
-                }
-            },
-            SimplexAtom::SimplexNumeric(ref n) => {
-                self.clone()
-            }
-            SimplexAtom::SimplexString(ref s) => {
-                self.clone()
-            }
-        }
+    fn reduce_expression(self) -> Plus {
+        self
     }
 
-    pub fn to_string(&self) -> String {
-        match self.head {
-            SimplexAtom::SimplexSymbol(ref s) => {
-                let mut rep = String::new();
-                rep.push_str(s.to_string().as_str());
-                rep.push('[');
-                for (item_num, item) in self.leaves.iter().enumerate() {
-                    if item_num != 0 {
-                        rep.push(' ')
-                    } 
-
-                    rep.push_str(item.to_string().as_str());
-                    if item_num != self.leaves.len() - 1 {
-                        rep.push(',');
-                    }
-
-                }
-
-                rep.push(']');
-                rep
-            },
-            SimplexAtom::SimplexNumeric(ref n) => {
-                n.to_string()
-            }
-            SimplexAtom::SimplexString(ref s) => {
-                s.to_string()
-            }
-        }
-    }
-
-    /// Taking a currently created BaseExpression and creates
-    /// a copy, applying rules linearly to our expression and
-    /// outputting the modified structure: This is a pure function.
-    /// Note that in the case that our rules don't throw a "none"
-    /// this works as one would expect it to, however if our
-    /// expression can not be evaluated it returns a None and
-    /// the system upstream will have to determine how to deal
-    /// with the issue
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let mut base_exp = BaseExpression::new();
-    /// let rule = SympyEngine("Integrate");
-    /// let mut new_exp = base_exp.iterate_rules( vec![rule]);
-    /// ```
-    /// TODO: True implementation once Rule data
-    /// structure is properly implemented.
-    #[allow(dead_code)]
-    fn iterate_rules(&self, /*rules: Vec<Rule>*/) -> Option<CoreExpression>{
-        /*
-        let mut new_expression = self.clone(); 
-        for rule in rules {
-            rule.apply(new_expression);
-            if new_expression != None {
-                (new_expression, true)
-            }
-        }
-        */
-
+    fn get_int_value(&self) -> Option<i64> {
         None
     }
 
-    // TODO: Add more descriptive names to
-    // destructured elements (l1, l2): What
-    // do these things even mean?
+    fn get_float_value(&self) -> Option<d128> {
+        None
+    }
 
-    // TODO: Make this faster by using
-    // lazy returns: That way if nothing
-    // has changed, we simply denote that
-    // via the use of an enumerative type.
+    fn get_string_value(&self) -> Option<&String> {
+        None
+    }
+}
 
-    // TODO: True implementation once Rule data
-    // structure is properly implemented.
+impl SymbolicExpression<SimplexAtom> for PrimitiveExpression {
+    fn get_leaves(&self) -> &Vec<SimplexAtom> {
+        &self.leaves
+    }
 
-    #[allow(dead_code)]
-    pub fn apply_rules(&self /*rules: Rule, */ /*evaluation: Evaluation*/, level: u8, options: (Option<u8>, Option<u8>)) -> Option<CoreExpression>{
-        match options {
-            (Some(l1), None) => {
-                if level < l1 {
-                    None
-                } else {
-                    self.iterate_rules(/*rules*/)
-                }
-            }, (None, Some(l2)) => {
-                if level > l2 {
-                    None
-                } else {
-                    self.iterate_rules(/*rules*/)
-                }
-            }, (Some(l1), Some(l2)) => {
-                if level < l1 {
-                    None
-                } else if level > l2 {
-                    None
-                } else {
-                    self.iterate_rules(/*rules*/)
-                }
-            }, _ => {
-                self.iterate_rules(/*rules*/)
-            }
-        }
+    fn push_leave(&mut self, leave: SimplexAtom) {
+        self.leaves.push(leave);
     }
 }

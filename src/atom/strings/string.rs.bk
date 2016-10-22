@@ -8,7 +8,9 @@ pub struct SString {
 impl SString {
     pub fn from_str(n: &str) -> Option<SString> {
         if representable_string(n) {
-            Some(SString { contents: n.to_string() })
+            Some(SString {
+                contents: n.to_string(),
+            })
         } else {
             None
         }

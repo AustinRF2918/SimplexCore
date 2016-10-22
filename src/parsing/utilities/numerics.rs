@@ -23,11 +23,7 @@ pub fn get_representable_numeric(s: &str) -> Option<&str> {
         static ref RE: Regex = Regex::new(r"^(?P<numeric>[+-]?[0-9]*(\.?)([0-9]*))$").unwrap();
     }
 
-    if RE.is_match(s) {
-        Some(s)
-    } else {
-        None
-    }
+    if RE.is_match(s) { Some(s) } else { None }
 }
 
 pub fn get_representable_integer(s: &str) -> Option<i64> {
@@ -42,7 +38,7 @@ pub fn get_representable_integer(s: &str) -> Option<i64> {
         Some(c) => {
             match c.name("digit").unwrap().parse::<i64>() {
                 Ok(num) => Some(num),
-                Err(_) => None
+                Err(_) => None,
             }
         }
 
@@ -71,7 +67,7 @@ pub fn get_representable_integer(s: &str) -> Option<i64> {
                                 let mut d_flag = false;
 
                                 for letter in lhs.chars() {
-                                    if letter == '.'{
+                                    if letter == '.' {
                                         flag = true;
                                     } else {
                                         if !u_flag {
@@ -89,7 +85,7 @@ pub fn get_representable_integer(s: &str) -> Option<i64> {
                                             } else {
                                                 curr = curr - 1;
                                             }
-                                        } 
+                                        }
                                     }
                                 }
 
@@ -101,21 +97,17 @@ pub fn get_representable_integer(s: &str) -> Option<i64> {
 
                                     match s.parse::<i64>() {
                                         Ok(num) => Some(num),
-                                        _ => None
+                                        _ => None,
                                     }
                                 } else {
                                     None
                                 }
                             }
-                        },
-                        Err(e) => {
-                            None
                         }
+                        Err(e) => None,
                     }
                 }
-                None => {
-                    None
-                }
+                None => None,
             }
         }
     }

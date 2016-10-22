@@ -23,14 +23,14 @@ use regex::Regex;
 
 struct State {
     num_map: HashMap<String, Numeric>,
-    current_input: usize
+    current_input: usize,
 }
 
 impl State {
-    pub fn new() -> State{
+    pub fn new() -> State {
         State {
             num_map: HashMap::new(),
-            current_input: 0
+            current_input: 0,
         }
     }
 }
@@ -39,8 +39,11 @@ fn evaluate(line: String, state: &mut State) {
     match assignment(&line, state) {
         Some((x, y)) => {
             state.num_map.insert(x.clone(), y);
-            println!("Out[{}]= {} == {} [Assignment]", state.current_input, x.clone(), y.as_str());
-        },
+            println!("Out[{}]= {} == {} [Assignment]",
+                     state.current_input,
+                     x.clone(),
+                     y.as_str());
+        }
         None => {
             match operator(&line, state) {
                 Some(s) => {
@@ -48,9 +51,11 @@ fn evaluate(line: String, state: &mut State) {
                 }
 
                 None => {
-                        match parse_v_name(&line, state) {
+                    match parse_v_name(&line, state) {
                         Some(x) => {
-                            println!("Out[{}]= {} [VName Lookup]", state.current_input, x.as_str());
+                            println!("Out[{}]= {} [VName Lookup]",
+                                     state.current_input,
+                                     x.as_str());
                         }
                         None => {
                             println!("Out[{}]= {} [Unknown Op]", state.current_input, line);
@@ -58,7 +63,6 @@ fn evaluate(line: String, state: &mut State) {
                     }
                 }
             }
-
         }
     }
 
@@ -72,7 +76,6 @@ fn assignment(line: &String, state: &mut State) -> Option<(String, Numeric)> {
     }
 
     let captures = RE.captures(line.as_str());
-
     match captures {
         Some(c) => {
             let lhs = c.name("lhs").unwrap();
@@ -82,25 +85,16 @@ fn assignment(line: &String, state: &mut State) -> Option<(String, Numeric)> {
                 "NaN" => {
                     println!("{}", rhs.to_string());
                     match operator(&rhs.to_string(), state) {
-                        Some(x) => {
-                            Some((lhs.to_string(), Numeric::from(x.as_str())))
-                        }
-                        None => {
-                            None
-
-                        }
+                        Some(x) => Some((lhs.to_string(), Numeric::from(x.as_str()))),
+                        None => None,
                     }
                 }
-                _ => {
-                    Some((lhs.to_string(), Numeric::from(rhs)))
-                }
+                _ => Some((lhs.to_string(), Numeric::from(rhs))),
             }
 
         }
 
-        _ => {
-            None
-        }
+        _ => None,
     }
 }
 
@@ -120,9 +114,7 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
             match op {
                 "+" => {
                     match (state.num_map.get(lhs), state.num_map.get(rhs)) {
-                        (Some(x), Some(y)) => {
-                            Some((*x + *y).to_string())
-                        }
+                        (Some(x), Some(y)) => Some((*x + *y).to_string()),
                         (Some(x), None) => {
                             let y = Numeric::from(rhs);
                             if y.simplify() == Numeric::NaN {
@@ -139,16 +131,12 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                                 Some((*x + y).to_string())
                             }
                         }
-                        (None, None) => {
-                            Some((lhs.to_string() + " + " + rhs))
-                        }
+                        (None, None) => Some((lhs.to_string() + " + " + rhs)),
                     }
                 }
                 "-" => {
                     match (state.num_map.get(lhs), state.num_map.get(rhs)) {
-                        (Some(x), Some(y)) => {
-                            Some((*x - *y).to_string())
-                        }
+                        (Some(x), Some(y)) => Some((*x - *y).to_string()),
                         (Some(x), None) => {
                             let y = Numeric::from(rhs);
                             if y.simplify() == Numeric::NaN {
@@ -165,17 +153,13 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                                 Some((*x - y).to_string())
                             }
                         }
-                        (None, None) => {
-                            Some((Numeric::from(lhs) - Numeric::from(rhs)).to_string())
-                        }
+                        (None, None) => Some((Numeric::from(lhs) - Numeric::from(rhs)).to_string()),
                     }
                 }
 
                 "/" => {
                     match (state.num_map.get(lhs), state.num_map.get(rhs)) {
-                        (Some(x), Some(y)) => {
-                            Some((*x / *y).to_string())
-                        }
+                        (Some(x), Some(y)) => Some((*x / *y).to_string()),
                         (Some(x), None) => {
                             let y = Numeric::from(rhs);
                             if y.simplify() == Numeric::NaN {
@@ -192,17 +176,13 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                                 Some((*x / y).to_string())
                             }
                         }
-                        (None, None) => {
-                            Some((Numeric::from(lhs) / Numeric::from(rhs)).to_string())
-                        }
+                        (None, None) => Some((Numeric::from(lhs) / Numeric::from(rhs)).to_string()),
                     }
                 }
 
                 "*" => {
                     match (state.num_map.get(lhs), state.num_map.get(rhs)) {
-                        (Some(x), Some(y)) => {
-                            Some((*x * *y).to_string())
-                        }
+                        (Some(x), Some(y)) => Some((*x * *y).to_string()),
                         (Some(x), None) => {
                             let y = Numeric::from(rhs);
                             if y.simplify() == Numeric::NaN {
@@ -219,17 +199,13 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                                 Some((*x * y).to_string())
                             }
                         }
-                        (None, None) => {
-                            Some((Numeric::from(lhs) * Numeric::from(rhs)).to_string())
-                        }
+                        (None, None) => Some((Numeric::from(lhs) * Numeric::from(rhs)).to_string()),
                     }
                 }
 
                 "==" => {
                     match (state.num_map.get(lhs), state.num_map.get(rhs)) {
-                        (Some(x), Some(y)) => {
-                            Some((*x == *y).to_string())
-                        }
+                        (Some(x), Some(y)) => Some((*x == *y).to_string()),
                         (Some(x), None) => {
                             let y = Numeric::from(rhs);
                             if y.simplify() == Numeric::NaN {
@@ -251,15 +227,11 @@ fn operator(line: &String, state: &mut State) -> Option<String> {
                         }
                     }
                 }
-                _ => {
-                    None
-                }
+                _ => None,
             }
         }
 
-        _ => {
-            None
-        }
+        _ => None,
     }
 }
 
@@ -275,23 +247,15 @@ fn parse_v_name(line: &String, state: &mut State) -> Option<Numeric> {
             match c.name("data") {
                 Some(x) => {
                     match state.num_map.get(x) {
-                        Some(y) => {
-                            Some(y.to_owned())
-                        }
-                        None => {
-                            None
-                        }
+                        Some(y) => Some(y.to_owned()),
+                        None => None,
                     }
                 }
-                None => {
-                    None
-                }
+                None => None,
             }
         }
 
-        _ => {
-            None
-        }
+        _ => None,
     }
 }
 
@@ -311,4 +275,3 @@ fn main() {
         line_num = line_num + 1;
     }
 }
-

@@ -21,22 +21,18 @@ numeric_int_explicit_conversion!(u32, SimplexAtom::SimplexNumeric, SimplexAtom);
 numeric_float_explicit_conversion!(f32, SimplexAtom::SimplexNumeric, SimplexAtom);
 numeric_float_explicit_conversion!(f64, SimplexAtom::SimplexNumeric, SimplexAtom);
 
-impl <'a> From<&'a str> for SimplexAtom {
+impl<'a> From<&'a str> for SimplexAtom {
     fn from(s: &str) -> SimplexAtom {
         match (representable_numeric(s), representable_string(s), representable_symbol(s)) {
-            (true, _, _) => {
-                SimplexAtom::SimplexNumeric(Numeric::from(s))
-            }
+            (true, _, _) => SimplexAtom::SimplexNumeric(Numeric::from(s)),
 
-            (_, true, _) =>  {
+            (_, true, _) => {
                 match SString::from_str(s) {
-                    Some(s) => {
-                        SimplexAtom::SimplexString(s)
-                    }
+                    Some(s) => SimplexAtom::SimplexString(s),
 
                     None => {
-                        panic!(r#"An internal error in the SimplexCore library occured: representable_string(s) 
-                        in the parsing library returned true, ensuring that our numeric is parseable, however 
+                        panic!(r#"An internal error in the SimplexCore library occured: representable_string(s)
+                        in the parsing library returned true, ensuring that our numeric is parseable, however
                         SString::from_str(s) returned None."#);
                     }
                 }
@@ -44,19 +40,17 @@ impl <'a> From<&'a str> for SimplexAtom {
 
             (_, _, true) => {
                 match Symbol::from_str(s) {
-                    Some(s) => {
-                        SimplexAtom::SimplexSymbol(s)
-                    }
+                    Some(s) => SimplexAtom::SimplexSymbol(s),
 
                     None => {
-                        panic!(r#"An internal error in the SimplexCore library occured: representable_symbol(s) 
-                        in the parsing library returned true, ensuring that our numeric is parseable, however 
+                        panic!(r#"An internal error in the SimplexCore library occured: representable_symbol(s)
+                        in the parsing library returned true, ensuring that our numeric is parseable, however
                         Symbol::from_str(s) returned None."#);
                     }
                 }
             }
 
-            _ => SimplexAtom::SimplexSymbol(Symbol::from_str("Simplex`UnknownParse").unwrap())
+            _ => SimplexAtom::SimplexSymbol(Symbol::from_str("Simplex`UnknownParse").unwrap()),
         }
     }
 }

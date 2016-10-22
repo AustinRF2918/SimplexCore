@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     mod test_basic_numbers {
-        mod test_real_numbers  {
+        mod test_real_numbers {
             use atom::atom::SimplexAtom;
             use expression::structures::attributes::BaseExpression;
             use expression::structures::attributes::PrimitiveConverter;
@@ -23,7 +23,8 @@ mod tests {
             #[test]
             fn it_gets_float_value() {
                 let s_atom = SimplexAtom::from(100.201);
-                assert_eq!(s_atom.get_float_value(), Some(d128::from_str("100.201").unwrap()));
+                assert_eq!(s_atom.get_float_value(),
+                           Some(d128::from_str("100.201").unwrap()));
             }
 
             #[test]
@@ -39,7 +40,7 @@ mod tests {
             }
         }
 
-        mod test_int_numbers  {
+        mod test_int_numbers {
             use atom::atom::SimplexAtom;
             use expression::structures::attributes::BaseExpression;
             use expression::structures::attributes::PrimitiveConverter;
@@ -91,7 +92,7 @@ mod tests {
 
             #[test]
             fn it_instantiates() {
-                let s_atom : SimplexAtom = SimplexAtom::from(32);
+                let s_atom: SimplexAtom = SimplexAtom::from(32);
                 assert_eq!(s_atom.get_expression_name(), "Simplex`Atom");
                 assert_eq!(s_atom.get_head_name(), "Integer");
             }

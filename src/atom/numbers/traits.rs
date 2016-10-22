@@ -17,12 +17,11 @@ extern crate num;
 use num::{ToPrimitive, FromPrimitive};
 use std::str::FromStr;
 
-impl <'a> From<&'a str> for Numeric {
+impl<'a> From<&'a str> for Numeric {
     fn from(s: &str) -> Numeric {
         match s.parse::<i64>() {
-            Ok(num) => {
-                Numeric::LittleInteger(num)
-            }, Err(_) => {
+            Ok(num) => Numeric::LittleInteger(num),
+            Err(_) => {
                 match d128::from_str(s) {
                     Ok(num) => {
                         if num.to_string() != "NaN" {
@@ -30,9 +29,8 @@ impl <'a> From<&'a str> for Numeric {
                         } else {
                             Numeric::NaN
                         }
-                    }, Err(_) => {
-                        Numeric::NaN
                     }
+                    Err(_) => Numeric::NaN,
                 }
             }
         }

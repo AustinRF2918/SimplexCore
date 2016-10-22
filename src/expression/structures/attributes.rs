@@ -1,25 +1,52 @@
 extern crate decimal;
 use decimal::d128;
 
-pub trait BaseExpression {
-    fn get_expression_name(&self) -> &str;
+pub trait BaseExpression<T> {
     fn get_head_name(&self) -> &str;
-}
+    fn get_head(&self) -> &T;
 
-pub trait PrimitiveConverter {
+    fn get_expression_type(&self) -> &str;
+    fn reduce_expression(self) -> Self;
+
     fn get_int_value(&self) -> Option<i64>;
     fn get_float_value(&self) -> Option<d128>;
     fn get_string_value(&self) -> Option<&String>;
 }
 
-pub trait ComposableExpression<T: BaseExpression>{
-    fn get_head(&self) -> Option<T>;
-    fn get_leaves(&self) -> Vec<T>;
+pub trait SymbolicExpression<T>
+    where T: BaseExpression<T>
+{
+    fn get_leaves(&self) -> &Vec<T>;
+    fn push_leave(&mut self, leave: T);
 }
 
-pub trait ExpressionSequencable<T: BaseExpression>{
-    fn sequences(self) -> Option<Vec<T>>;
-    fn flatten(self) -> Self;
-    fn flatten_sequence(self) -> Self;
-    fn flatten_pattern_sequence(self) -> Self;
+pub trait BuiltinExpression<T>
+    where T: BaseExpression<T>
+{
+    fn eval(&self) -> SymbolicExpression<T>;
 }
+
+pub trait MetaExpression<T>
+    where T: BaseExpression<T>
+{
+    fn get_meta_variables(&self) -> &Vec<T>;
+    fn push_meta_variable(&mut self, leave: T);
+    fn check_meta_variables(&mut self, m_vars: Vec<T>) -> bool;
+    fn m_eval(&self, m_vars: Vec<T>) -> SymbolicExpression<T>;
+}
+
+// pub trait ComposedMExpression<T: BaseMExpression>{
+// fn get_leaves(&self) -> Vec<T>;
+// fn push_leave(&mut self, T);
+// fn get_m_variables(&self) -> Vec<T>;
+// fn push_m_variable(&mut self, T) -> Vec<T>;
+// }
+//
+
+// pub trait ExpressionSequencable<T: BaseExpression>{
+// fn sequences(self) -> Option<Vec<T>>;
+// fn flatten(self) -> Self;
+// fn flatten_sequence(self) -> Self;
+// fn flatten_pattern_sequence(self) -> Self;
+// }
+//

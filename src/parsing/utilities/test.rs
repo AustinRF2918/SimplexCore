@@ -52,22 +52,26 @@ mod tests {
 
             #[test]
             fn it_works_with_tic_not_first() {
-                assert_eq!(false, has_notation_character( StringNotationPattern::Last, '`', "Hello"));
+                assert_eq!(false,
+                           has_notation_character(StringNotationPattern::Last, '`', "Hello"));
             }
 
             #[test]
             fn it_works_with_tic_first_and_last() {
-                assert_eq!(true, has_notation_character( StringNotationPattern::Last, '`', "`Hello`"));
+                assert_eq!(true,
+                           has_notation_character(StringNotationPattern::Last, '`', "`Hello`"));
             }
 
             #[test]
             fn it_doesnt_work_with_tic_and_first() {
-                assert_eq!(false, has_notation_character( StringNotationPattern::Last, '`', "`Hello"));
+                assert_eq!(false,
+                           has_notation_character(StringNotationPattern::Last, '`', "`Hello"));
             }
 
             #[test]
             fn it_doesnt_work_with_tic_middle() {
-                assert_eq!(false, has_notation_character( StringNotationPattern::Last, '`', "He`llo"));
+                assert_eq!(false,
+                           has_notation_character(StringNotationPattern::Last, '`', "He`llo"));
             }
         }
 
@@ -77,22 +81,26 @@ mod tests {
 
             #[test]
             fn it_works_with_tic_not_first() {
-                assert_eq!(false, has_notation_character( StringNotationPattern::Internal, '`', "Hello"));
+                assert_eq!(false,
+                           has_notation_character(StringNotationPattern::Internal, '`', "Hello"));
             }
 
             #[test]
             fn it_doesnt_work_with_tic_first_and_last() {
-                assert_eq!(false, has_notation_character( StringNotationPattern::Internal, '`', "`Hello`"));
+                assert_eq!(false,
+                           has_notation_character(StringNotationPattern::Internal, '`', "`Hello`"));
             }
 
             #[test]
             fn it_doesnt_work_with_tic_first() {
-                assert_eq!(false, has_notation_character( StringNotationPattern::Internal, '`', "`Hello"));
+                assert_eq!(false,
+                           has_notation_character(StringNotationPattern::Internal, '`', "`Hello"));
             }
 
             #[test]
             fn it_works_with_tic_middle() {
-                assert_eq!(true, has_notation_character( StringNotationPattern::Internal, '`', "He`llo"));
+                assert_eq!(true,
+                           has_notation_character(StringNotationPattern::Internal, '`', "He`llo"));
             }
         }
 
@@ -102,22 +110,26 @@ mod tests {
 
             #[test]
             fn it_works_with_tic_first() {
-                assert_eq!(true, has_notation_character( StringNotationPattern::External, '`', "`Hello"));
+                assert_eq!(true,
+                           has_notation_character(StringNotationPattern::External, '`', "`Hello"));
             }
 
             #[test]
             fn it_doesnt_work_with_tic_not_first() {
-                assert_eq!(false, has_notation_character( StringNotationPattern::Internal, '`', "Hello"));
+                assert_eq!(false,
+                           has_notation_character(StringNotationPattern::Internal, '`', "Hello"));
             }
 
             #[test]
             fn it_works_with_tic_first_and_last() {
-                assert_eq!(true, has_notation_character( StringNotationPattern::External, '`', "`Hello`"));
+                assert_eq!(true,
+                           has_notation_character(StringNotationPattern::External, '`', "`Hello`"));
             }
 
             #[test]
             fn it_doesnt_work_with_tic_middle() {
-                assert_eq!(false, has_notation_character( StringNotationPattern::External, '`', "He`llo"));
+                assert_eq!(false,
+                           has_notation_character(StringNotationPattern::External, '`', "He`llo"));
             }
         }
 
@@ -127,22 +139,26 @@ mod tests {
 
             #[test]
             fn it_works_with_tic_first() {
-                assert_eq!(true, has_notation_character( StringNotationPattern::Contains, '`', "`Hello"));
+                assert_eq!(true,
+                           has_notation_character(StringNotationPattern::Contains, '`', "`Hello"));
             }
 
             #[test]
             fn it_works_with_no_tic() {
-                assert_eq!(false, has_notation_character( StringNotationPattern::Contains, '`', "Hello"));
+                assert_eq!(false,
+                           has_notation_character(StringNotationPattern::Contains, '`', "Hello"));
             }
 
             #[test]
             fn it_works_with_tic_first_and_last() {
-                assert_eq!(true, has_notation_character( StringNotationPattern::Contains, '`', "`Hello`"));
+                assert_eq!(true,
+                           has_notation_character(StringNotationPattern::Contains, '`', "`Hello`"));
             }
 
             #[test]
             fn it_doesnt_work_with_tic_middle() {
-                assert_eq!(true, has_notation_character( StringNotationPattern::Contains, '`', "He`llo"));
+                assert_eq!(true,
+                           has_notation_character(StringNotationPattern::Contains, '`', "He`llo"));
             }
         }
     }
@@ -171,7 +187,7 @@ mod tests {
             fn it_finds_a_more_complex_point_where_multiple_points() {
                 assert_eq!(Some(6), get_point_location("123456.0431.43"));
             }
-#[test]
+            #[test]
             fn it_finds_no_plus() {
                 assert_eq!(None, get_point_location("1"));
             }
@@ -304,7 +320,7 @@ mod tests {
             fn it_converts_from_exponent_notation_3() {
                 assert_eq!(Some(1000), get_representable_integer("1.00E+3"));
             }
-            
+
             #[test]
             fn it_converts_from_exponent_notation_8() {
                 assert_eq!(Some(100000000), get_representable_integer("1.00E+8"));

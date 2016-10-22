@@ -4,29 +4,28 @@ pub mod checks {
 
     #[allow(dead_code)]
     pub fn fully_qualified_symbol_name(name: &str) -> bool {
-        !(has_notation_character( StringNotationPattern::First, '`', name))
-        && !(has_notation_character( StringNotationPattern::Last, '`', name))
-        && (has_notation_character( StringNotationPattern::Contains, '`', name))
-        && !(name.contains("``"))
+        !(has_notation_character(StringNotationPattern::First, '`', name)) &&
+        !(has_notation_character(StringNotationPattern::Last, '`', name)) &&
+        (has_notation_character(StringNotationPattern::Contains, '`', name)) &&
+        !(name.contains("``"))
     }
 
     #[allow(dead_code)]
-    pub fn valid_context_name(context: &str) -> bool{
-        has_notation_character( StringNotationPattern::Last,'`', context)
-        && !(has_notation_character( StringNotationPattern::First, '`', context))
-        && !context.contains("``")
+    pub fn valid_context_name(context: &str) -> bool {
+        has_notation_character(StringNotationPattern::Last, '`', context) &&
+        !(has_notation_character(StringNotationPattern::First, '`', context)) &&
+        !context.contains("``")
     }
 
     #[allow(dead_code)]
     pub fn valid_context_name_initial_bq(context: &str) -> bool {
-        has_notation_character( StringNotationPattern::Last, '`', context)
-        && !context.contains("``")
+        has_notation_character(StringNotationPattern::Last, '`', context) && !context.contains("``")
     }
 
     pub fn ensure_context(name: &str) -> String {
         if name.len() == 0 {
             "Error`Undefined".to_string()
-        } else if has_notation_character( StringNotationPattern::Contains, '`', name ) {
+        } else if has_notation_character(StringNotationPattern::Contains, '`', name) {
             if fully_qualified_symbol_name(name) {
                 name.to_string()
             } else {
@@ -39,7 +38,7 @@ pub mod checks {
 
     #[allow(dead_code)]
     pub fn strip_context(name: &str) -> String {
-        if has_notation_character( StringNotationPattern::Contains, '`', name) {
+        if has_notation_character(StringNotationPattern::Contains, '`', name) {
             let mut stripped_context = String::new();
             let mut flag = false;
 
@@ -47,7 +46,7 @@ pub mod checks {
                 if flag {
                     stripped_context.push(letter);
                 } else if letter == '`' {
-                        flag = true;
+                    flag = true;
                 }
             }
             stripped_context
@@ -62,20 +61,22 @@ pub mod applications {
 
     #[allow(dead_code)]
     pub fn vec_to_symbols(symbols: Vec<String>) -> Vec<String> {
-        symbols.into_iter().map( |s| ensure_context(&s)).collect()
+        symbols.into_iter().map(|s| ensure_context(&s)).collect()
     }
 
     // Implement once symbols are implemented.
-    /*
-    pub fn map_to_symbols(hash: HashMap<String, symbol::structures::core_symbol> ) -> HashkMap<String, symbol::structures::core_symbol> {
-    }
-    */
+    //
+    // pub fn map_to_symbols(hash: HashMap<String, symbol::structures::core_symbol> ) -> HashkMap<String, symbol::structures::core_symbol> {
+    // }
+    //
+
 }
 
 #[cfg(test)]
 mod tests {
     mod fully_qualified_tests {
-        use expression::structures::integrity::checks::{ensure_context, fully_qualified_symbol_name};
+        use expression::structures::integrity::checks::{ensure_context,
+                                                        fully_qualified_symbol_name};
         #[test]
         fn it_denies_fully_qualified_left_mark() {
             assert_eq!(false, fully_qualified_symbol_name("`Hello"));
@@ -113,7 +114,9 @@ mod tests {
     }
 
     mod valid_context_tests {
-        use expression::structures::integrity::checks::{valid_context_name, fully_qualified_symbol_name, valid_context_name_initial_bq};
+        use expression::structures::integrity::checks::{valid_context_name,
+                                                        fully_qualified_symbol_name,
+                                                        valid_context_name_initial_bq};
 
         #[test]
         fn it_denies_bad_context_name() {
@@ -157,7 +160,7 @@ mod tests {
     }
 
     mod ensure_context_tests {
-        use expression::structures::integrity::checks::{ensure_context};
+        use expression::structures::integrity::checks::ensure_context;
 
         #[test]
         fn it_denies_bad_context_name() {
