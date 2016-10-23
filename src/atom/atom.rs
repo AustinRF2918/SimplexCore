@@ -4,8 +4,6 @@ use atom::strings::string::SString;
 
 use expression::structures::attributes::BaseExpression;
 
-use atom::traits;
-
 extern crate decimal;
 use decimal::d128;
 
@@ -17,6 +15,7 @@ pub enum SimplexAtom {
 }
 
 impl SimplexAtom {
+    #[allow(dead_code)]
     pub fn to_string(&self) -> String {
         match self {
             &SimplexAtom::SimplexNumeric(ref n) => n.to_string().clone(),

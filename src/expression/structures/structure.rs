@@ -1,16 +1,12 @@
 use atom::atom::SimplexAtom;
-use atom::traits;
-use parsing::utilities::string::representable_string;
-use parsing::utilities::numerics::representable_numeric;
 
-use expression::structures::integrity::checks::ensure_context;
 use expression::structures::attributes::BaseExpression;
 use expression::structures::attributes::SymbolicExpression;
-use expression::structures::attributes::MetaExpression;
+// use expression::structures::attributes::MetaExpression;
 
-use atom::numbers::number::Numeric;
+// use atom::numbers::number::Numeric;
+// use atom::strings::string::SString;
 use atom::symbols::symbol::Symbol;
-use atom::strings::string::SString;
 
 extern crate decimal;
 use decimal::d128;
@@ -31,6 +27,7 @@ pub struct Plus {
 }
 
 impl Plus {
+    #[allow(dead_code)]
     fn new() -> Plus {
         Plus {
             head: SimplexAtom::SimplexSymbol(Symbol::from_str("Plus").unwrap()),
@@ -72,7 +69,7 @@ impl BaseExpression<SimplexAtom> for Plus {
     }
 }
 
-impl SymbolicExpression<SimplexAtom> for PrimitiveExpression {
+impl SymbolicExpression<SimplexAtom> for Plus {
     fn get_leaves(&self) -> &Vec<SimplexAtom> {
         &self.leaves
     }

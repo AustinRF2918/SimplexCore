@@ -2,8 +2,6 @@ use atom::numbers::number::Numeric;
 use atom::symbols::symbol::Symbol;
 use atom::strings::string::SString;
 
-#[macro_use]
-use atom::macros;
 use atom::atom::SimplexAtom;
 
 use parsing::utilities::numerics::representable_numeric;

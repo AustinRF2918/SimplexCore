@@ -1,4 +1,4 @@
-use regex::{Regex, RegexBuilder, Captures};
+use regex::Regex;
 
 pub enum StringNotationPattern {
     First,
@@ -14,7 +14,7 @@ pub fn has_notation_character(snp: StringNotationPattern, c: char, s: &str) -> b
             let first_regex = Regex::new((format!("^{}.*$", c)).as_str());
             match first_regex {
                 Ok(parser) => parser.is_match(s),
-                Err(e) => {
+                Err(_) => {
                     panic!("The character you passed to has_notation_character( ... ) caused the \
                             regex compiler to crash!");
                 }
@@ -25,7 +25,7 @@ pub fn has_notation_character(snp: StringNotationPattern, c: char, s: &str) -> b
             let last_regex = Regex::new((format!("^.*{}$", c)).as_str());
             match last_regex {
                 Ok(parser) => parser.is_match(s),
-                Err(e) => {
+                Err(_) => {
                     panic!("The character you passed to has_notation_character( ... ) caused the \
                             regex compiler to crash!");
                 }
@@ -51,7 +51,7 @@ pub fn has_notation_character(snp: StringNotationPattern, c: char, s: &str) -> b
             let contains_regex = Regex::new((format!("^.*{}.*$", c)).as_str());
             match contains_regex {
                 Ok(parser) => parser.is_match(s),
-                Err(e) => {
+                Err(_) => {
                     panic!("The character you passed to has_notation_character( ... ) caused the \
                             regex compiler to crash!");
                 }

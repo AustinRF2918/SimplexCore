@@ -75,8 +75,8 @@ pub mod applications {
 #[cfg(test)]
 mod tests {
     mod fully_qualified_tests {
-        use expression::structures::integrity::checks::{ensure_context,
-                                                        fully_qualified_symbol_name};
+        use expression::structures::integrity::checks::fully_qualified_symbol_name;
+
         #[test]
         fn it_denies_fully_qualified_left_mark() {
             assert_eq!(false, fully_qualified_symbol_name("`Hello"));
@@ -115,7 +115,6 @@ mod tests {
 
     mod valid_context_tests {
         use expression::structures::integrity::checks::{valid_context_name,
-                                                        fully_qualified_symbol_name,
                                                         valid_context_name_initial_bq};
 
         #[test]

@@ -1,7 +1,5 @@
-use std::io;
 use std::ops::{Add, Sub, Mul, Div};
 use std::cmp::PartialEq;
-use std::fmt::Debug;
 use std::borrow::Cow;
 use parsing::utilities::numerics::get_representable_integer;
 
@@ -9,7 +7,6 @@ extern crate decimal;
 use decimal::d128;
 
 extern crate num;
-use num::{ToPrimitive, FromPrimitive};
 use std::str::FromStr;
 
 // TODO: Make emulated integer using d128.
@@ -58,6 +55,7 @@ impl Numeric {
         }
     }
 
+    #[allow(dead_code)]
     pub fn capacity(&self) -> usize {
         match self {
             &Numeric::LittleInteger(_) => 64,
@@ -76,8 +74,8 @@ impl PartialEq for Numeric {
             (&Numeric::NaN, _) => false,
             (_, &Numeric::NaN) => false,
             (&Numeric::LittleInteger(lhs), &Numeric::LittleInteger(rhs)) => lhs == rhs,
-            (&Numeric::LittleInteger(lhs), &Numeric::LittleReal(rhs)) => *self == other.simplify(),
-            (&Numeric::LittleReal(lhs), &Numeric::LittleInteger(rhs)) => other.simplify() == *self,
+            (&Numeric::LittleInteger(_), &Numeric::LittleReal(_)) => *self == other.simplify(),
+            (&Numeric::LittleReal(_), &Numeric::LittleInteger(_)) => other.simplify() == *self,
             (&Numeric::LittleReal(lhs), &Numeric::LittleReal(rhs)) => lhs == rhs,
 
         }

@@ -3,7 +3,6 @@ mod tests {
     mod string_tests {
         mod first_tests {
             use parsing::utilities::string::representable_string;
-            use parsing::utilities::string::StringNotationPattern;
 
             #[test]
             fn it_fails_with_only_a_quote() {

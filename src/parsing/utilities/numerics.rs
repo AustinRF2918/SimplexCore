@@ -1,5 +1,6 @@
 use regex::Regex;
 
+#[allow(dead_code)]
 pub fn representable_integer(s: &str) -> bool {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"^[+-]?[0-9]*(\.?)([0]*)$").unwrap();
@@ -10,6 +11,7 @@ pub fn representable_integer(s: &str) -> bool {
 
 // TODO: Fix bug that could occur during dynamic parsing with exponent d128
 // numbers.
+#[allow(dead_code)]
 pub fn representable_numeric(s: &str) -> bool {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"^[+-]?[0-9]*(\.?)([0-9]*)$").unwrap();
@@ -18,6 +20,7 @@ pub fn representable_numeric(s: &str) -> bool {
     RE.is_match(s)
 }
 
+#[allow(dead_code)]
 pub fn get_representable_numeric(s: &str) -> Option<&str> {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"^(?P<numeric>[+-]?[0-9]*(\.?)([0-9]*))$").unwrap();
@@ -26,6 +29,7 @@ pub fn get_representable_numeric(s: &str) -> Option<&str> {
     if RE.is_match(s) { Some(s) } else { None }
 }
 
+#[allow(dead_code)]
 pub fn get_representable_integer(s: &str) -> Option<i64> {
     lazy_static! {
         static ref REG_NOTATION: Regex = Regex::new(r"^(?P<digit>[+-]?([0-9]*))(\.?)([0]*)$").unwrap();
@@ -104,7 +108,7 @@ pub fn get_representable_integer(s: &str) -> Option<i64> {
                                 }
                             }
                         }
-                        Err(e) => None,
+                        Err(_) => None,
                     }
                 }
                 None => None,
@@ -127,10 +131,12 @@ fn first_location(s: &str, letter: char) -> Option<usize> {
     pos
 }
 
+#[allow(dead_code)]
 pub fn get_point_location(s: &str) -> Option<usize> {
     first_location(s, '.')
 }
 
+#[allow(dead_code)]
 pub fn get_plus_location(s: &str) -> Option<usize> {
     first_location(s, '+')
 }

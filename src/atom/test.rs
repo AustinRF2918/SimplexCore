@@ -4,19 +4,17 @@ mod tests {
         mod test_real_numbers {
             use atom::atom::SimplexAtom;
             use expression::structures::attributes::BaseExpression;
-            use expression::structures::attributes::PrimitiveConverter;
 
             extern crate decimal;
             use decimal::d128;
 
             extern crate num;
-            use num::{ToPrimitive, FromPrimitive};
             use std::str::FromStr;
 
             #[test]
             fn it_instantiates() {
                 let s_atom = SimplexAtom::from(1.21);
-                assert_eq!(s_atom.get_expression_name(), "Simplex`Atom");
+                assert_eq!(s_atom.get_expression_type(), "Simplex`Atom");
                 assert_eq!(s_atom.get_head_name(), "Real");
             }
 
@@ -43,19 +41,11 @@ mod tests {
         mod test_int_numbers {
             use atom::atom::SimplexAtom;
             use expression::structures::attributes::BaseExpression;
-            use expression::structures::attributes::PrimitiveConverter;
-
-            extern crate decimal;
-            use decimal::d128;
-
-            extern crate num;
-            use num::{ToPrimitive, FromPrimitive};
-            use std::str::FromStr;
 
             #[test]
             fn it_instantiates() {
                 let s_atom = SimplexAtom::from(1.00);
-                assert_eq!(s_atom.get_expression_name(), "Simplex`Atom");
+                assert_eq!(s_atom.get_expression_type(), "Simplex`Atom");
                 assert_eq!(s_atom.get_head_name(), "Integer");
             }
 
@@ -81,19 +71,11 @@ mod tests {
         mod test_type_deduction {
             use atom::atom::SimplexAtom;
             use expression::structures::attributes::BaseExpression;
-            use expression::structures::attributes::PrimitiveConverter;
-
-            extern crate decimal;
-            use decimal::d128;
-
-            extern crate num;
-            use num::{ToPrimitive, FromPrimitive};
-            use std::str::FromStr;
 
             #[test]
             fn it_instantiates() {
                 let s_atom: SimplexAtom = SimplexAtom::from(32);
-                assert_eq!(s_atom.get_expression_name(), "Simplex`Atom");
+                assert_eq!(s_atom.get_expression_type(), "Simplex`Atom");
                 assert_eq!(s_atom.get_head_name(), "Integer");
             }
         }
@@ -101,19 +83,11 @@ mod tests {
         mod test_symbols {
             use atom::atom::SimplexAtom;
             use expression::structures::attributes::BaseExpression;
-            use expression::structures::attributes::PrimitiveConverter;
-
-            extern crate decimal;
-            use decimal::d128;
-
-            extern crate num;
-            use num::{ToPrimitive, FromPrimitive};
-            use std::str::FromStr;
 
             #[test]
             fn it_instantiates() {
                 let s_atom = SimplexAtom::from("x");
-                assert_eq!(s_atom.get_expression_name(), "Simplex`Atom");
+                assert_eq!(s_atom.get_expression_type(), "Simplex`Atom");
                 assert_eq!(s_atom.get_head_name(), "Symbol");
             }
 

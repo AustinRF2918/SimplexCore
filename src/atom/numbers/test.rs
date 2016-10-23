@@ -15,7 +15,7 @@ mod tests {
         }
 
         #[test]
-        fn it_says_NaN() {
+        fn it_says_n_a_n() {
             let x = Numeric::from("dsajfdksjk");
             assert_eq!(x, Numeric::NaN);
         }

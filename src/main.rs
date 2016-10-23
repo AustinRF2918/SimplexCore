@@ -2,11 +2,6 @@ mod parsing;
 mod expression;
 mod atom;
 
-extern crate num;
-use num::FromPrimitive;
-use num::bigint::BigInt;
-use num::bigint::BigUint;
-
 #[macro_use]
 extern crate decimal;
 
@@ -15,10 +10,9 @@ extern crate lazy_static;
 
 extern crate regex;
 
-use std::io::{self, BufRead, Write};
+use std::io::{self, BufRead};
 use std::collections::HashMap;
 use atom::numbers::number::Numeric;
-use parsing::utilities::numerics::representable_numeric;
 use regex::Regex;
 
 struct State {
@@ -263,7 +257,6 @@ fn main() {
     println!("SimplexCore Test Environment Loaded.");
 
     let stdin = io::stdin();
-    let stdout = io::stdout();
 
     let mut program_state = State::new();
 
