@@ -19,4 +19,10 @@ impl SString {
     pub fn to_string(&self) -> String {
         format!("\"{}\"", self.contents)
     }
+
+    #[allow(dead_code)]
+    pub fn replace(&mut self, n: &str) {
+        self.contents.clear();
+        self.contents.push_str(n);
+    }
 }

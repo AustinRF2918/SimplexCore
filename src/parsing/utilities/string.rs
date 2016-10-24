@@ -1,13 +1,15 @@
 use regex::Regex;
 
+#[allow(dead_code)]
 pub enum StringNotationPattern {
     First,
     Last,
     External,
     Internal,
-    Contains,
+    Contains
 }
 
+#[allow(dead_code)]
 pub fn has_notation_character(snp: StringNotationPattern, c: char, s: &str) -> bool {
     match snp {
         StringNotationPattern::First => {

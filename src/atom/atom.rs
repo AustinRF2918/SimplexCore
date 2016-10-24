@@ -14,18 +14,15 @@ pub enum SimplexAtom {
     SimplexSymbol(Symbol),
 }
 
-impl SimplexAtom {
-    #[allow(dead_code)]
-    pub fn to_string(&self) -> String {
+impl BaseExpression for SimplexAtom {
+    fn to_string(&self) -> String {
         match self {
             &SimplexAtom::SimplexNumeric(ref n) => n.to_string().clone(),
             &SimplexAtom::SimplexString(ref n) => n.to_string().clone(),
             &SimplexAtom::SimplexSymbol(ref n) => n.to_string().clone(),
         }
     }
-}
 
-impl BaseExpression<SimplexAtom> for SimplexAtom {
     fn get_expression_type(&self) -> &str {
         "Simplex`Atom"
     }
@@ -49,8 +46,8 @@ impl BaseExpression<SimplexAtom> for SimplexAtom {
         &self
     }
 
-    fn reduce_expression(self) -> SimplexAtom {
-        self
+    fn reduce_expression(&self) -> Option<SimplexAtom> {
+        Some(self.clone())
     }
 
     fn get_int_value(&self) -> Option<i64> {
