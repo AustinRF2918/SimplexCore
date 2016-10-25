@@ -45,44 +45,4 @@ impl BaseExpression for SimplexAtom {
     fn get_head(&self) -> &SimplexAtom {
         &self
     }
-
-    fn reduce_expression(&self) -> Option<SimplexAtom> {
-        Some(self.clone())
-    }
-
-    fn get_int_value(&self) -> Option<i64> {
-        match self {
-            &SimplexAtom::SimplexNumeric(numeric) => {
-                match numeric.simplify() {
-                    Numeric::LittleInteger(i) => Some(i),
-                    _ => None,
-                }
-            }
-
-            &SimplexAtom::SimplexString(_) => None,
-            &SimplexAtom::SimplexSymbol(_) => None, 
-        }
-    }
-
-    fn get_float_value(&self) -> Option<d128> {
-        match self {
-            &SimplexAtom::SimplexNumeric(numeric) => {
-                match numeric {
-                    Numeric::LittleReal(i) => Some(i),
-                    _ => None,
-                }
-            }
-
-            &SimplexAtom::SimplexString(_) => None,
-            &SimplexAtom::SimplexSymbol(_) => None, 
-        }
-    }
-
-    fn get_string_value(&self) -> Option<&String> {
-        match self {
-            &SimplexAtom::SimplexNumeric(_) => None,
-            &SimplexAtom::SimplexString(ref s) => Some(&s.contents),
-            &SimplexAtom::SimplexSymbol(_) => None, 
-        }
-    }
 }

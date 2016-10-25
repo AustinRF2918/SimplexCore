@@ -7,7 +7,7 @@ use atom::strings::string::SString;
 use expression::traits::BaseExpression;
 use expression::traits::SExpression;
 use expression::traits::SExpressionFrom;
-use expression::traits::BuiltinExpression;
+use expression::traits::SExpressionTo;
 
 use expression::structure::Expression;
 
@@ -46,65 +46,6 @@ impl BaseExpression for Plus {
 
     fn get_head(&self) -> &SimplexAtom {
         &self.head
-    }
-
-    fn reduce_expression(&self) -> Option<SimplexAtom> {
-        let mut x = self.eval();
-        let mut y = Plus::new();
-
-        for i in x.leaves {
-            match i {
-                Expression::Add(ref x) => {
-                    match x.reduce_expression() {
-                        Some(x) => {
-                            y.push_leave(x)
-                        }
-                        None => {
-                        }
-                    }
-                }
-
-                Expression::Sub(ref x) => {
-                    match x.reduce_expression() {
-                        Some(x) => {
-                            y.push_leave(x)
-                        }
-                        None => {
-                        }
-                    }
-                }
-
-                Expression::Atomic(ref x) => {y.push_leave(x.clone())}
-            }
-        }
-
-        let mut z = y.eval();
-
-        if z.leaves.len() == 1 {
-            match y.leaves[0] {
-                Expression::Atomic(ref t) => {
-                    match t {
-                        &SimplexAtom::SimplexNumeric(_) => Some(t.clone()),
-                        _ => None
-                    }
-                }
-                _ => None
-            }
-        } else {
-            None
-        }
-    }
-
-    fn get_int_value(&self) -> Option<i64> {
-        None
-    }
-
-    fn get_float_value(&self) -> Option<d128> {
-        None
-    }
-
-    fn get_string_value(&self) -> Option<&String> {
-        None
     }
 
     fn to_string(&self) -> String {
@@ -171,8 +112,8 @@ impl SExpressionFrom<Subtract> for Plus {
     }
 }
 
-impl BuiltinExpression<SimplexAtom> for Plus {
-    fn eval(&self) -> Plus {
+impl SExpressionTo<SimplexAtom> for Plus {
+    fn eval(&self) -> Option<SimplexAtom> {
         let mut r = Plus::new();
         let mut n_accumulator = Numeric::from(0);
 
@@ -187,16 +128,49 @@ impl BuiltinExpression<SimplexAtom> for Plus {
                 },
 
                 &Expression::Add(ref a) => {
-                    r.push_leave(a.eval());
+                    match a.eval() {
+                        Some(evaluation) => {
+                            match evaluation {
+                                SimplexAtom::SimplexNumeric(n) => {n_accumulator = n_accumulator + n;},
+                                _ => r.push_leave(evaluation),
+                            }
+                        }
+                        None => {
+                            r.push_leave(a.clone());
+                        }
+                    }
                 }
 
                 &Expression::Sub(ref a) => {
-                    r.push_leave(a.eval());
+                    match a.eval() {
+                        Some(evaluation) => {
+                            match evaluation {
+                                SimplexAtom::SimplexNumeric(n) => {n_accumulator = n_accumulator + n;},
+                                _ => r.push_leave(evaluation),
+                            }
+                        }
+                        None => {
+                            
+                            r.push_leave(a.clone());
+                        }
+                    }
                 }
             }
         }
 
         r.push_leave(SimplexAtom::SimplexNumeric(Numeric::from(n_accumulator)));
-        r
+
+        if r.leaves.len() == 1 {
+            match r.leaves.pop() {
+                Some(Expression::Atomic(SimplexAtom::SimplexNumeric(n))) => Some(SimplexAtom::SimplexNumeric(n)),
+                Some(Expression::Atomic(SimplexAtom::SimplexString(st))) => Some(SimplexAtom::SimplexString(st)),
+                Some(Expression::Atomic(SimplexAtom::SimplexSymbol(sy))) => Some(SimplexAtom::SimplexSymbol(sy)),
+                Some(Expression::Add(a)) => a.eval(),
+                Some(Expression::Sub(s)) => s.eval(),
+                None => None
+            }
+        } else {
+            None
+        }
     }
 }

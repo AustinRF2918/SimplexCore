@@ -5,7 +5,7 @@ mod tests {
         use expression::traits::BaseExpression;
         use expression::traits::SExpression;
         use expression::traits::SExpressionFrom;
-        use expression::traits::BuiltinExpression;
+        use expression::traits::SExpressionTo;
 
         use atom::atom::SimplexAtom;
 
@@ -27,6 +27,38 @@ mod tests {
         }
 
         #[test]
+        fn it_does_a_couple_of_leaf() {
+            let mut my_plus = Plus::new();
+            my_plus.push_leave(SimplexAtom::from(1));
+            my_plus.push_leave(SimplexAtom::from(2));
+            my_plus.push_leave(SimplexAtom::from(3));
+            my_plus.push_leave(SimplexAtom::from(4));
+            let y = my_plus.eval();
+            assert_eq!(y.unwrap(), SimplexAtom::from(10));
+        }
+
+        #[test]
+        fn it_does_mutiple_nodes() {
+            let mut a = Plus::new();
+            a.push_leave(SimplexAtom::from(1));
+            a.push_leave(SimplexAtom::from(2));
+            a.push_leave(SimplexAtom::from(3));
+            a.push_leave(SimplexAtom::from(4));
+
+            let mut b = Plus::new();
+            b.push_leave(SimplexAtom::from(1));
+            b.push_leave(SimplexAtom::from(2));
+            b.push_leave(SimplexAtom::from(3));
+            b.push_leave(SimplexAtom::from(4));
+
+            let mut c = Plus::new();
+            c.push_leave(a);
+            c.push_leave(b);
+
+            assert_eq!(c.eval().unwrap(), SimplexAtom::from(20));
+        }
+
+        #[test]
         fn it_pushes_a_leave() {
             let mut my_plus = Plus::new();
             let mut my_plus_2 = Plus::new();
@@ -39,10 +71,8 @@ mod tests {
             my_plus_2.push_leave(SimplexAtom::from(4));
             my_plus_2.push_leave(SimplexAtom::from(4));
             my_plus.push_leave(my_plus_2);
-            let x = my_plus.eval();
-            println!("{}", x.to_string());
-            let y = x.reduce_expression();
-            assert_eq!(y.unwrap(), SimplexAtom::from(16));
+            let y = my_plus.eval();
+            assert_eq!(y.unwrap(), SimplexAtom::from(26));
         }
     }
 
@@ -53,7 +83,7 @@ mod tests {
         use expression::traits::BaseExpression;
         use expression::traits::SExpression;
         use expression::traits::SExpressionFrom;
-        use expression::traits::BuiltinExpression;
+        use expression::traits::SExpressionTo;
 
         use atom::atom::SimplexAtom;
 
@@ -87,10 +117,8 @@ mod tests {
             my_plus_2.push_leave(SimplexAtom::from(4));
             my_plus_2.push_leave(SimplexAtom::from(4));
             my_plus.push_leave(my_plus_2);
-            let x = my_plus.eval();
-            println!("{}", x.to_string());
-            let y = x.reduce_expression();
-            assert_eq!(y.unwrap(), SimplexAtom::from(-16));
+            let y = my_plus.eval();
+            assert_eq!(y.unwrap(), SimplexAtom::from(6));
         }
     }
 
@@ -100,7 +128,7 @@ mod tests {
         use expression::traits::BaseExpression;
         use expression::traits::SExpression;
         use expression::traits::SExpressionFrom;
-        use expression::traits::BuiltinExpression;
+        use expression::traits::SExpressionTo;
 
         use atom::atom::SimplexAtom;
 
@@ -119,10 +147,9 @@ mod tests {
             my_plus_2.push_leave(SimplexAtom::from(4));
             my_plus_2.push_leave(SimplexAtom::from(4));
             my_plus_2.push_leave(SimplexAtom::from(4));
-            let x = my_plus.eval();
-            my_plus.push_leave(x);
-            let y = my_plus.reduce_expression();
-            assert_eq!(y.unwrap(), SimplexAtom::from(-13));
+            my_plus.push_leave(my_plus_2);
+            let y = my_plus.eval();
+            assert_eq!(y.unwrap(), SimplexAtom::from(-6));
         }
     }
 }

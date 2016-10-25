@@ -9,11 +9,6 @@ pub trait BaseExpression {
     fn get_head(&self) -> &SimplexAtom;
 
     fn get_expression_type(&self) -> &str;
-    fn reduce_expression(&self) -> Option<SimplexAtom>;
-
-    fn get_int_value(&self) -> Option<i64>;
-    fn get_float_value(&self) -> Option<d128>;
-    fn get_string_value(&self) -> Option<&String>;
 
     fn to_string(&self) -> String;
 }
@@ -29,10 +24,10 @@ pub trait SExpressionFrom<T>
     fn push_leave(&mut self, leave: T);
 }
 
-pub trait BuiltinExpression<T>
+pub trait SExpressionTo<T>
     where T: BaseExpression
 {
-    fn eval(&self) -> Self;
+    fn eval(&self) -> Option<T>;
 }
 
 pub trait MetaExpression<T>
