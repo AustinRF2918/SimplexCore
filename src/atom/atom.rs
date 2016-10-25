@@ -2,7 +2,7 @@ use atom::numbers::number::Numeric;
 use atom::symbols::symbol::Symbol;
 use atom::strings::string::SString;
 
-use expression::structures::attributes::BaseExpression;
+use expression::traits::BaseExpression;
 
 extern crate decimal;
 use decimal::d128;

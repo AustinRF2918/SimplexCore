@@ -1,7 +1,7 @@
 extern crate decimal;
 use decimal::d128;
 use atom::atom::SimplexAtom;
-use expression::structures::structure::Expression;
+use expression::structure::Expression;
 
 pub trait BaseExpression {
 

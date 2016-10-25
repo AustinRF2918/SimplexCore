@@ -1,6 +1,7 @@
 use atom::atom::SimplexAtom;
-use expression::structures::builtins::plus::Plus;
-use expression::structures::builtins::subtract::Subtract;
+
+use arithmetic::plus::Plus;
+use arithmetic::subtract::Subtract;
 
 #[derive(Clone, Eq, PartialEq, Debug)]
 pub enum Expression {
@@ -8,5 +9,3 @@ pub enum Expression {
     Sub(Subtract),
     Atomic(SimplexAtom)
 }
-
-

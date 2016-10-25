@@ -3,7 +3,7 @@ mod tests {
     mod test_basic_numbers {
         mod test_real_numbers {
             use atom::atom::SimplexAtom;
-            use expression::structures::attributes::BaseExpression;
+            use expression::traits::BaseExpression;
 
             extern crate decimal;
             use decimal::d128;
@@ -40,7 +40,7 @@ mod tests {
 
         mod test_int_numbers {
             use atom::atom::SimplexAtom;
-            use expression::structures::attributes::BaseExpression;
+            use expression::traits::BaseExpression;
 
             #[test]
             fn it_instantiates() {
@@ -70,7 +70,7 @@ mod tests {
 
         mod test_type_deduction {
             use atom::atom::SimplexAtom;
-            use expression::structures::attributes::BaseExpression;
+            use expression::traits::BaseExpression;
 
             #[test]
             fn it_instantiates() {
@@ -82,7 +82,7 @@ mod tests {
 
         mod test_symbols {
             use atom::atom::SimplexAtom;
-            use expression::structures::attributes::BaseExpression;
+            use expression::traits::BaseExpression;
 
             #[test]
             fn it_instantiates() {

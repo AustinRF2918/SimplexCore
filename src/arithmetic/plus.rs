@@ -4,13 +4,14 @@ use atom::symbols::symbol::Symbol;
 use atom::numbers::number::Numeric;
 use atom::strings::string::SString;
 
-use expression::structures::attributes::BaseExpression;
-use expression::structures::attributes::SExpression;
-use expression::structures::attributes::SExpressionFrom;
-use expression::structures::attributes::BuiltinExpression;
-use expression::structures::structure::Expression;
+use expression::traits::BaseExpression;
+use expression::traits::SExpression;
+use expression::traits::SExpressionFrom;
+use expression::traits::BuiltinExpression;
 
-use expression::structures::builtins::subtract::Subtract;
+use expression::structure::Expression;
+
+use arithmetic::subtract::Subtract;
 
 extern crate decimal;
 use decimal::d128;

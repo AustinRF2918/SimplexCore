@@ -57,7 +57,7 @@ pub mod checks {
 }
 
 pub mod applications {
-    use expression::structures::integrity::checks::ensure_context;
+    use expression::integrity::checks::ensure_context;
 
     #[allow(dead_code)]
     pub fn vec_to_symbols(symbols: Vec<String>) -> Vec<String> {
@@ -75,7 +75,7 @@ pub mod applications {
 #[cfg(test)]
 mod tests {
     mod fully_qualified_tests {
-        use expression::structures::integrity::checks::fully_qualified_symbol_name;
+        use expression::integrity::checks::fully_qualified_symbol_name;
 
         #[test]
         fn it_denies_fully_qualified_left_mark() {
@@ -114,8 +114,8 @@ mod tests {
     }
 
     mod valid_context_tests {
-        use expression::structures::integrity::checks::{valid_context_name,
-                                                        valid_context_name_initial_bq};
+        use expression::integrity::checks::{valid_context_name,
+                                            valid_context_name_initial_bq};
 
         #[test]
         fn it_denies_bad_context_name() {
@@ -159,7 +159,7 @@ mod tests {
     }
 
     mod ensure_context_tests {
-        use expression::structures::integrity::checks::ensure_context;
+        use expression::integrity::checks::ensure_context;
 
         #[test]
         fn it_denies_bad_context_name() {

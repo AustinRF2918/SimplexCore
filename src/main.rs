@@ -1,6 +1,7 @@
 mod parsing;
 mod expression;
 mod atom;
+mod arithmetic;
 
 #[macro_use]
 extern crate decimal;

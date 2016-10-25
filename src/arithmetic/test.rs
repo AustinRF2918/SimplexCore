@@ -1,11 +1,11 @@
 #[cfg(test)]
 mod tests {
     mod test_plus_expression {
-        use expression::structures::builtins::plus::Plus;
-        use expression::structures::attributes::BaseExpression;
-        use expression::structures::attributes::SExpression;
-        use expression::structures::attributes::SExpressionFrom;
-        use expression::structures::attributes::BuiltinExpression;
+        use arithmetic::plus::Plus;
+        use expression::traits::BaseExpression;
+        use expression::traits::SExpression;
+        use expression::traits::SExpressionFrom;
+        use expression::traits::BuiltinExpression;
 
         use atom::atom::SimplexAtom;
 
@@ -47,11 +47,13 @@ mod tests {
     }
 
     mod test_minus_expression {
-        use expression::structures::builtins::subtract::Subtract;
-        use expression::structures::attributes::BaseExpression;
-        use expression::structures::attributes::SExpression;
-        use expression::structures::attributes::SExpressionFrom;
-        use expression::structures::attributes::BuiltinExpression;
+        use arithmetic::subtract::Subtract;
+        use arithmetic::plus::Plus;
+
+        use expression::traits::BaseExpression;
+        use expression::traits::SExpression;
+        use expression::traits::SExpressionFrom;
+        use expression::traits::BuiltinExpression;
 
         use atom::atom::SimplexAtom;
 
@@ -93,12 +95,12 @@ mod tests {
     }
 
     mod test_both_expressions {
-        use expression::structures::builtins::subtract::Subtract;
-        use expression::structures::builtins::plus::Plus;
-        use expression::structures::attributes::BaseExpression;
-        use expression::structures::attributes::SExpression;
-        use expression::structures::attributes::SExpressionFrom;
-        use expression::structures::attributes::BuiltinExpression;
+        use arithmetic::subtract::Subtract;
+        use arithmetic::plus::Plus;
+        use expression::traits::BaseExpression;
+        use expression::traits::SExpression;
+        use expression::traits::SExpressionFrom;
+        use expression::traits::BuiltinExpression;
 
         use atom::atom::SimplexAtom;
 
