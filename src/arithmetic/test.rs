@@ -33,7 +33,7 @@ mod tests {
             my_plus.push_leave(SimplexAtom::from(2));
             my_plus.push_leave(SimplexAtom::from(3));
             my_plus.push_leave(SimplexAtom::from(4));
-            let y = my_plus.eval();
+            let y : Option<SimplexAtom> = my_plus.eval();
             assert_eq!(y.unwrap(), SimplexAtom::from(10));
         }
 
@@ -55,7 +55,8 @@ mod tests {
             c.push_leave(a);
             c.push_leave(b);
 
-            assert_eq!(c.eval().unwrap(), SimplexAtom::from(20));
+            let d : Option<SimplexAtom> = c.eval();
+            assert_eq!(d.unwrap(), SimplexAtom::from(20));
         }
 
         #[test]
@@ -71,7 +72,7 @@ mod tests {
             my_plus_2.push_leave(SimplexAtom::from(4));
             my_plus_2.push_leave(SimplexAtom::from(4));
             my_plus.push_leave(my_plus_2);
-            let y = my_plus.eval();
+            let y : Option<SimplexAtom> = my_plus.eval();
             assert_eq!(y.unwrap(), SimplexAtom::from(26));
         }
     }
@@ -117,7 +118,7 @@ mod tests {
             my_plus_2.push_leave(SimplexAtom::from(4));
             my_plus_2.push_leave(SimplexAtom::from(4));
             my_plus.push_leave(my_plus_2);
-            let y = my_plus.eval();
+            let y : Option<SimplexAtom> = my_plus.eval();
             assert_eq!(y.unwrap(), SimplexAtom::from(6));
         }
     }
@@ -148,7 +149,7 @@ mod tests {
             my_plus_2.push_leave(SimplexAtom::from(4));
             my_plus_2.push_leave(SimplexAtom::from(4));
             my_plus.push_leave(my_plus_2);
-            let y = my_plus.eval();
+            let y : Option<SimplexAtom> = my_plus.eval();
             assert_eq!(y.unwrap(), SimplexAtom::from(-6));
         }
     }

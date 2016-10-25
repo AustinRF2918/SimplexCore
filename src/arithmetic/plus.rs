@@ -112,6 +112,12 @@ impl SExpressionFrom<Subtract> for Plus {
     }
 }
 
+impl SExpressionTo<Subtract> for Plus {
+    fn eval(&self) -> Option<Subtract> {
+        None
+    }
+}
+
 impl SExpressionTo<SimplexAtom> for Plus {
     fn eval(&self) -> Option<SimplexAtom> {
         let mut r = Plus::new();

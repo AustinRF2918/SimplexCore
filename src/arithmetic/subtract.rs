@@ -16,7 +16,6 @@ use arithmetic::plus::Plus;
 extern crate decimal;
 use decimal::d128;
 
-#[allow(dead_code)]
 #[derive(Clone, Eq, PartialEq, Debug)]
 pub struct Subtract {
     head: SimplexAtom,
@@ -24,7 +23,6 @@ pub struct Subtract {
 }
 
 impl Subtract {
-    #[allow(dead_code)]
     pub fn new() -> Subtract {
         Subtract {
             head: SimplexAtom::SimplexSymbol(Symbol::from_str("Subtract").unwrap()),
@@ -106,6 +104,12 @@ impl SExpressionFrom<Plus> for Subtract {
 impl SExpressionFrom<Subtract> for Subtract {
     fn push_leave(&mut self, leave: Subtract) {
         self.leaves.push(Expression::Sub(leave));
+    }
+}
+
+impl SExpressionTo<Plus> for Subtract {
+    fn eval(&self) -> Option<Plus> {
+        None
     }
 }
 
