@@ -14,7 +14,7 @@ impl SExpression {
         }
     }
 
-    pub fn add_expression(&mut self, e: SExpression) {
+    pub fn add_expression(&mut self, e: Expression) {
         self.expressions.push_back(e);
     }
 }

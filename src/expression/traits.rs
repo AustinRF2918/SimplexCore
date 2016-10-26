@@ -4,10 +4,7 @@ use atom::atom::SimplexAtom;
 use expression::structure::Expression;
 
 pub trait BaseExpression {
-
-    fn get_head_name(&self) -> &str;
     fn get_head(&self) -> &SimplexAtom;
-    fn get_expression_type(&self) -> &str;
     fn to_string(&self) -> String;
 }
 
