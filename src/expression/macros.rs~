@@ -1,0 +1,12 @@
+#![macro_use]
+
+#[macro_export]
+macro_rules! SExpressionFrom{
+    ($ta:ty, $tb:ty, $ti:expr) => (
+        impl From<$ta> for $tb {
+            fn from(num: $ta) -> $tb {
+                $ti(num as i64)
+            }
+        }
+    )
+}

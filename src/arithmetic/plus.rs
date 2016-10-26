@@ -9,12 +9,23 @@ use expression::traits::SExpression;
 use expression::traits::SExpressionFrom;
 use expression::traits::SExpressionTo;
 
+use expression::macros;
+
 use expression::structure::Expression;
 
 use arithmetic::subtract::Subtract;
 
 extern crate decimal;
 use decimal::d128;
+
+macro_rules! SExpressionFrom {
+    ($type_from:ty, $type_to:ty, $expression:expr) => (
+    impl SExpressionFrom<$type_from> for $type_to {
+        fn push_leave(&mut self, leave: $type_from) {
+            self.leaves.push($expression(leave));
+        }
+    })
+}
 
 #[allow(dead_code)]
 #[derive(Clone, Eq, PartialEq, Debug)]
@@ -94,23 +105,9 @@ impl SExpression for Plus {
     }
 }
 
-impl SExpressionFrom<SimplexAtom> for Plus {
-    fn push_leave(&mut self, leave: SimplexAtom) {
-        self.leaves.push(Expression::Atomic(leave));
-    }
-}
-
-impl SExpressionFrom<Plus> for Plus {
-    fn push_leave(&mut self, leave: Plus) {
-        self.leaves.push(Expression::Add(leave));
-    }
-}
-
-impl SExpressionFrom<Subtract> for Plus {
-    fn push_leave(&mut self, leave: Subtract) {
-        self.leaves.push(Expression::Sub(leave));
-    }
-}
+SExpressionFrom!(SimplexAtom, Plus, Expression::Atomic);
+SExpressionFrom!(Plus, Plus, Expression::Add);
+SExpressionFrom!(Subtract, Plus, Expression::Sub);
 
 impl SExpressionTo<Subtract> for Plus {
     fn eval(&self) -> Option<Subtract> {

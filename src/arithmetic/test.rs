@@ -75,6 +75,41 @@ mod tests {
             let y : Option<SimplexAtom> = my_plus.eval();
             assert_eq!(y.unwrap(), SimplexAtom::from(26));
         }
+
+        #[test]
+        fn it_pushes_4_pluses() {
+            let mut a = Plus::new();
+            let mut b = Plus::new();
+            let mut c = Plus::new();
+            let mut d = Plus::new();
+
+            a.push_leave(SimplexAtom::from(1));
+            a.push_leave(SimplexAtom::from(1));
+            a.push_leave(SimplexAtom::from(1));
+            a.push_leave(SimplexAtom::from(1));
+
+            b.push_leave(SimplexAtom::from(2));
+            b.push_leave(SimplexAtom::from(3));
+            b.push_leave(SimplexAtom::from(2));
+            b.push_leave(SimplexAtom::from(3));
+
+            c.push_leave(SimplexAtom::from(-2));
+            c.push_leave(SimplexAtom::from(-3));
+            c.push_leave(SimplexAtom::from(-2));
+            c.push_leave(SimplexAtom::from(-3));
+
+            d.push_leave(SimplexAtom::from(-1));
+            d.push_leave(SimplexAtom::from(-1));
+            d.push_leave(SimplexAtom::from(-1));
+            d.push_leave(SimplexAtom::from(-1));
+
+            a.push_leave(b);
+            b.push_leave(c);
+            a.push_leave(d);
+
+            let y : Option<SimplexAtom> = a.eval();
+            assert_eq!(y.unwrap(), SimplexAtom::from(0));
+        }
     }
 
     mod test_minus_expression {
