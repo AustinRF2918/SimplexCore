@@ -9,3 +9,9 @@ pub enum Expression {
     Sub(Subtract),
     Atomic(SimplexAtom)
 }
+
+/*
+pub fn eval(e: Expression) -> Expression {
+    
+}
+*/

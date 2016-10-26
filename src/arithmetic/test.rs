@@ -103,9 +103,9 @@ mod tests {
             d.push_leave(SimplexAtom::from(-1));
             d.push_leave(SimplexAtom::from(-1));
 
-            a.push_leave(b);
-            b.push_leave(c);
-            a.push_leave(d);
+            a.push_leave(b.clone());
+            b.push_leave(c.clone());
+            a.push_leave(d.clone());
 
             let y : Option<SimplexAtom> = a.eval();
             assert_eq!(y.unwrap(), SimplexAtom::from(0));

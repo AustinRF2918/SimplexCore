@@ -1,3 +1,4 @@
+pub mod s_expression;
 pub mod traits;
 pub mod integrity;
 pub mod structure;

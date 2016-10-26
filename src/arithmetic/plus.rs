@@ -12,7 +12,6 @@ use expression::traits::SExpressionTo;
 use expression::macros;
 
 use expression::structure::Expression;
-
 use arithmetic::subtract::Subtract;
 
 extern crate decimal;
