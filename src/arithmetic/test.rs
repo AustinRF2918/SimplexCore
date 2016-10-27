@@ -15,15 +15,12 @@ mod tests {
         #[test]
         fn it_instantiates() {
             let my_plus = Plus::new();
-            assert_eq!(my_plus.get_expression_type(), "Simplex`MExpression");
-            assert_eq!(my_plus.get_head_name(), "Plus");
         }
 
         #[test]
         fn it_gets_expression_head() {
             let my_plus = Plus::new();
             let x = my_plus.get_head();
-            assert_eq!(x.get_expression_type(), "Simplex`Atom");
         }
 
         #[test]
@@ -129,15 +126,12 @@ mod tests {
         #[test]
         fn it_instantiates() {
             let my_plus = Subtract::new();
-            assert_eq!(my_plus.get_expression_type(), "Simplex`MExpression");
-            assert_eq!(my_plus.get_head_name(), "Subtract");
         }
 
         #[test]
         fn it_gets_expression_head() {
             let my_plus = Subtract::new();
             let x = my_plus.get_head();
-            assert_eq!(x.get_expression_type(), "Simplex`Atom");
         }
 
         #[test]

@@ -14,8 +14,6 @@ mod tests {
             #[test]
             fn it_instantiates() {
                 let s_atom = SimplexAtom::from(1.21);
-                assert_eq!(s_atom.get_expression_type(), "Simplex`Atom");
-                assert_eq!(s_atom.get_head_name(), "Real");
             }
         }
 
@@ -26,8 +24,6 @@ mod tests {
             #[test]
             fn it_instantiates() {
                 let s_atom = SimplexAtom::from(1.00);
-                assert_eq!(s_atom.get_expression_type(), "Simplex`Atom");
-                assert_eq!(s_atom.get_head_name(), "Integer");
             }
         }
 
@@ -38,8 +34,6 @@ mod tests {
             #[test]
             fn it_instantiates() {
                 let s_atom: SimplexAtom = SimplexAtom::from(32);
-                assert_eq!(s_atom.get_expression_type(), "Simplex`Atom");
-                assert_eq!(s_atom.get_head_name(), "Integer");
             }
         }
     }

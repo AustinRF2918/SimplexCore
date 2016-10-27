@@ -1,8 +1,13 @@
 use atom::numbers::number::Numeric;
 use atom::symbols::symbol::Symbol;
 use atom::strings::string::SString;
+use atom::numbers::traits;
 
 use expression::traits::BaseExpression;
+
+use parsing::utilities::numerics::representable_numeric;
+use parsing::utilities::string::representable_string;
+use parsing::utilities::symbols::representable_symbol;
 
 extern crate decimal;
 use decimal::d128;
@@ -14,31 +19,27 @@ pub enum SimplexAtom {
     SimplexSymbol(Symbol),
 }
 
+impl SimplexAtom {
+    pub fn new(s: &str) -> SimplexAtom {
+        if representable_numeric(s) {
+            let n = Numeric::from(s);
+            SimplexAtom::SimplexNumeric(n)
+        } else if representable_string(s) {
+            SimplexAtom::SimplexString(SString::from_str(s).unwrap())
+        } else if representable_symbol(s) {
+            SimplexAtom::SimplexSymbol(Symbol::from_str(s).unwrap())
+        } else {
+            panic!("Some invalid input was passed into BaseExpression, maybe develop none case?");
+        }
+    }
+}
+
 impl BaseExpression for SimplexAtom {
     fn to_string(&self) -> String {
         match self {
             &SimplexAtom::SimplexNumeric(ref n) => n.to_string().clone(),
             &SimplexAtom::SimplexString(ref n) => n.to_string().clone(),
             &SimplexAtom::SimplexSymbol(ref n) => n.to_string().clone(),
-        }
-    }
-
-    fn get_expression_type(&self) -> &str {
-        "Simplex`Atom"
-    }
-
-    fn get_head_name(&self) -> &str {
-        match self {
-            &SimplexAtom::SimplexNumeric(num) => {
-                match num.simplify() {
-                    Numeric::LittleInteger(_) => "Integer",
-                    Numeric::LittleReal(_) => "Real",
-                    Numeric::NaN => "Symbol",
-                }
-            }
-
-            &SimplexAtom::SimplexString(_) => "String",
-            &SimplexAtom::SimplexSymbol(_) => "Symbol",
         }
     }
 

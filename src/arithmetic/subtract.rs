@@ -40,24 +40,13 @@ impl Subtract {
     }
 }
 impl BaseExpression for Subtract {
-    fn get_expression_type(&self) -> &str {
-        "Simplex`MExpression"
-    }
-
-    fn get_head_name(&self) -> &str {
-        match self.head {
-            SimplexAtom::SimplexSymbol(ref s) => s.to_string().as_str(),
-            _ => "Simplex`Invalid",
-        }
-    }
-
     fn get_head(&self) -> &SimplexAtom {
         &self.head
     }
 
     fn to_string(&self) -> String {
         let mut s = String::new();
-        s.push_str(self.get_head_name());
+        //s.push_str(self.get_head_name());
         s.push('[');
         for leave in &self.leaves {
             match leave {
