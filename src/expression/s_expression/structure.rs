@@ -6,6 +6,7 @@ use expression::structure::Expression;
 use atom::atom::SimplexAtom;
 
 
+#[derive(Clone, Eq, PartialEq, Debug)]
 pub struct SExpression {
     expressions: LinkedList<Expression>,
 }

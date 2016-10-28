@@ -1,6 +1,7 @@
 use atom::atom::SimplexAtom;
 
 use expression::traits::BaseExpression;
+use expression::s_expression::structure::SExpression;
 
 use arithmetic::plus::Plus;
 use arithmetic::subtract::Subtract;
@@ -9,6 +10,7 @@ use arithmetic::subtract::Subtract;
 pub enum Expression {
     Add(Plus),
     Sub(Subtract),
+    List(SExpression),
     Atomic(SimplexAtom)
 }
 
@@ -25,10 +27,15 @@ impl Expression {
         }
     }
 
+    pub fn new_list(l: SExpression) -> Expression {
+        Expression::List(l)
+    }
+
     pub fn to_string(&self) -> String {
         match self {
             &Expression::Add(_) => "Add".to_string(),
             &Expression::Sub(_) => "Sub".to_string(),
+            &Expression::List(ref l) => l.to_string().clone(),
             &Expression::Atomic(ref a) => a.to_string().clone(),
         }
     }
