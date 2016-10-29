@@ -7,19 +7,17 @@ use expression::structure::Expression;
 
 use atom::atom::SimplexAtom;
 
-
 #[derive(Clone, Eq, PartialEq, Debug)]
 pub struct SExpression {
+    head: SimplexAtom,
     expressions: LinkedList<Expression>,
 }
 
 impl SExpression {
     pub fn new() -> SExpression {
-        let mut expression_list : LinkedList<Expression> = LinkedList::new();
-        expression_list.push_back(Expression::new_primitive("List"));
-
         SExpression {
-            expressions: expression_list,
+            head: SimplexAtom::from("List"),
+            expressions: LinkedList::new(),
         }
     }
 
@@ -59,10 +57,10 @@ impl SExpression {
         let delimiter = ", ";
         let mut body = String::with_capacity(self.expressions.len() * 5);
 
-        for (entry_number, entry) in self.expressions.iter().skip(1).enumerate() {
+        for (entry_number, entry) in self.expressions.iter().enumerate() {
             body.push_str(&entry.as_str());
 
-            if entry_number != (self.expressions.len() - 2) {
+            if entry_number != (self.expressions.len() - 1) {
               body.push_str(delimiter);
             }
         }
@@ -81,11 +79,6 @@ impl BaseExpression for SExpression {
     }
 
     fn get_head(&self) -> &SimplexAtom {
-        let head = self.expressions.front();
-
-        match head {
-            Some(&Expression::Atomic(ref x)) => &x,
-            _ => panic!("Invalid value passed...")
-        }
+        &self.head
     }
 }
