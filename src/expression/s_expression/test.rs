@@ -252,12 +252,6 @@ mod test {
 
         #[test]
         fn it_substitutes_multichar_symbol() {
-            let matrix = SExp!(SExp!(1, 2, x), SExp!(1, y, 3), SExp!(z, 2, 3)); // { {1, 2, x}, {1, y, 3}, {z, 2, 3} }
-            let function = MExp!(|x, y| {x * y / 2}); // function[x_, y_] := ((x * y) / 2)
-            let x = Var!(x)
-            let y = Symbol!(y)
-            let thing = MPlug!(function[x, y]); // function
-
             let list_a = SExpression::new()
                 .push_expression(Expression::from("x"))
                 .make_generic();

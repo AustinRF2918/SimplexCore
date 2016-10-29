@@ -50,10 +50,6 @@ impl SExpression {
         self
     }
 
-    pub fn as_str<'a>(&'a self) -> Cow<'a, str> {
-        Cow::Owned(self.to_string())
-    }
-
     pub fn to_generic(&self) -> Expression {
         Expression::List(self.clone())
     }
@@ -84,6 +80,10 @@ impl BaseExpression for SExpression {
         }
         s.push(']');
         s
+    }
+
+    fn as_str<'a>(&'a self) -> Cow<'a, str> {
+        Cow::Owned(self.to_string())
     }
 
     fn get_head(&self) -> &SimplexAtom {

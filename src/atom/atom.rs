@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use atom::numbers::number::Numeric;
 use atom::symbols::symbol::Symbol;
 use atom::strings::string::SString;
@@ -41,6 +43,10 @@ impl BaseExpression for SimplexAtom {
             &SimplexAtom::SimplexString(ref n) => n.to_string().clone(),
             &SimplexAtom::SimplexSymbol(ref n) => n.to_string().clone(),
         }
+    }
+
+    fn as_str<'a>(&'a self) -> Cow<'a, str> {
+        Cow::Owned(self.to_string())
     }
 
     fn get_head(&self) -> &SimplexAtom {

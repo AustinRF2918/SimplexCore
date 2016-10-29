@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use atom::atom::SimplexAtom;
 
 use atom::symbols::symbol::Symbol;
@@ -85,8 +87,9 @@ impl BaseExpression for Plus {
         s
     }
 
-    
-
+    fn as_str<'a>(&'a self) -> Cow<'a, str> {
+        Cow::Owned(self.to_string())
+    }
 }
 
 impl SExpression for Plus {

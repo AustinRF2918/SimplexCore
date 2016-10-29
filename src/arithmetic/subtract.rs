@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use atom::atom::SimplexAtom;
 
 use atom::symbols::symbol::Symbol;
@@ -80,6 +82,10 @@ impl BaseExpression for Subtract {
         s.push(']');
 
         s
+    }
+
+    fn as_str<'a>(&'a self) -> Cow<'a, str> {
+        Cow::Owned(self.to_string())
     }
 }
 
