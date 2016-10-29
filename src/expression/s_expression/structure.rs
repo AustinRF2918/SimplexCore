@@ -61,25 +61,18 @@ impl SExpression {
 
 impl BaseExpression for SExpression {
     fn to_string(&self) -> String {
-        let mut s = String::with_capacity(15);
-        let mut flag = false;
-        s.push_str("List[");
-        for entry in &self.expressions {
-            if flag == true {
-                s.push_str(entry.to_string().as_str());
-                s.push(',');
-                s.push(' ');
-            } else {
-                flag = true;
+        let delimiter = ", ";
+        let mut body = String::with_capacity(15);
+
+        for (entry_number, entry) in self.expressions.iter().skip(1).enumerate() {
+            body.push_str(&entry.as_str());
+
+            if entry_number != (self.expressions.len() - 2) {
+              body.push_str(delimiter);
             }
         }
 
-        if self.expressions.len() != 1 {
-            s.pop();
-            s.pop();
-        }
-        s.push(']');
-        s
+        format!("{}[{}]", self.get_head().as_str(), body)
     }
 
     fn as_str<'a>(&'a self) -> Cow<'a, str> {
