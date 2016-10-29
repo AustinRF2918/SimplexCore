@@ -18,7 +18,7 @@ mod test {
 
         #[test]
         fn it_pushes_expressions() {
-            let mut s_exp = SExpression::new()
+            let s_exp = SExpression::new()
                 .push_expression(Expression::from("x"))
                 .push_expression(Expression::from("y"))
                 .push_expression(Expression::from("z"));
@@ -28,7 +28,7 @@ mod test {
 
         #[test]
         fn it_pushes_numbers() {
-            let mut s_exp = SExpression::new()
+            let s_exp = SExpression::new()
                 .push_expression(Expression::from("1"))
                 .push_expression(Expression::from("2"))
                 .push_expression(Expression::from("3"));
@@ -44,11 +44,11 @@ mod test {
 
         #[test]
         fn it_composes_LsLe() {
-            let mut list_a = SExpression::new()
+            let list_a = SExpression::new()
                 .push_expression(Expression::from("z"))
                 .make_generic();
 
-            let mut list_b = SExpression::new()
+            let list_b = SExpression::new()
                 .push_expression(list_a)
                 .make_generic();
 
@@ -57,15 +57,15 @@ mod test {
 
         #[test]
         fn it_composes_LsLLe() {
-            let mut list_a = SExpression::new()
+            let list_a = SExpression::new()
                 .push_expression(Expression::from("z"))
                 .make_generic();
 
-            let mut list_b = SExpression::new()
+            let list_b = SExpression::new()
                 .push_expression(Expression::from("x"))
                 .make_generic();
 
-            let mut list_c = SExpression::new()
+            let list_c = SExpression::new()
                 .push_expression(list_a)
                 .push_expression(list_b)
                 .make_generic();
@@ -75,15 +75,15 @@ mod test {
 
         #[test]
         fn it_composes_LsLsLee() {
-            let mut list_a = SExpression::new()
+            let list_a = SExpression::new()
                 .push_expression(Expression::from("x"))
                 .make_generic();
 
-            let mut list_b = SExpression::new()
+            let list_b = SExpression::new()
                 .push_expression(list_a)
                 .make_generic();
 
-            let mut list_c = SExpression::new()
+            let list_c = SExpression::new()
                 .push_expression(list_b)
                 .make_generic();
 
@@ -92,16 +92,16 @@ mod test {
 
         #[test]
         fn it_composes_LpsLpsLpee() {
-            let mut list_a = SExpression::new()
+            let list_a = SExpression::new()
                 .push_expression(Expression::from("x"))
                 .make_generic();
 
-            let mut list_b = SExpression::new()
+            let list_b = SExpression::new()
                 .push_expression(Expression::from("c"))
                 .push_expression(list_a)
                 .make_generic();
 
-            let mut list_c = SExpression::new()
+            let list_c = SExpression::new()
                 .push_expression(Expression::from("d"))
                 .push_expression(list_b)
                 .make_generic();
@@ -111,16 +111,16 @@ mod test {
 
         #[test]
         fn it_composes_LpsLpsLpepe() {
-            let mut list_a = SExpression::new()
+            let list_a = SExpression::new()
                 .push_expression(Expression::from("x"))
                 .make_generic();
 
-            let mut list_b = SExpression::new()
+            let list_b = SExpression::new()
                 .push_expression(Expression::from("c"))
                 .push_expression(list_a)
                 .make_generic();
 
-            let mut list_c = SExpression::new()
+            let list_c = SExpression::new()
                 .push_expression(Expression::from("d"))
                 .push_expression(list_b)
                 .push_expression(Expression::from("var"))
@@ -137,23 +137,23 @@ mod test {
 
         #[test]
         fn it_composes_clones() {
-            let mut list_a = SExpression::new()
+            let list_a = SExpression::new()
                 .push_expression(Expression::from("x"))
                 .make_generic();
 
-            let mut list_b = SExpression::new()
+            let list_b = SExpression::new()
                 .push_expression(Expression::from("c"))
                 .push_expression(list_a)
                 .make_generic();
 
-            let mut list_c = SExpression::new()
+            let list_c = SExpression::new()
                 .push_expression(Expression::from("d"))
                 .push_expression(list_b)
                 .push_expression(Expression::from("var"))
                 .make_generic();
 
-            let mut list_d = list_c.clone();
-            let mut list_e = SExpression::new()
+            let list_d = list_c.clone();
+            let list_e = SExpression::new()
                 .push_expression(list_c)
                 .push_expression(list_d);
 
@@ -168,23 +168,23 @@ mod test {
 
         #[test]
         fn it_substitutes_simple() {
-            let mut list_a = SExpression::new()
+            let list_a = SExpression::new()
                 .push_expression(Expression::from("x"))
                 .make_generic();
 
-            let mut list_b = SExpression::new()
+            let list_b = SExpression::new()
                 .push_expression(Expression::from("c"))
                 .push_expression(list_a)
                 .make_generic();
 
-            let mut list_c = SExpression::new()
+            let list_c = SExpression::new()
                 .push_expression(Expression::from("d"))
                 .push_expression(list_b)
                 .push_expression(Expression::from("var"))
                 .make_generic();
 
-            let mut list_d = list_c.clone();
-            let mut list_e = SExpression::new()
+            let list_d = list_c.clone();
+            let list_e = SExpression::new()
                 .push_expression(Expression::from("d"))
                 .push_expression(list_c)
                 .push_expression(list_d)
@@ -195,23 +195,23 @@ mod test {
 
         #[test]
         fn it_substitutes_less_simple() {
-            let mut list_a = SExpression::new()
+            let list_a = SExpression::new()
                 .push_expression(Expression::from("x"))
                 .make_generic();
 
-            let mut list_b = SExpression::new()
+            let list_b = SExpression::new()
                 .push_expression(Expression::from("c"))
                 .push_expression(list_a)
                 .make_generic();
 
-            let mut list_c = SExpression::new()
+            let list_c = SExpression::new()
                 .push_expression(Expression::from("d"))
                 .push_expression(list_b)
                 .push_expression(Expression::from("var"))
                 .make_generic();
 
-            let mut list_d = list_c.clone();
-            let mut list_e = SExpression::new()
+            let list_d = list_c.clone();
+            let list_e = SExpression::new()
                 .push_expression(Expression::from("d"))
                 .push_expression(list_c)
                 .push_expression(list_d)
@@ -223,23 +223,23 @@ mod test {
 
         #[test]
         fn it_substitutes_even_less_simple() {
-            let mut list_a = SExpression::new()
+            let list_a = SExpression::new()
                 .push_expression(Expression::from("x"))
                 .make_generic();
 
-            let mut list_b = SExpression::new()
+            let list_b = SExpression::new()
                 .push_expression(Expression::from("c"))
                 .push_expression(list_a)
                 .make_generic();
 
-            let mut list_c = SExpression::new()
+            let list_c = SExpression::new()
                 .push_expression(Expression::from("d"))
                 .push_expression(list_b)
                 .push_expression(Expression::from("var"))
                 .make_generic();
 
-            let mut list_d = list_c.clone();
-            let mut list_e = SExpression::new()
+            let list_d = list_c.clone();
+            let list_e = SExpression::new()
                 .push_expression(Expression::from("d"))
                 .push_expression(list_c)
                 .push_expression(list_d)
@@ -252,23 +252,29 @@ mod test {
 
         #[test]
         fn it_substitutes_multichar_symbol() {
-            let mut list_a = SExpression::new()
+            let matrix = SExp!(SExp!(1, 2, x), SExp!(1, y, 3), SExp!(z, 2, 3)); // { {1, 2, x}, {1, y, 3}, {z, 2, 3} }
+            let function = MExp!(|x, y| {x * y / 2}); // function[x_, y_] := ((x * y) / 2)
+            let x = Var!(x)
+            let y = Symbol!(y)
+            let thing = MPlug!(function[x, y]); // function
+
+            let list_a = SExpression::new()
                 .push_expression(Expression::from("x"))
                 .make_generic();
 
-            let mut list_b = SExpression::new()
+            let list_b = SExpression::new()
                 .push_expression(Expression::from("c"))
                 .push_expression(list_a)
                 .make_generic();
 
-            let mut list_c = SExpression::new()
+            let list_c = SExpression::new()
                 .push_expression(Expression::from("d"))
                 .push_expression(list_b)
                 .push_expression(Expression::from("var"))
                 .make_generic();
 
-            let mut list_d = list_c.clone();
-            let mut list_e = SExpression::new()
+            let list_d = list_c.clone();
+            let list_e = SExpression::new()
                 .push_expression(Expression::from("d"))
                 .push_expression(list_c)
                 .push_expression(list_d)
