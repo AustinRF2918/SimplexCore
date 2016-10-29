@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use std::collections::LinkedList;
 
 use expression::traits::BaseExpression;
@@ -21,8 +23,21 @@ impl SExpression {
         }
     }
 
-    pub fn push_expression(&mut self, e: Expression) {
+    pub fn push_expression(mut self, e: Expression) -> SExpression {
         self.expressions.push_back(e);
+        self
+    }
+
+    pub fn as_str<'a>(&'a self) -> Cow<'a, str> {
+        Cow::Owned(self.to_string())
+    }
+
+    pub fn to_generic(&self) -> Expression {
+        Expression::List(self.clone())
+    }
+
+    pub fn make_generic(self) -> Expression {
+        Expression::List(self)
     }
 }
 

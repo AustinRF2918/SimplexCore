@@ -69,6 +69,8 @@ impl BaseExpression for Subtract {
                 &Expression::Sub(ref a) => {
                     s.push_str(a.to_string().as_str());
                 }
+
+                _ => panic!("Function is not implemented.")
             }
             s.push(',');
             s.push(' ');
@@ -141,6 +143,8 @@ impl SExpressionTo<SimplexAtom> for Subtract {
                         }
                     }
                 }
+
+                _ => panic!("Function is not implemented.")
             }
         }
 
@@ -153,7 +157,8 @@ impl SExpressionTo<SimplexAtom> for Subtract {
                 Some(Expression::Atomic(SimplexAtom::SimplexSymbol(sy))) => Some(SimplexAtom::SimplexSymbol(sy)),
                 Some(Expression::Add(a)) => a.eval(),
                 Some(Expression::Sub(s)) => s.eval(),
-                None => None
+                None => None,
+                _ => panic!("Function is not implemented.")
             }
         } else {
             None

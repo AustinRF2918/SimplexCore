@@ -67,11 +67,13 @@ impl BaseExpression for Plus {
 
                 &Expression::Add(ref a) => {
                     s.push_str(a.to_string().as_str());
-                }
+                },
 
                 &Expression::Sub(ref a) => {
                     s.push_str(a.to_string().as_str());
-                }
+                },
+
+                _ => panic!("Function is not implemented.")
             }
             s.push(',');
             s.push(' ');
@@ -146,6 +148,8 @@ impl SExpressionTo<SimplexAtom> for Plus {
                         }
                     }
                 }
+
+                _ => panic!("Function is not implemented.")
             }
         }
 
@@ -158,7 +162,8 @@ impl SExpressionTo<SimplexAtom> for Plus {
                 Some(Expression::Atomic(SimplexAtom::SimplexSymbol(sy))) => Some(SimplexAtom::SimplexSymbol(sy)),
                 Some(Expression::Add(a)) => a.eval(),
                 Some(Expression::Sub(s)) => s.eval(),
-                None => None
+                None => None,
+                _ => panic!("Function is not implemented.")
             }
         } else {
             None

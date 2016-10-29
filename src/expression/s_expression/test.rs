@@ -7,31 +7,34 @@ mod test {
 
         #[test]
         fn it_instantiates() {
-            let x = SExpression::new();
+            let s_exp = SExpression::new();
         }
 
         #[test]
         fn it_shows_string() {
-            let x = SExpression::new();
-            assert_eq!(x.to_string().as_str(), "List[]");
+            let s_exp = SExpression::new();
+
+            assert_eq!(s_exp.as_str(), "List[]");
         }
 
         #[test]
         fn it_pushes_expressions() {
-            let mut x = SExpression::new();
-            x.push_expression(Expression::new_primitive("x"));
-            x.push_expression(Expression::new_primitive("y"));
-            x.push_expression(Expression::new_primitive("z"));
-            assert_eq!(x.to_string().as_str(), "List[x, y, z]");
+            let mut s_exp = SExpression::new()
+                .push_expression(Expression::from("x"))
+                .push_expression(Expression::from("y"))
+                .push_expression(Expression::from("z"));
+
+            assert_eq!(s_exp.as_str(), "List[x, y, z]");
         }
 
         #[test]
         fn it_pushes_numbers() {
-            let mut x = SExpression::new();
-            x.push_expression(Expression::new_primitive("1"));
-            x.push_expression(Expression::new_primitive("2"));
-            x.push_expression(Expression::new_primitive("3"));
-            assert_eq!(x.to_string().as_str(), "List[1, 2, 3]");
+            let mut s_exp = SExpression::new()
+                .push_expression(Expression::from("1"))
+                .push_expression(Expression::from("2"))
+                .push_expression(Expression::from("3"));
+
+            assert_eq!(s_exp.as_str(), "List[1, 2, 3]");
         }
     }
 
@@ -42,93 +45,89 @@ mod test {
 
         #[test]
         fn it_composes_LsLe() {
-            let mut s_a = SExpression::new();
-            let mut s_b = SExpression::new();
+            let mut list_a = SExpression::new()
+                .push_expression(Expression::from("z"))
+                .make_generic();
 
-            s_a.push_expression(Expression::new_primitive("z"));
+            let mut list_b = SExpression::new()
+                .push_expression(list_a)
+                .make_generic();
 
-            let mut list_a = Expression::new_list(s_a);
-
-            s_b.push_expression(list_a);
-            assert_eq!(s_b.to_string().as_str(), "List[List[z]]")
+            assert_eq!(list_b.as_str(), "List[List[z]]")
         }
 
         #[test]
         fn it_composes_LsLLe() {
-            let mut s_a = SExpression::new();
-            let mut s_b = SExpression::new();
-            let mut s_c = SExpression::new();
+            let mut list_a = SExpression::new()
+                .push_expression(Expression::from("z"))
+                .make_generic();
 
-            s_a.push_expression(Expression::new_primitive("z"));
-            s_c.push_expression(Expression::new_primitive("x"));
+            let mut list_b = SExpression::new()
+                .push_expression(Expression::from("x"))
+                .make_generic();
 
-            let mut list_a = Expression::new_list(s_a);
-            let mut list_c = Expression::new_list(s_c);
+            let mut list_c = SExpression::new()
+                .push_expression(list_a)
+                .push_expression(list_b)
+                .make_generic();
 
-            s_b.push_expression(list_a);
-            s_b.push_expression(list_c);
-
-            assert_eq!(s_b.to_string().as_str(), "List[List[z], List[x]]")
+            assert_eq!(list_c.as_str(), "List[List[z], List[x]]");
         }
 
         #[test]
         fn it_composes_LsLsLee() {
-            let mut s_a = SExpression::new();
-            let mut s_b = SExpression::new();
-            let mut s_c = SExpression::new();
+            let mut list_a = SExpression::new()
+                .push_expression(Expression::from("x"))
+                .make_generic();
 
-            s_c.push_expression(Expression::new_primitive("x"));
+            let mut list_b = SExpression::new()
+                .push_expression(list_a)
+                .make_generic();
 
-            let mut list_c = Expression::new_list(s_c);
+            let mut list_c = SExpression::new()
+                .push_expression(list_b)
+                .make_generic();
 
-            s_a.push_expression(list_c);
-            let mut list_a = Expression::new_list(s_a);
-
-            s_b.push_expression(list_a);
-
-            assert_eq!(s_b.to_string().as_str(), "List[List[List[x]]]")
+            assert_eq!(list_c.as_str(), "List[List[List[x]]]");
         }
 
         #[test]
         fn it_composes_LpsLpsLpee() {
-            let mut s_a = SExpression::new();
-            let mut s_b = SExpression::new();
-            let mut s_c = SExpression::new();
+            let mut list_a = SExpression::new()
+                .push_expression(Expression::from("x"))
+                .make_generic();
 
-            s_b.push_expression(Expression::new_primitive("d"));
-            s_a.push_expression(Expression::new_primitive("c"));
-            s_c.push_expression(Expression::new_primitive("x"));
+            let mut list_b = SExpression::new()
+                .push_expression(Expression::from("c"))
+                .push_expression(list_a)
+                .make_generic();
 
-            let mut list_c = Expression::new_list(s_c);
+            let mut list_c = SExpression::new()
+                .push_expression(Expression::from("d"))
+                .push_expression(list_b)
+                .make_generic();
 
-            s_a.push_expression(list_c);
-            let mut list_a = Expression::new_list(s_a);
-
-            s_b.push_expression(list_a);
-
-            assert_eq!(s_b.to_string().as_str(), "List[d, List[c, List[x]]]")
+            assert_eq!(list_c.as_str(), "List[d, List[c, List[x]]]");
         }
 
         #[test]
         fn it_composes_LpsLpsLpepe() {
-            let mut s_b = SExpression::new();
-            s_b.push_expression(Expression::new_primitive("d"));
+            let mut list_a = SExpression::new()
+                .push_expression(Expression::from("x"))
+                .make_generic();
 
-            let mut s_a = SExpression::new();
-            s_a.push_expression(Expression::new_primitive("c"));
+            let mut list_b = SExpression::new()
+                .push_expression(Expression::from("c"))
+                .push_expression(list_a)
+                .make_generic();
 
-            let mut s_c = SExpression::new();
-            s_c.push_expression(Expression::new_primitive("x"));
-            let list_c = Expression::new_list(s_c);
+            let mut list_c = SExpression::new()
+                .push_expression(Expression::from("d"))
+                .push_expression(list_b)
+                .push_expression(Expression::from("var"))
+                .make_generic();
 
-            s_a.push_expression(list_c);
-
-            let mut list_a = Expression::new_list(s_a);
-            s_b.push_expression(list_a);
-
-            s_b.push_expression(Expression::new_primitive("var"));
-
-            assert_eq!(s_b.to_string().as_str(), "List[d, List[c, List[x]], var]")
+            assert_eq!(list_c.as_str(), "List[d, List[c, List[x]], var]")
         }
     }
 }
