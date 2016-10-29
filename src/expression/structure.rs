@@ -39,6 +39,12 @@ impl<'a> From<&'a str> for Expression {
     }
 }
 
+impl From<SimplexAtom> for Expression {
+    fn from(a: SimplexAtom) -> Expression {
+        Expression::Atomic(a)
+    }
+}
+
 impl From<SExpression> for Expression {
     fn from(s: SExpression) -> Expression {
         Expression::List(s)
