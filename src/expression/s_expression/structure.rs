@@ -41,9 +41,6 @@ impl SExpression {
                     let mut r = l.clone();
                     *l = r.replace_symbol(symbol, new);
                 }
-
-                _ => {
-                }
             }
         }
 
@@ -57,12 +54,10 @@ impl SExpression {
     pub fn make_generic(self) -> Expression {
         Expression::List(self)
     }
-}
 
-impl BaseExpression for SExpression {
-    fn to_string(&self) -> String {
+    pub fn body_to_string(&self) -> String {
         let delimiter = ", ";
-        let mut body = String::with_capacity(15);
+        let mut body = String::with_capacity(self.expressions.len() * 5);
 
         for (entry_number, entry) in self.expressions.iter().skip(1).enumerate() {
             body.push_str(&entry.as_str());
@@ -72,7 +67,13 @@ impl BaseExpression for SExpression {
             }
         }
 
-        format!("{}[{}]", self.get_head().as_str(), body)
+        body
+    }
+}
+
+impl BaseExpression for SExpression {
+    fn to_string(&self) -> String {
+        format!("{}[{}]", self.get_head().as_str(), self.body_to_string())
     }
 
     fn as_str<'a>(&'a self) -> Cow<'a, str> {
@@ -80,10 +81,10 @@ impl BaseExpression for SExpression {
     }
 
     fn get_head(&self) -> &SimplexAtom {
-        let head = self.expressions.front().unwrap();
+        let head = self.expressions.front();
 
         match head {
-            &Expression::Atomic(ref x) => &x,
+            Some(&Expression::Atomic(ref x)) => &x,
             _ => panic!("Invalid value passed...")
         }
     }
