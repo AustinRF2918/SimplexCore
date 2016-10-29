@@ -17,7 +17,7 @@ impl SString {
 
     #[allow(dead_code)]
     pub fn to_string(&self) -> String {
-        format!("\"{}\"", self.contents)
+        format!("{}", self.contents)
     }
 
     #[allow(dead_code)]

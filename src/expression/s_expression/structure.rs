@@ -28,6 +28,28 @@ impl SExpression {
         self
     }
 
+    pub fn replace_symbol(mut self, symbol: &Expression, new: &Expression) -> SExpression {
+        for i in &mut self.expressions {
+            match i {
+                &mut Expression::Atomic(_) => {
+                    if i.as_str() == symbol.as_str() {
+                        *i = new.clone();
+                    }
+                }
+
+                &mut Expression::List(ref mut l) => {
+                    let mut r = l.clone();
+                    *l = r.replace_symbol(symbol, new);
+                }
+
+                _ => {
+                }
+            }
+        }
+
+        self
+    }
+
     pub fn as_str<'a>(&'a self) -> Cow<'a, str> {
         Cow::Owned(self.to_string())
     }

@@ -13,7 +13,6 @@ mod test {
         #[test]
         fn it_shows_string() {
             let s_exp = SExpression::new();
-
             assert_eq!(s_exp.as_str(), "List[]");
         }
 
@@ -128,6 +127,157 @@ mod test {
                 .make_generic();
 
             assert_eq!(list_c.as_str(), "List[d, List[c, List[x]], var]")
+        }
+    }
+
+    mod test_usability {
+        use expression::structure::Expression;
+        use expression::s_expression::structure::SExpression;
+        use expression::traits::BaseExpression;
+
+        #[test]
+        fn it_composes_clones() {
+            let mut list_a = SExpression::new()
+                .push_expression(Expression::from("x"))
+                .make_generic();
+
+            let mut list_b = SExpression::new()
+                .push_expression(Expression::from("c"))
+                .push_expression(list_a)
+                .make_generic();
+
+            let mut list_c = SExpression::new()
+                .push_expression(Expression::from("d"))
+                .push_expression(list_b)
+                .push_expression(Expression::from("var"))
+                .make_generic();
+
+            let mut list_d = list_c.clone();
+            let mut list_e = SExpression::new()
+                .push_expression(list_c)
+                .push_expression(list_d);
+
+            assert_eq!(list_e.as_str(), "List[List[d, List[c, List[x]], var], List[d, List[c, List[x]], var]]")
+        }
+    }
+
+    mod test_evaluation {
+        use expression::structure::Expression;
+        use expression::s_expression::structure::SExpression;
+        use expression::traits::BaseExpression;
+
+        #[test]
+        fn it_substitutes_simple() {
+            let mut list_a = SExpression::new()
+                .push_expression(Expression::from("x"))
+                .make_generic();
+
+            let mut list_b = SExpression::new()
+                .push_expression(Expression::from("c"))
+                .push_expression(list_a)
+                .make_generic();
+
+            let mut list_c = SExpression::new()
+                .push_expression(Expression::from("d"))
+                .push_expression(list_b)
+                .push_expression(Expression::from("var"))
+                .make_generic();
+
+            let mut list_d = list_c.clone();
+            let mut list_e = SExpression::new()
+                .push_expression(Expression::from("d"))
+                .push_expression(list_c)
+                .push_expression(list_d)
+                .replace_symbol(&Expression::from("d"), &Expression::from("2"));
+
+            assert_eq!(list_e.as_str(), "List[2, List[2, List[c, List[x]], var], List[2, List[c, List[x]], var]]")
+        }
+
+        #[test]
+        fn it_substitutes_less_simple() {
+            let mut list_a = SExpression::new()
+                .push_expression(Expression::from("x"))
+                .make_generic();
+
+            let mut list_b = SExpression::new()
+                .push_expression(Expression::from("c"))
+                .push_expression(list_a)
+                .make_generic();
+
+            let mut list_c = SExpression::new()
+                .push_expression(Expression::from("d"))
+                .push_expression(list_b)
+                .push_expression(Expression::from("var"))
+                .make_generic();
+
+            let mut list_d = list_c.clone();
+            let mut list_e = SExpression::new()
+                .push_expression(Expression::from("d"))
+                .push_expression(list_c)
+                .push_expression(list_d)
+                .replace_symbol(&Expression::from("d"), &Expression::from("2"))
+                .replace_symbol(&Expression::from("c"), &Expression::from("3"));
+
+            assert_eq!(list_e.as_str(), "List[2, List[2, List[3, List[x]], var], List[2, List[3, List[x]], var]]")
+        }
+
+        #[test]
+        fn it_substitutes_even_less_simple() {
+            let mut list_a = SExpression::new()
+                .push_expression(Expression::from("x"))
+                .make_generic();
+
+            let mut list_b = SExpression::new()
+                .push_expression(Expression::from("c"))
+                .push_expression(list_a)
+                .make_generic();
+
+            let mut list_c = SExpression::new()
+                .push_expression(Expression::from("d"))
+                .push_expression(list_b)
+                .push_expression(Expression::from("var"))
+                .make_generic();
+
+            let mut list_d = list_c.clone();
+            let mut list_e = SExpression::new()
+                .push_expression(Expression::from("d"))
+                .push_expression(list_c)
+                .push_expression(list_d)
+                .replace_symbol(&Expression::from("d"), &Expression::from("2"))
+                .replace_symbol(&Expression::from("c"), &Expression::from("3"))
+                .replace_symbol(&Expression::from("x"), &Expression::from("\"Hello\""));
+
+            assert_eq!(list_e.as_str(), "List[2, List[2, List[3, List[\"Hello\"]], var], List[2, List[3, List[\"Hello\"]], var]]")
+        }
+
+        #[test]
+        fn it_substitutes_multichar_symbol() {
+            let mut list_a = SExpression::new()
+                .push_expression(Expression::from("x"))
+                .make_generic();
+
+            let mut list_b = SExpression::new()
+                .push_expression(Expression::from("c"))
+                .push_expression(list_a)
+                .make_generic();
+
+            let mut list_c = SExpression::new()
+                .push_expression(Expression::from("d"))
+                .push_expression(list_b)
+                .push_expression(Expression::from("var"))
+                .make_generic();
+
+            let mut list_d = list_c.clone();
+            let mut list_e = SExpression::new()
+                .push_expression(Expression::from("d"))
+                .push_expression(list_c)
+                .push_expression(list_d)
+                .replace_symbol(&Expression::from("d"), &Expression::from("2"))
+                .replace_symbol(&Expression::from("c"), &Expression::from("3"))
+                .replace_symbol(&Expression::from("x"), &Expression::from("\"Hello\""))
+                .replace_symbol(&Expression::from("var"), &Expression::from("HelloWorld"));
+
+            assert_eq!(list_e.as_str(), "List[2, List[2, List[3, List[\"Hello\"]], HelloWorld], List[2, List[3, List[\"Hello\"]], HelloWorld]]")
         }
     }
 }
