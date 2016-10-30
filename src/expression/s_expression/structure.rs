@@ -1,5 +1,4 @@
 use std::borrow::Cow;
-
 use std::collections::LinkedList;
 
 use expression::traits::BaseExpression;
@@ -37,8 +36,10 @@ impl SExpression {
         match &mut self.head {
             &mut SimplexAtom::SimplexSymbol(_) => {
                 if self.head.as_str() == symbol.as_str() {
-                    let atom_string = new.to_string();
-                    self.head = SimplexAtom::from(atom_string.as_str());
+                    // TODO: Make static replacement possible by making trait
+                    // in expression non-cow. This would be considered an
+                    // optimization and will not be done for a while.
+                    self.head = SimplexAtom::from(new.to_string());
                 }
             }
             _ => {
@@ -49,14 +50,13 @@ impl SExpression {
         for i in &mut self.expressions {
             match i {
                 &mut Expression::Atomic(_) => {
-                    if i.as_str() == symbol.as_str() {
+                    if *i == *symbol {
                         *i = new.clone();
                     }
                 }
 
                 &mut Expression::List(ref mut l) => {
-                    let mut r = l.clone();
-                    *l = r.replace_symbol(symbol, new);
+                    *l = l.clone().replace_symbol(symbol, new);
                 }
             }
         }
@@ -73,6 +73,9 @@ impl SExpression {
     }
 
     pub fn body_to_string(&self) -> String {
+        // TODO: This could be really nicely optimized by giving the BaseExpression trait
+        // that ability to calculate its own length and use that instead of an approximation.
+
         let delimiter = ", ";
         let mut body = String::with_capacity(self.expressions.len() * 5);
 
