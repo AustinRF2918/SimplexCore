@@ -1,0 +1,27 @@
+* Atom Specification
+  Atoms are basically primitives in regular languages with a few intricacies. Where in a regular language
+  like Python or C++, we have numbers and strings, Mathics introduces one more fundamental primitive 
+  data structure: Symbols. Symbols are much like atoms in a language like Elixir, in that they are 
+  defined as themselves, so to say. 
+
+** Layout Of An Atom
+   Currently, an atom in Simplex is implemented as an algebraic data type. Three variants are available
+   of said type: SimplexAtom::SimplexSymbol, SimplexAtom::SimplexNumeric, and SimplexAtom::SimplexString.
+   
+*** SimplexSymbol
+    SimplexSymbol is a variant with one field: a String field. The *Rust* string that is contained within
+    SimplexSymbol serves as the identifier of it. If we call to_string, or as_str it will simply spit 
+    out the value contained in this field. 
+
+*** SimplexNumeric
+    SimplexSymbol is a variant with one field: a Numeric field. This is an abstraction around multiple 
+    data structures. Because Mathics supports arbitrary precision arithmetic, it is neccessary to 
+    have an implementation of such contained within our core numeric type. However, it is notable 
+    that such arithmetic is very slow, and in the case that we are using reasonable numbers, it would
+    be much better to use decimal types (to avoid floating point error) for real numbers, and 
+    built-in integer types for integers. Numeric is as of yet unfinished, and only allows for 
+    dynamic casting between decimals and integers, in the future however, the abstraction shall be 
+    built out to cast to arbitrary precision types as well.
+    
+*** SimplexString
+    This must be simplified as well. *WIP*

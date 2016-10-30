@@ -103,8 +103,8 @@ impl BaseExpression for MExpression {
         Cow::Owned(self.to_string())
     }
 
-    fn get_head(&self) -> &SimplexAtom {
-        &self.head
+    fn get_head(&self) -> SimplexAtom {
+        self.head.clone()
     }
 }
 

@@ -33,7 +33,17 @@ impl BaseExpression for SimplexAtom {
         Cow::Owned(self.to_string())
     }
 
-    fn get_head(&self) -> &SimplexAtom {
-        &self
+    fn get_head(&self) -> SimplexAtom {
+        match self {
+            &SimplexAtom::SimplexSymbol(_) => self.clone(),
+
+            &SimplexAtom::SimplexString(_) => {
+                SimplexAtom::SimplexSymbol("String".to_string())
+            },
+
+            &SimplexAtom::SimplexNumeric(_) => {
+                SimplexAtom::SimplexSymbol("Number".to_string())
+            }
+        }
     }
 }
