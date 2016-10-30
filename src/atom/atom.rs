@@ -1,7 +1,6 @@
 use std::borrow::Cow;
 
 use atom::numbers::number::Numeric;
-use atom::strings::string::SString;
 use atom::numbers::traits;
 
 use expression::traits::BaseExpression;
@@ -38,11 +37,11 @@ impl BaseExpression for SimplexAtom {
             &SimplexAtom::SimplexSymbol(_) => self.clone(),
 
             &SimplexAtom::SimplexString(_) => {
-                SimplexAtom::SimplexSymbol("String".to_string())
+                SimplexAtom::SimplexSymbol(String::from("String"))
             },
 
             &SimplexAtom::SimplexNumeric(_) => {
-                SimplexAtom::SimplexSymbol("Number".to_string())
+                SimplexAtom::SimplexSymbol(String::from("Number"))
             }
         }
     }

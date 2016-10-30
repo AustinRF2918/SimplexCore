@@ -32,3 +32,19 @@ impl<'a> From<&'a str> for SimplexAtom {
         }
     }
 }
+
+impl From<String> for SimplexAtom {
+    fn from(s: String) -> SimplexAtom {
+        if representable_numeric(s.as_str()) {
+            let n = Numeric::from(s);
+            SimplexAtom::SimplexNumeric(n)
+        } else if representable_string(s.as_str()) {
+            SimplexAtom::SimplexString(s)
+        } else if representable_symbol(s.as_str()) {
+            SimplexAtom::SimplexSymbol(s)
+        } else {
+            // TODO: USE DYNAMIC ERROR TYPE HERE.
+            panic!("Some invalid input was passed into BaseExpression, maybe develop none case?");
+        }
+    }
+}
