@@ -6,7 +6,7 @@
   in a template parameter.
   
 ** Why?
-   Doing such would allow the library to be used as a meta programming utility, for example:
+   Doing such would allow the library to be used as a meta-programming utility, for example:
 
    #+NAME: Static Example
    #+BEGIN_SRC Rust
@@ -48,7 +48,7 @@
 *** Complex Functions
    It would not be possible to use future bindings to SymPy or SymEngine because they
    are based on run-time evaluation, but doing simple arithmetics and general generic
-   meta programming may be useful use-cases for such a implementation of Simplex expressions.
+   meta-programming may be useful use-cases for such a implementation of Simplex expressions.
    
 *** Possibility
    It also may not be possible without macros to implement such functionality, but 
