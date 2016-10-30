@@ -48,7 +48,11 @@ impl<'a> From<&'a str> for SimplexAtom {
                 }
             }
 
-            _ => SimplexAtom::SimplexSymbol(Symbol::from_str("Simplex`UnknownParse").unwrap()),
+            _ => {
+                panic!(r#"An internal error in the SimplexCore library occured: atom's as_str(&str) method was 
+                sent some string that could not be represented as a number, string, or symbol: said string's name
+                was: {}."#, s)
+            },
         }
     }
 }
