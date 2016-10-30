@@ -16,18 +16,34 @@ pub struct MExpression {
 }
 
 impl MExpression {
-    pub fn new(head_name: &str, meta_names: Vec<&str>, s_expression: SExpression) -> MExpression {
-        let mut meta_variables : LinkedList<SimplexAtom> = LinkedList::new();
-
-        for name in meta_names {
-            meta_variables.push_back(SimplexAtom::from(name));
-        }
-
+    pub fn new(head_name: &str) -> MExpression {
         MExpression {
             head: SimplexAtom::from(head_name),
-            meta_variables: meta_variables,
-            s_expression: s_expression
+            meta_variables: LinkedList::new(),
+            s_expression:SExpression::new() 
         }
+    }
+
+    pub fn push_expression(mut self, e: Expression) -> MExpression {
+        self.s_expression = self.s_expression.push_expression(e);
+        self
+    }
+
+    pub fn push_meta_variable(mut self, e: Expression) -> MExpression {
+        match e {
+            Expression::List(_) => {panic!("You attempted to place a non-atomic as a meta variable!")}
+            Expression::Atomic(atom) => {
+                match atom {
+                    SimplexAtom::SimplexSymbol(_) => {
+                        self.meta_variables.push_back(atom);
+                    }
+                    _ => {
+                        panic!("You attempted to place a number or string as a meta-variable into a meta-expression.");
+                    }
+                }
+            }
+        }
+        self
     }
 
     pub fn evaluate(&self, params: Vec<&str>) -> SExpression {
