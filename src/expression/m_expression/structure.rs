@@ -11,14 +11,16 @@ use atom::atom::SimplexAtom;
 #[derive(Clone, Eq, PartialEq, Debug)]
 pub struct MExpression {
     head: SimplexAtom,
+    reflexive: bool,
     meta_variables: LinkedList<SimplexAtom>,
-    s_expression: SExpression
+    s_expression: SExpression,
 }
 
 impl MExpression {
     pub fn new(head_name: &str) -> MExpression {
         MExpression {
             head: SimplexAtom::from(head_name),
+            reflexive: false,
             meta_variables: LinkedList::new(),
             s_expression:SExpression::new() 
         }
@@ -46,8 +48,19 @@ impl MExpression {
         self
     }
 
+    pub fn toggle_reflexive(mut self) -> MExpression {
+        self.reflexive = !self.reflexive;
+        self
+    }
+
     pub fn evaluate(&self, params: Vec<&str>) -> SExpression {
         let mut new_s_expression = self.s_expression.clone();
+
+        if self.reflexive {
+            let head_name = self.get_head().to_string();
+            new_s_expression = new_s_expression.replace_symbol(&Expression::from("List"), &Expression::from(head_name.as_str()));
+        }
+
         let mut new_params = params.clone();
 
         for (item_number, item) in self.meta_variables.iter().enumerate().rev() {

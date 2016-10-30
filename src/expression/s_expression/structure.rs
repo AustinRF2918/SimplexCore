@@ -27,6 +27,18 @@ impl SExpression {
     }
 
     pub fn replace_symbol(mut self, symbol: &Expression, new: &Expression) -> SExpression {
+        match &mut self.head {
+            &mut SimplexAtom::SimplexSymbol(_) => {
+                if self.head.as_str() == symbol.as_str() {
+                    let atom_string = new.to_string();
+                    self.head = SimplexAtom::from(atom_string.as_str());
+                }
+            }
+            _ => {
+                panic!("Somehow a non-primitive was part of the SExpression head...");
+            }
+        }
+
         for i in &mut self.expressions {
             match i {
                 &mut Expression::Atomic(_) => {
