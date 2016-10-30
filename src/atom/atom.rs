@@ -1,5 +1,4 @@
 use std::borrow::Cow;
-
 use atom::numbers::number::Numeric;
 use atom::symbols::symbol::Symbol;
 use atom::strings::string::SString;

@@ -16,3 +16,24 @@
    we would first do a replacement from the symbol table, after all our variables are replaced that can
    be, we run whatever operations (specifically plus, subtract, etc) we want and in the case that a 
    symbol or unmatching type is resulting, we can return an SExpression instead of an evaluation.
+   
+** Plan
+*** SimplexAtom
+    Operations upon abstract SimplexAtoms will always return a custom SExpression for said primitive operation,
+    in a sense, all of the operations upon SimplexAtoms return data structures that must be evaluated,
+    so all primitives function as concatenating operators that are then wrapped in their associated SExpression
+    implementation (Plus, Subtract, etc.)
+
+*** SimplexPrimitives
+**** Numeric
+     Numerics work like numerics anywhere else: Any arithmetic operation will do its numerical operation that
+     the underlying data structure implements.
+**** String
+     String, on the other hand only implements one operation: Addition. Addition, as is the case in many
+     other languages, functions as a concatenation operator.
+**** Symbol
+     Symbol operations function much like SimplexAtom's: Therefore I will actually reimplement a SimplexAtom
+     to have an atom baked in, and String and Symbol will function as extensions with a preset head type.
+    
+
+
