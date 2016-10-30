@@ -24,4 +24,7 @@
     built out to cast to arbitrary precision types as well.
     
 *** SimplexString
-    This must be simplified as well. *WIP*
+    SimplexString is implemented in exactly the same fashion as a SimplexSymbol, however the semantics
+    of it are quite different. Strings function exactly as strings in Python or C++. The barrier
+    to entry, so to speak, of SimplexString is a regular expression check for  quotes at the beginning 
+    and end of the construction string.

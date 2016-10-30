@@ -16,15 +16,15 @@ use decimal::d128;
 #[derive(Clone, Eq, PartialEq, Debug)]
 pub enum SimplexAtom {
     SimplexSymbol(String),
+    SimplexString(String),
     SimplexNumeric(Numeric),
-    SimplexString(SString),
 }
 
 impl BaseExpression for SimplexAtom {
     fn to_string(&self) -> String {
         match self {
             &SimplexAtom::SimplexNumeric(ref n) => n.to_string().clone(),
-            &SimplexAtom::SimplexString(ref n) => n.to_string().clone(),
+            &SimplexAtom::SimplexString(ref n) => n.clone(),
             &SimplexAtom::SimplexSymbol(ref n) => n.clone(),
         }
     }

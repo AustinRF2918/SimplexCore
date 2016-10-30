@@ -1,5 +1,4 @@
 use atom::numbers::number::Numeric;
-use atom::strings::string::SString;
 
 use atom::atom::SimplexAtom;
 
@@ -24,7 +23,7 @@ impl<'a> From<&'a str> for SimplexAtom {
             let n = Numeric::from(s);
             SimplexAtom::SimplexNumeric(n)
         } else if representable_string(s) {
-            SimplexAtom::SimplexString(SString::from_str(s).unwrap())
+            SimplexAtom::SimplexString(s.to_string())
         } else if representable_symbol(s) {
             SimplexAtom::SimplexSymbol(s.to_string())
         } else {
