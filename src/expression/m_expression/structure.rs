@@ -22,7 +22,7 @@ impl MExpression {
             head: SimplexAtom::from(head_name),
             reflexive: false,
             meta_variables: LinkedList::new(),
-            s_expression:SExpression::new() 
+            s_expression: SExpression::new("List") 
         }
     }
 

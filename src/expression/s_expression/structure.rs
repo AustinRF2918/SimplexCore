@@ -7,6 +7,8 @@ use expression::structure::Expression;
 
 use atom::atom::SimplexAtom;
 
+use parsing::utilities::symbols::representable_symbol;
+
 #[derive(Clone, Eq, PartialEq, Debug)]
 pub struct SExpression {
     head: SimplexAtom,
@@ -14,10 +16,15 @@ pub struct SExpression {
 }
 
 impl SExpression {
-    pub fn new() -> SExpression {
-        SExpression {
-            head: SimplexAtom::from("List"),
-            expressions: LinkedList::new(),
+    pub fn new(head_name: &str) -> SExpression {
+        if representable_symbol(head_name) {
+            SExpression {
+                head: SimplexAtom::from(head_name),
+                expressions: LinkedList::new(),
+            }
+        } else {
+            // Implement Error Type 
+            panic!("Bad head name passed to SExpression.");
         }
     }
 
