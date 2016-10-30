@@ -1,5 +1,4 @@
 use atom::numbers::number::Numeric;
-use atom::symbols::symbol::Symbol;
 use atom::strings::string::SString;
 
 use atom::atom::SimplexAtom;
@@ -21,38 +20,16 @@ numeric_float_explicit_conversion!(f64, SimplexAtom::SimplexNumeric, SimplexAtom
 
 impl<'a> From<&'a str> for SimplexAtom {
     fn from(s: &str) -> SimplexAtom {
-        match (representable_numeric(s), representable_string(s), representable_symbol(s)) {
-            (true, _, _) => SimplexAtom::SimplexNumeric(Numeric::from(s)),
-
-            (_, true, _) => {
-                match SString::from_str(s) {
-                    Some(s) => SimplexAtom::SimplexString(s),
-
-                    None => {
-                        panic!(r#"An internal error in the SimplexCore library occured: representable_string(s)
-                        in the parsing library returned true, ensuring that our numeric is parseable, however
-                        SString::from_str(s) returned None."#);
-                    }
-                }
-            }
-
-            (_, _, true) => {
-                match Symbol::from_str(s) {
-                    Some(s) => SimplexAtom::SimplexSymbol(s),
-
-                    None => {
-                        panic!(r#"An internal error in the SimplexCore library occured: representable_symbol(s)
-                        in the parsing library returned true, ensuring that our numeric is parseable, however
-                        Symbol::from_str(s) returned None."#);
-                    }
-                }
-            }
-
-            _ => {
-                panic!(r#"An internal error in the SimplexCore library occured: atom's as_str(&str) method was 
-                sent some string that could not be represented as a number, string, or symbol: said string's name
-                was: {}."#, s)
-            },
+        if representable_numeric(s) {
+            let n = Numeric::from(s);
+            SimplexAtom::SimplexNumeric(n)
+        } else if representable_string(s) {
+            SimplexAtom::SimplexString(SString::from_str(s).unwrap())
+        } else if representable_symbol(s) {
+            SimplexAtom::SimplexSymbol(s.to_string())
+        } else {
+            // TODO: USE DYNAMIC ERROR TYPE HERE.
+            panic!("Some invalid input was passed into BaseExpression, maybe develop none case?");
         }
     }
 }
