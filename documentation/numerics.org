@@ -1,0 +1,71 @@
+* Mathics (Simplex) Numeric Manipulation Specification
+** Integers
+   Integers in Mathics are of arbitrary precision
+
+   In[1] := 1 + 1 
+
+   Out[1] = 2
+   
+*** Implementation
+    Implementation of Integers of arbirary precision shall be
+    done by using a generic numeric data structure that holds either
+    a i64, or a Num (Rust library) BigInt type. Either the structure
+    will be held by the whole 64 bit unsigned integer, or a pointer
+    to a heap allocated big int will  be used in the case that a parsed
+    str overflows it.
+
+** Reals
+   Reals, like Integers are of arbitrary precision.
+
+   In[1]:= 1.2 + 2.2
+
+   Out[1]= 3.4
+
+   In[2]:= 1.234 + 2.2
+
+   Out[2]= 3.4345
+   
+   In[3]:= 1.2345 + 2
+
+   Out[3]= 3.2345
+
+*** Notes
+    Note how addition of Real types lack floating point error 
+    common to many traditional programming languages, like 
+    Python or C++, this is done via the following two techniques.
+
+**** Technique 1: Fixed Point Arithmetic
+     For smaller numbers, fixed point arithmetic is an excellent
+     choice to remove floating point error: There is a trade-off, 
+     however: Fixed point requires a 128 bit allocation to allow
+     nonlossy conversions from f64: This means that we will have
+     a significant slow down because current processor function
+     on 64 bit arithmetic. It is, however, significantly faster
+     than technique 2, which is progressively expanding floating
+     point precision.
+     
+**** Technique 2: Arbitrary Floating Point Expansion
+     For larger (and quite frankly, not often used) numerics, 
+     it would be a better choice to simply use the library Rust 
+     provides for allowing a big floating point number: The way 
+     this would function is by performing simple operations on 
+     the data structure provided and expanding decimals as needed
+     on the heap: this is, however, much slower than fixed
+     point arithmetic, which gives us, a sized data structure that 
+     is theoretically allocatable on the stack.
+
+*** Implementation
+    Implementation of real arithmetic shall be done in much the 
+    same way integers are to be implemented: Have a static 128 bit
+    data structure to represent smaller, more realistic real numbers,
+    and in the case that a numeric is either designated to be past
+    machine precision or expanded past such via some arbitrary operation,
+    we will reallocate to an arbitrary floating point number that 
+    expands as needed: Much like before our raw data structure will
+    be much faster as the 128 bit structure.
+    
+** Rational *Unimplemented*
+   Rationals are to be implemented as expressions
+
+** Imaginary *Unimplemented*
+   Imaginary numbers are also to be implemented as expressions.

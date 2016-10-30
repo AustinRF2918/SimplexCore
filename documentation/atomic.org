@@ -1,0 +1,67 @@
+* Atom Specification
+  Atoms are basically primitives in regular languages with a few intricacies. Where in a regular language
+  like Python or C++, we have numbers and strings, Mathics introduces one more fundamental primitive 
+  data structure: Symbols. Symbols are much like atoms in a language like Elixir, in that they are 
+  defined as themselves, so to say. 
+
+** Layout Of An Atom
+   Currently, an atom in Simplex is implemented as an algebraic data type. Three variants are available
+   of said type: SimplexAtom::SimplexSymbol, SimplexAtom::SimplexNumeric, and SimplexAtom::SimplexString.
+   
+*** SimplexSymbol
+    SimplexSymbol is a variant with one field: a String field. The *Rust* string that is contained within
+    SimplexSymbol serves as the identifier of it. If we call to_string, or as_str it will simply spit 
+    out the value contained in this field. 
+
+*** SimplexNumeric
+    SimplexSymbol is a variant with one field: a Numeric field. This is an abstraction around multiple 
+    data structures. Because Mathics supports arbitrary precision arithmetic, it is neccessary to 
+    have an implementation of such contained within our core numeric type. However, it is notable 
+    that such arithmetic is very slow, and in the case that we are using reasonable numbers, it would
+    be much better to use decimal types (to avoid floating point error) for real numbers, and 
+    built-in integer types for integers. Numeric is as of yet unfinished, and only allows for 
+    dynamic casting between decimals and integers, in the future however, the abstraction shall be 
+    built out to cast to arbitrary precision types as well.
+    
+*** SimplexString
+    SimplexString is implemented in exactly the same fashion as a SimplexSymbol, however the semantics
+    of it are quite different. Strings function exactly as strings in Python or C++. The barrier
+    to entry, so to speak, of SimplexString is a regular expression check for  quotes at the beginning 
+    and end of the construction string.
+    
+* Binary Operations Upon Simplex Primitives.
+** Operations Upon Various Atomic Types 
+|         | SString     | Symbol      | Number      |
+| SString | SString     | SExpression | SExpression |
+| Symbol  | SExpression | SExpression | SExpression |
+| Number  | SExpression | SExpression | Number      |
+
+** Note
+   Evaluation and replacement of symbolic variables should be delayed until after said operations are done,
+   this makes our primitive library much, much simpler to think about, as we do not have to have multiple
+   return types (requiring the use of templates possibly)
+   
+** Explanation
+   The way this should be done is in the case we are performing some internal function, for example add, 
+   we would first do a replacement from the symbol table, after all our variables are replaced that can
+   be, we run whatever operations (specifically plus, subtract, etc) we want and in the case that a 
+   symbol or unmatching type is resulting, we can return an SExpression instead of an evaluation.
+   
+** Plan
+*** SimplexAtom
+    Operations upon abstract SimplexAtoms will always return a custom SExpression for said primitive operation,
+    in a sense, all of the operations upon SimplexAtoms return data structures that must be evaluated,
+    so all primitives function as concatenating operators that are then wrapped in their associated SExpression
+    implementation (Plus, Subtract, etc.)
+
+*** SimplexPrimitives
+**** Numeric
+     Numerics work like numerics anywhere else: Any arithmetic operation will do its numerical operation that
+     the underlying data structure implements.
+**** String
+     String, on the other hand only implements one operation: Addition. Addition, as is the case in many
+     other languages, functions as a concatenation operator.
+**** Symbol
+     Symbol operations function much like SimplexAtom's: Therefore I will actually reimplement a SimplexAtom
+     to have an atom baked in, and String and Symbol will function as extensions with a preset head type.
+    

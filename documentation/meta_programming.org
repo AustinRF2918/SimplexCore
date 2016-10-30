@@ -1,0 +1,55 @@
+* Static and Non-Static Structures.
+  Currently this library only allows expressions and evaluations of such expressions to be 
+  done at run time. This may not be how a developer wishes to use this library. It may be 
+  beneficial to make MExpressions, SExpressions, and SimplexAtoms generic, allowing for 
+  both static and non-static structures and then wrapping the Expression structure itself
+  in a template parameter.
+  
+** Why?
+   Doing such would allow the library to be used as a meta programming utility, for example:
+
+   #+NAME: Static Example
+   #+BEGIN_SRC Rust
+   let plus : MExpression<&str> = MExpression::new("Plus")
+     .push_meta_variable(Expression::from("a"))
+     .push_meta_variable(Expression::from("b"))
+     .push_expression(Expression::from("a"))
+     .push_expression(Expression::from("b"))
+     .toggle_reflexive();
+     
+   let x = plus.p_eval("a", 2).p_eval("b", 3) as i64;
+   
+   doUsefulStuff(x);
+   ...
+   #+END_SRC
+   
+   In such a case, the evaluation of plus itself could be directly baked into the 
+   executable, meaning we could do complex evaluations at compile time, resulting 
+   in zero cost evaluations. Such a code snippet could be thought of as boiling 
+   down to the following:
+
+   #+NAME: Static Example
+   #+BEGIN_SRC Rust
+   fn plus( ...              // let plus : MExpression<&str> = MExpression::new("Plus")
+   a: SimplexSymbol,         // .push_meta_variable(Expression::from("a"))
+   b: SimplexSymbol,         // .push_meta_variable(Expression::from("b"))
+   ) -> SimplexSymbol {
+                             // .push_expression(Expression::from("a"))
+     a + b                   // .push_expression(Expression::from("b"))
+   }                         // .toggle_reflexive();
+     
+   let x = plus(2, 3);       // let x = plus.p_eval("a", 2).p_eval("b", 3) as i64;
+   
+   doUsefulStuff(x as i64)   // doUsefulStuff(x);
+   ...
+   #+END_SRC
+ 
+** Other notes.
+*** Complex Functions
+   It would not be possible to use future bindings to SymPy or SymEngine because they
+   are based on run-time evaluation, but doing simple arithmetics and general generic
+   meta programming may be useful use-cases for such a implementation of Simplex expressions.
+   
+*** Possibility
+   It also may not be possible without macros to implement such functionality, but 
+   manipulation of static strings lead me to believe that it is a possibility.
