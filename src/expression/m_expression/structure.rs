@@ -54,7 +54,7 @@ impl MExpression {
         self
     }
 
-    pub fn evaluate(self, params: &Vec<&str>) -> SExpression {
+    pub fn evaluate(&self, params: &Vec<&str>) -> SExpression {
         let mut new_s_expression = self.s_expression.clone();
 
         if self.reflexive {
