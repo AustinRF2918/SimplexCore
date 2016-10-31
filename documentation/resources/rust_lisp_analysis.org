@@ -1,0 +1,178 @@
+* Rust-Lisp Analysis
+  This is an analysis of the Scheme inspired interpreter written in Rust by *swgillespie*.
+  Because Mathics/Mathematica are heavily based on Lisp and could be thought of as a 
+  symbolic Lisp that uses Meta-Expressions instead of homo-iconic Symbolic-Expressions that 
+  convert to an identical AST nodes.
+  
+** Built-ins
+*** Introduction
+    Rust-Lisp has built-in functions, just like Mathics/Mathematica. Instead of being referred
+    to as builtins, Rust-Lisp, and indeed other Lisp dialects, for example Clojure refer to 
+    these functions as *instrinsics*. The Clojure implementation of intrinsics can be seen 
+    at *http://www.github.com/clojure/blob/master/src/jvm/clojure/lang/Intrinsics.java*.
+    For sake of sanity, I will refer to instrinsics as built-ins, or built-in functions.
+*** Rust-Lisp's Built In Functions
+**** Add
+***** Implemented As
+      add
+***** Notes
+      This is a much simpler implementation of the add function compared to SimplexCore's
+      atomic add operation. Specifically this is visible as being coupled as a closure 
+      inside of the .fold function.
+**** Sub
+***** Implemented As
+      sub
+***** Notes
+      Similar story to add
+**** Mul
+***** Implemented As
+      mul
+***** Notes
+      Similar story to add
+**** Div
+***** Implemented As
+      div
+***** Notes
+      Similar story to add
+**** Head
+***** Implemented As
+      car
+***** Notes
+      This is interesting: In SimplexCore I use a trait called BaseExpression that forces the
+      implementation of head. This is interesting, however, because each structures head is 
+      actually the identifier of the data structure itself, unlike in Lisp which takes 
+      symbolic expressions and does not explicitly set its type as head, instead implicitly
+      implying that it is an SExpression. The expressiveness of the API itself may be enhanced
+      by such a mutation function. Consider:
+
+      #+BEGIN_SRC Rust
+	let plus = MExpression::new("Plus")
+	    .push_expression(Expression::from("a"))
+	    .push_expression(Expression::from("b"));
+	let minus = MExpression::new("Plus")
+	    .push_expression(Expression::from("a"))
+	    .push_expression(Expression::from("b"));
+
+	let mut swap_a = plus.car();
+	let mut swap_b = minus.car();
+
+	swap_a += minus.car();
+	swap_a += minus.car();
+	swap_b += plus.car();
+	swap_b += plus.car();
+      #+END_SRC
+ 
+**** Rest
+***** Implemented As
+      cdr
+***** Notes
+      Similar story to car. Having such a function being forced to have an implementation by
+      BaseExpression would allow us to do sophisticated and ergomatic computations. Consider: 
+      #+BEGIN_SRC Rust
+	let plus = MExpression::new("Plus")
+	    .push_expression(Expression::from("a"))
+	    .push_expression(Expression::from("b"));
+	let minus = MExpression::new("Plus")
+	    .push_expression(Expression::from("a"))
+	    .push_expression(Expression::from("b"));
+
+	let swap_a = plus.car() + minus.cdr();
+	let swap_b = minus.car() + plus.cdr();
+      #+END_SRC
+      
+      Note that this allows us to maintain an immutable API, reducing possibilities for bugs,
+      while allowing easier to implement asyncrinous facilities.
+ 
+**** PushFront
+***** Implemented As
+      cons
+***** Notes
+      Quite self explanitory. We already have push back, implementing push front would be 
+      very benefitial.
+**** Equality
+***** Implemented As
+      eq
+***** Notes
+      *This is complicated*. Unfourtunately, in a symbolic system, equality of data structures
+      is much harder to reason about compared to a traditional system. Consider:
+      #+BEGIN_SRC Rust
+	let plus = MExpression::new("Plus")
+	    .push_expression(Expression::from("a"))
+	    .push_expression(Expression::from("b"));
+	let minus = MExpression::new("Plus")
+	    .push_expression(Expression::from("b"))
+	    .push_expression(Expression::from("a"));
+	integrate(plus) == integrate(minus)
+	integrate_n(plus) == integrate_n(minus)
+      #+END_SRC
+      
+      The integration of such an equation x + y and y + x are clearly equivalent, however
+      prooving this for sophisticated systems requires a complex API that may not always
+      be able to find an answer. Therefore, on an atomic level, equality will be 
+      implemented because it is trivial to proove equality. SExpressions and 
+      MExpressions, on the other hand will check for literal coorelation of variables 
+      on each of the structures nodes.
+**** Display
+***** Implemented As
+      display
+***** Notes
+      This is already implemented as to_string().
+**** Pair
+***** Implemented As
+      pair
+***** Notes
+      I Have to do more research on pair, I am not 100% sure as to what it does.
+      
+*** Function Parameters
+    One peculiarity of Rust-Lisp's implementation of built-in functions is the fashion in
+    which its parameters are passed. Let's have a look at the implementation of the add
+    builtin:
+    #+BEGIN_SRC Rust
+      pub fn add(params: Vec<Rc<LispValue>>) -> EvalResult {
+        ...
+      }
+    #+END_SRC
+    
+**** Rcs?
+    Here we take a vector of Rc wrapped LispValues and use a fold to perform
+    arithmetic operations, and then map the result to an Rc wrapped result. This 
+    confirms a suspicion that I have had: That async, reference counted data structures
+    will have to be built into the core language library. To maintain references 
+    between structures, Rc is used in this case. This is to allow direct access 
+    to heap allocated values and structures. 
+      
+**** Why Does This Confirm Such A Suspicion?
+     This confirms my suspicion because if the interpreter abstraction built upon
+     this library is to be able to run multiple reads and writes on data structures
+     on the symbol table, we will have to have all our symbolic expressions, meta
+     expressions, and primitives be wrapped inside of an Arc<Mutex<T>>. 
+      
+**** Ideas.
+     Because Simplex uses the Expression enum to hold lists and atoms, and MExpressions
+     would seem to be immutable, we could just use a further abstraction upon 
+     Expression. Observe the current implementation:
+
+    #+BEGIN_SRC Rust
+      pub enum Expression {
+        List(SExpression),
+        Atomic(SimplexAtom),
+      }
+    #+END_SRC
+    
+    Note that this implementation of Expression is currently showing to be very 
+    capable in terms of expressive power, and at the time of this writing, SExpression
+    is simply lacking a evaluation and add_rule implementation that would allow 
+    for easy implementation of arithmetic fold operations. Because Expression is an
+    abstract structure, it may be possible to implement easy asyncronousity with 
+    the current API by doing the following:
+
+    #+BEGIN_SRC Rust
+      pub enum Expression {
+        List(Arc<Mutex<SExpression>>),
+        Atomic(Arc<Mutex<SimplexAtom>>),
+      }
+    #+END_SRC
+    
+    Then any and all operations upon Expression would simply require a mutex lock 
+    to be attained, and we could include multiple pointers to the same structure 
+    as well.
