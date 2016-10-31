@@ -1,4 +1,5 @@
 use std::borrow::Cow;
+use std::sync::{Arc, Mutex};
 
 use std::collections::LinkedList;
 
@@ -8,11 +9,11 @@ use expression::s_expression::structure::SExpression;
 
 use atom::atom::SimplexAtom;
 
-#[derive(Clone, Eq, PartialEq, Debug)]
+#[derive(Clone, Debug)]
 pub struct MExpression {
     head: SimplexAtom,
     reflexive: bool,
-    meta_variables: LinkedList<SimplexAtom>,
+    meta_variables: LinkedList<Arc<Mutex<SimplexAtom>>>,
     s_expression: SExpression,
 }
 
@@ -35,9 +36,9 @@ impl MExpression {
         match e {
             Expression::List(_) => {panic!("You attempted to place a non-atomic as a meta variable!")}
             Expression::Atomic(atom) => {
-                match atom {
+                match *atom.lock().unwrap() {
                     SimplexAtom::SimplexSymbol(_) => {
-                        self.meta_variables.push_back(atom);
+                        self.meta_variables.push_back(atom.clone());
                     }
                     _ => {
                         panic!("You attempted to place a number or string as a meta-variable into a meta-expression.");
@@ -53,12 +54,12 @@ impl MExpression {
         self
     }
 
-    pub fn evaluate(&self, params: Vec<&str>) -> SExpression {
+    pub fn evaluate(self, params: &Vec<&str>) -> SExpression {
         let mut new_s_expression = self.s_expression.clone();
 
         if self.reflexive {
             let head_name = self.get_head().to_string();
-            new_s_expression = new_s_expression.replace_symbol(&Expression::from("List"), &Expression::from(head_name.as_str()));
+            new_s_expression = new_s_expression.replace_symbol(Expression::from("List"), Expression::from(head_name.as_str()));
         }
 
         let mut new_params = params.clone();
@@ -66,7 +67,7 @@ impl MExpression {
         for (item_number, item) in self.meta_variables.iter().enumerate().rev() {
             match new_params.pop() {
                 Some(thing) => {
-                    new_s_expression = new_s_expression.replace_symbol(&Expression::from(item.clone()), &Expression::from(thing));
+                    new_s_expression = new_s_expression.replace_symbol(Expression::from(item.lock().unwrap().clone()), Expression::from(thing));
                 }
 
                 None => {
@@ -82,7 +83,9 @@ impl MExpression {
         let mut body = String::with_capacity(self.meta_variables.len() * 5);
 
         for (entry_number, entry) in self.meta_variables.iter().enumerate() {
-            body.push_str(&entry.as_str());
+            // TODO: DONT UNWRAP!
+            let mut entry_locked = entry.lock().unwrap();
+            body.push_str(&entry_locked.as_str());
             body.push('_');
 
             if entry_number != (self.meta_variables.len() - 1) {
@@ -99,7 +102,7 @@ impl BaseExpression for MExpression {
         format!("{}[{}] := {}", self.get_head().as_str(), self.m_vars_to_string(), self.s_expression.to_string())
     }
 
-    fn as_str<'a>(&'a self) -> Cow<'a, str> {
+    fn as_str<'a>(&self) -> Cow<'a, str> {
         Cow::Owned(self.to_string())
     }
 

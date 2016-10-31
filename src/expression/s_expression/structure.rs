@@ -1,5 +1,6 @@
 use std::borrow::Cow;
 use std::collections::LinkedList;
+use std::sync::{Arc, Mutex};
 
 use expression::traits::BaseExpression;
 use expression::structure::Expression;
@@ -8,7 +9,7 @@ use atom::atom::SimplexAtom;
 
 use parsing::utilities::symbols::representable_symbol;
 
-#[derive(Clone, Eq, PartialEq, Debug)]
+#[derive(Clone, Debug)]
 pub struct SExpression {
     head: SimplexAtom,
     expressions: LinkedList<Expression>,
@@ -32,7 +33,7 @@ impl SExpression {
         self
     }
 
-    pub fn replace_symbol(mut self, symbol: &Expression, new: &Expression) -> SExpression {
+    pub fn replace_symbol(mut self, symbol: Expression, new: Expression) -> SExpression {
         match &mut self.head {
             &mut SimplexAtom::SimplexSymbol(_) => {
                 if self.head.as_str() == symbol.as_str() {
@@ -50,13 +51,15 @@ impl SExpression {
         for i in &mut self.expressions {
             match i {
                 &mut Expression::Atomic(_) => {
-                    if *i == *symbol {
+                    if i.to_string() == symbol.to_string() {
                         *i = new.clone();
                     }
                 }
 
-                &mut Expression::List(ref mut l) => {
-                    *l = l.clone().replace_symbol(symbol, new);
+                &mut Expression::List(ref list) => {
+                    let mut x = list.clone();
+                    let mut lock = x.lock().unwrap();
+                    *lock = lock.clone().replace_symbol(symbol.clone(), new.clone());
                 }
             }
         }
@@ -65,11 +68,11 @@ impl SExpression {
     }
 
     pub fn to_generic(&self) -> Expression {
-        Expression::List(self.clone())
+        Expression::List(Arc::new(Mutex::new(self.clone())))
     }
 
     pub fn make_generic(self) -> Expression {
-        Expression::List(self)
+        Expression::List(Arc::new(Mutex::new(self.clone())))
     }
 
     pub fn body_to_string(&self) -> String {

@@ -188,7 +188,7 @@ mod test {
                 .push_expression(Expression::from("d"))
                 .push_expression(list_c)
                 .push_expression(list_d)
-                .replace_symbol(&Expression::from("d"), &Expression::from("2"));
+                .replace_symbol(Expression::from("d"), Expression::from("2"));
 
             assert_eq!(list_e.as_str(), "List[2, List[2, List[c, List[x]], var], List[2, List[c, List[x]], var]]")
         }
@@ -215,8 +215,8 @@ mod test {
                 .push_expression(Expression::from("d"))
                 .push_expression(list_c)
                 .push_expression(list_d)
-                .replace_symbol(&Expression::from("d"), &Expression::from("2"))
-                .replace_symbol(&Expression::from("c"), &Expression::from("3"));
+                .replace_symbol(Expression::from("d"), Expression::from("2"))
+                .replace_symbol(Expression::from("c"), Expression::from("3"));
 
             assert_eq!(list_e.as_str(), "List[2, List[2, List[3, List[x]], var], List[2, List[3, List[x]], var]]")
         }
@@ -243,9 +243,9 @@ mod test {
                 .push_expression(Expression::from("d"))
                 .push_expression(list_c)
                 .push_expression(list_d)
-                .replace_symbol(&Expression::from("d"), &Expression::from("2"))
-                .replace_symbol(&Expression::from("c"), &Expression::from("3"))
-                .replace_symbol(&Expression::from("x"), &Expression::from("\"Hello\""));
+                .replace_symbol(Expression::from("d"), Expression::from("2"))
+                .replace_symbol(Expression::from("c"), Expression::from("3"))
+                .replace_symbol(Expression::from("x"), Expression::from("\"Hello\""));
 
             assert_eq!(list_e.as_str(), "List[2, List[2, List[3, List[\"Hello\"]], var], List[2, List[3, List[\"Hello\"]], var]]")
         }
@@ -272,12 +272,52 @@ mod test {
                 .push_expression(Expression::from("d"))
                 .push_expression(list_c)
                 .push_expression(list_d)
-                .replace_symbol(&Expression::from("d"), &Expression::from("2"))
-                .replace_symbol(&Expression::from("c"), &Expression::from("3"))
-                .replace_symbol(&Expression::from("x"), &Expression::from("\"Hello\""))
-                .replace_symbol(&Expression::from("var"), &Expression::from("HelloWorld"));
+                .replace_symbol(Expression::from("d"), Expression::from("2"))
+                .replace_symbol(Expression::from("c"), Expression::from("3"))
+                .replace_symbol(Expression::from("x"), Expression::from("\"Hello\""))
+                .replace_symbol(Expression::from("var"), Expression::from("HelloWorld"));
 
             assert_eq!(list_e.as_str(), "List[2, List[2, List[3, List[\"Hello\"]], HelloWorld], List[2, List[3, List[\"Hello\"]], HelloWorld]]")
+        }
+    }
+
+    mod test_sharing {
+        use atom::atom::SimplexAtom;
+        use expression::structure::Expression;
+        use expression::s_expression::structure::SExpression;
+        use expression::traits::BaseExpression;
+
+        #[test]
+        fn basic() {
+            let mut x = Expression::from("x");
+
+            let list_a = SExpression::new("List")
+                .push_expression(x.clone())
+                .make_generic();
+
+            match x {
+                Expression::Atomic(ref mut arc) => {
+                    let mut lock = arc.lock().unwrap();
+                    *lock = SimplexAtom::from("y");
+                }
+
+                Expression::List(_) => {
+                }
+            }
+
+            let mut list_b = SExpression::new("List");
+
+            match x  {
+                Expression::Atomic(arc) => {
+                    list_b = list_b.push_expression(Expression::from(arc));
+                }
+
+                Expression::List(arc) => {
+                    list_b = list_b.push_expression(Expression::from(arc));
+                }
+            }
+
+            assert_eq!(list_a.to_string(), list_b.to_string())
         }
     }
 }
