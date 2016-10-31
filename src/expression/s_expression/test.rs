@@ -282,20 +282,35 @@ mod test {
     }
 
     mod test_sharing {
+        use std::sync::mpsc::channel;
+        use std::thread;
+        use std::sync::{Arc, Mutex};
+
         use atom::atom::SimplexAtom;
+
         use expression::structure::Expression;
         use expression::s_expression::structure::SExpression;
         use expression::traits::BaseExpression;
 
         #[test]
         fn basic() {
-            let mut x = Expression::from("x");
+            let (tx, rx) = channel();
 
-            let list_a = SExpression::new("List")
-                .push_expression(x.clone())
-                .make_generic();
+            let mut x = Arc::new(Mutex::new(Expression::from("x")));
 
-            match x {
+            {
+                let tx = tx.clone();
+                let a = x.clone();
+                thread::spawn(move || {
+                    let lock = a.lock().unwrap();
+                    let list_a = SExpression::new("List")
+                        .push_pointer(&lock)
+                        .make_generic();
+                    tx.send(list_a).unwrap();
+                });
+            }
+
+            match *x.lock().unwrap() {
                 Expression::Atomic(ref mut arc) => {
                     let mut lock = arc.lock().unwrap();
                     *lock = SimplexAtom::from("y");
@@ -305,17 +320,19 @@ mod test {
                 }
             }
 
-            let mut list_b = SExpression::new("List");
-
-            match x  {
-                Expression::Atomic(arc) => {
-                    list_b = list_b.push_expression(Expression::from(arc));
-                }
-
-                Expression::List(arc) => {
-                    list_b = list_b.push_expression(Expression::from(arc));
-                }
+            {
+                let tx = tx.clone();
+                thread::spawn(move || {
+                    let mut list_b = SExpression::new("List");
+                    let a = x.clone();
+                    let lock = a.lock().unwrap();
+                    list_b = list_b.push_pointer(&lock);
+                    tx.send(list_b.make_generic()).unwrap();
+                });
             }
+
+            let list_a = rx.iter().next().unwrap();
+            let list_b = rx.iter().next().unwrap();
 
             assert_eq!(list_a.to_string(), list_b.to_string())
         }

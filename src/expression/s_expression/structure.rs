@@ -33,6 +33,11 @@ impl SExpression {
         self
     }
 
+    pub fn push_pointer(mut self, e: &Expression) -> SExpression {
+        self.expressions.push_back(e.clone());
+        self
+    }
+
     pub fn replace_symbol(mut self, symbol: Expression, new: Expression) -> SExpression {
         match &mut self.head {
             &mut SimplexAtom::SimplexSymbol(_) => {
