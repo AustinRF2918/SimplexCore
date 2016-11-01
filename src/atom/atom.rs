@@ -1,9 +1,12 @@
 use std::borrow::Cow;
+use std::sync::{Arc, Mutex};
 
 use atom::numbers::number::Numeric;
 use atom::numbers::traits;
 
 use expression::traits::BaseExpression;
+use expression::structure::Expression;
+use expression::s_expression::structure::SExpression;
 
 use parsing::utilities::numerics::representable_numeric;
 use parsing::utilities::string::representable_string;
@@ -44,5 +47,9 @@ impl BaseExpression for SimplexAtom {
                 SimplexAtom::SimplexSymbol(String::from("Number"))
             }
         }
+    }
+
+    fn get_rest(&self) -> Expression {
+        Expression::List(Arc::new(Mutex::new(SExpression::new("List"))))
     }
 }

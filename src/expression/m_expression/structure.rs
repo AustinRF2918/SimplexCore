@@ -109,5 +109,9 @@ impl BaseExpression for MExpression {
     fn get_head(&self) -> SimplexAtom {
         self.head.clone()
     }
+
+    fn get_rest(&self) -> Expression {
+        Expression::from(self.s_expression.clone())
+    }
 }
 

@@ -1,5 +1,16 @@
 #[cfg(test)]
 mod tests {
+    mod test_intrinsics {
+        use atom::atom::SimplexAtom;
+        use expression::traits::BaseExpression;
+
+        extern crate decimal;
+        use decimal::d128;
+
+        extern crate num;
+        use std::str::FromStr;
+    }
+
     mod test_basic_numbers {
         mod test_real_numbers {
             use atom::atom::SimplexAtom;

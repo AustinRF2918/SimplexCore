@@ -111,4 +111,10 @@ impl BaseExpression for SExpression {
     fn get_head(&self) -> SimplexAtom {
         self.head.clone()
     }
+
+    fn get_rest(&self) -> Expression {
+        let mut new_list = self.clone();
+        new_list.expressions.pop_front();
+        Expression::from(new_list)
+    }
 }
