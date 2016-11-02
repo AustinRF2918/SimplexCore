@@ -4,7 +4,7 @@ use std::sync::{Arc, Mutex};
 
 use atom::atom::SimplexAtom;
 
-use expression::traits::BaseExpression;
+use expression::traits::{BaseExpression, Transmutable};
 use expression::s_expression::structure::SExpression;
 
 #[derive(Clone, Debug)]
