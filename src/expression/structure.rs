@@ -41,6 +41,60 @@ impl Expression {
     }
 }
 
+impl BaseExpression for Expression {
+    fn get_head(&self) -> SimplexAtom {
+        match self {
+            &Expression::List(ref internal) => {
+                // FIX UNWRAP ANTI-PATTERN;
+                let lock = internal.lock().unwrap();
+                lock.get_head()
+            }
+
+            &Expression::Atomic(ref  internal) => {
+                // FIX UNWRAP ANTI-PATTERN;
+                let lock = internal.lock().unwrap();
+                lock.get_head()
+            }
+        }
+    }
+
+    fn get_rest(&self) -> Expression {
+        match self {
+            &Expression::List(ref internal) => {
+                // FIX UNWRAP ANTI-PATTERN;
+                let lock = internal.lock().unwrap();
+                lock.get_rest()
+            }
+
+            &Expression::Atomic(ref internal) => {
+                // FIX UNWRAP ANTI-PATTERN;
+                let lock = internal.lock().unwrap();
+                lock.get_rest()
+            }
+        }
+    }
+
+    fn to_string(&self) -> String {
+        match self {
+            &Expression::List(ref internal) => {
+                // FIX UNWRAP ANTI-PATTERN;
+                let lock = internal.lock().unwrap();
+                lock.to_string()
+            }
+
+            &Expression::Atomic(ref internal) => {
+                // FIX UNWRAP ANTI-PATTERN;
+                let lock = internal.lock().unwrap();
+                lock.to_string()
+            }
+        }
+    }
+
+    fn as_str<'a>(&'a self) -> Cow<'a, str>{
+        Cow::Owned(self.to_string())
+    }
+}
+
 impl<'a> From<&'a str> for Expression {
     fn from(s: &str) -> Expression {
         Expression::Atomic(Arc::new(Mutex::new(SimplexAtom::from(s))))
