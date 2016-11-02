@@ -39,6 +39,15 @@ mod test {
 
             let z = y.get_rest();
             assert_eq!(z.as_str(), "List[y, z]");
+
+            let a = z.get_rest();
+            assert_eq!(a.as_str(), "List[z]");
+
+            let b = a.get_rest();
+            assert_eq!(b.as_str(), "List[]");
+
+            let c = b.get_rest();
+            assert_eq!(c.as_str(), "List[]");
         }
     }
 
