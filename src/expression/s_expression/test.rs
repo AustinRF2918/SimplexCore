@@ -36,6 +36,48 @@ mod test {
             assert_eq!(s_exp.as_str(), "List[1, 2, 3]");
         }
     }
+mod test_intrinsics {
+        use expression::structure::Expression;
+        use expression::s_expression::structure::SExpression;
+        use expression::m_expression::structure::MExpression;
+        use expression::traits::BaseExpression;
+
+        #[test]
+        fn it_gets_rest() {
+            let m_exp = SExpression::new("List")
+                .push_expression(Expression::from("a"))
+                .push_expression(Expression::from("x"))
+                .push_expression(Expression::from("y"))
+                .push_expression(Expression::from("z"));
+            assert_eq!(m_exp.get_rest().as_str(), "List[x, y, z]");
+        }
+
+        #[test]
+        fn it_gets_rest_recursively_once() {
+            let m_exp = SExpression::new("List")
+                .push_expression(Expression::from("a"))
+                .push_expression(Expression::from("x"))
+                .push_expression(Expression::from("y"))
+                .push_expression(Expression::from("z"));
+
+            let x  = m_exp.get_rest();
+            assert_eq!(x.as_str(), "List[x, y, z]");
+
+            let y = x.get_rest();
+            assert_eq!(y.as_str(), "List[y, z]");
+
+            let z = y.get_rest();
+            assert_eq!(z.as_str(), "List[z]");
+
+            let a = z.get_rest();
+            assert_eq!(a.as_str(), "List[]");
+
+            let b = a.get_rest();
+            assert_eq!(b.as_str(), "List[]");
+        }
+    }
+
+
 
     mod test_composition {
         use expression::structure::Expression;
