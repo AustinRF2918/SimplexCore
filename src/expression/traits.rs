@@ -1,5 +1,6 @@
 extern crate decimal;
 use decimal::d128;
+use std::sync::{Arc, Mutex};
 
 use atom::atom::SimplexAtom;
 
@@ -16,14 +17,10 @@ pub trait BaseExpression {
     fn as_str<'a>(&'a self) -> Cow<'a, str>;
 }
 
-pub trait Transmutable {
+pub trait Transmutable<T: BaseExpression> {
+    fn get_internal_arc(&self) -> Option<Arc<Mutex<T>>>;
+    fn transmute(&mut self, e: &Expression) -> Option<Arc<Mutex<T>>>;
     // Deep copies the internal data inside of an expression,
     // meaning that if the underlying data originally passed in
     // changes, this will not.
-    fn transmute_deep(&self, e: &Expression) -> Expression;
-
-    // Copies the pointer value stored in the Arc to an expression.
-    // This means that if we change something it will change
-    // as well.
-    fn transmute_shallow(&self, e: &Expression) -> Expression;
 }

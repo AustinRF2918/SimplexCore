@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::mem;
 use std::borrow::Cow;
 use std::sync::{Arc, Mutex};
 
@@ -40,6 +40,7 @@ impl Expression {
         Cow::Owned(self.to_string())
     }
 }
+
 
 impl BaseExpression for Expression {
     fn get_head(&self) -> SimplexAtom {
@@ -93,6 +94,8 @@ impl BaseExpression for Expression {
     fn as_str<'a>(&'a self) -> Cow<'a, str>{
         Cow::Owned(self.to_string())
     }
+
+    
 }
 
 impl<'a> From<&'a str> for Expression {
@@ -115,12 +118,66 @@ impl From<SExpression> for Expression {
 
 impl From<Arc<Mutex<SimplexAtom>>> for Expression {
     fn from(a: Arc<Mutex<SimplexAtom>>) -> Expression {
-        Expression::Atomic(a)
+        Expression::Atomic(a.clone())
     }
 }
 
 impl From<Arc<Mutex<SExpression>>> for Expression {
     fn from(s: Arc<Mutex<SExpression>>) -> Expression {
-        Expression::List(s)
+        Expression::List(s.clone())
+    }
+}
+
+
+impl Transmutable<SExpression> for Expression{
+    fn get_internal_arc(&self) -> Option<Arc<Mutex<SExpression>>> {
+        match self {
+            &Expression::List(ref x) => {
+                Some(x.clone())
+            }
+            &Expression::Atomic(_) => {
+                None
+            }
+        }
+    }
+
+    fn transmute(&mut self, e: &Expression) -> Option<Arc<Mutex<SExpression>>> {
+        let internal_arc : Option<Arc<Mutex<SExpression>>> = e.get_internal_arc();
+        match *self {
+            Expression::List(x) => {
+                x = internal_arc.unwrap();
+                Some(x)
+            }
+            _ => {
+                None
+            }
+        }
+    }
+}
+
+impl Transmutable<SimplexAtom> for Expression{
+    fn get_internal_arc(&self) -> Option<Arc<Mutex<SimplexAtom>>> {
+        match self {
+            &Expression::List(_) => {
+                None
+            }
+            &Expression::Atomic(ref x) => {
+                Some(x.clone())
+            }
+        }
+    }
+
+    fn transmute(&mut self, e: &Expression) -> Option<Arc<Mutex<SimplexAtom>>> {
+        let internal_arc : Option<Arc<Mutex<SimplexAtom>>> = e.get_internal_arc();
+        match *self {
+            Expression::Atomic(ref mut x) => {
+                let z = internal_arc;
+                x = &mut z.unwrap();
+                Some(x.clone())
+            }
+            _ => {
+                None
+            }
+        }
     }
 }

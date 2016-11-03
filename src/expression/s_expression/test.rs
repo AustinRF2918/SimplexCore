@@ -4,6 +4,7 @@ mod test {
         use expression::structure::Expression;
         use expression::s_expression::structure::SExpression;
         use expression::traits::BaseExpression;
+        use expression::traits::Transmutable;
 
         #[test]
         fn it_instantiates() {
@@ -36,6 +37,7 @@ mod test {
             assert_eq!(s_exp.as_str(), "List[1, 2, 3]");
         }
     }
+
 mod test_intrinsics {
         use expression::structure::Expression;
         use expression::s_expression::structure::SExpression;
@@ -332,7 +334,7 @@ mod test_intrinsics {
 
         use expression::structure::Expression;
         use expression::s_expression::structure::SExpression;
-        use expression::traits::BaseExpression;
+        use expression::traits::{BaseExpression, Transmutable};
 
         #[test]
         fn basic() {
@@ -377,6 +379,22 @@ mod test_intrinsics {
             let list_b = rx.iter().next().unwrap();
 
             assert_eq!(list_a.to_string(), list_b.to_string())
+        }
+
+        #[test]
+        fn better_api() {
+            let mut x = Expression::from("x");
+            let _: Arc<Mutex<SimplexAtom>> = x.transmute(&Expression::from("y")).unwrap();
+            assert_eq!(x.to_string(), "y");
+
+            let other: Arc<Mutex<SExpression>> = x.transmute(&Expression::from(SExpression::new("List"))).unwrap();
+            let mut y = Expression::from(other);
+            assert_eq!(x.to_string(), "List[]");
+            assert_eq!(y.to_string(), "List[]");
+
+            let _: Arc<Mutex<SimplexAtom>> = y.transmute(&Expression::from("y")).unwrap();
+            assert_eq!(x.to_string(), "y");
+            assert_eq!(y.to_string(), "y");
         }
     }
 }
