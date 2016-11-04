@@ -6,7 +6,7 @@ use std::cmp::Ordering;
 
 use atom::atom::SimplexAtom;
 
-use expression::traits::{BaseExpression, Transmutable};
+use expression::traits::BaseExpression;
 use expression::list::structure::SimplexList;
 
 #[derive(Clone)]
@@ -88,3 +88,4 @@ impl From<SimplexList> for ExpressionPointer {
         }
     }
 }
+

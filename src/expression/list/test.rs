@@ -209,6 +209,60 @@ mod test_intrinsics {
 
             assert_eq!(list_e.as_str(), "List[List[d, List[c, List[x]], var], List[d, List[c, List[x]], var]]")
         }
+
+        #[test]
+        fn it_composes_clones_with_replacement() {
+            let mut x = ExpressionPointer::from("x");
+
+            let list_a = SimplexList::new("List")
+                .push(&x);
+
+            let list_b = SimplexList::new("List")
+                .push(&ExpressionPointer::from("c"))
+                .push(&ExpressionPointer::from(list_a));
+
+            let list_c = ExpressionPointer::from(SimplexList::new("List")
+                .push(&ExpressionPointer::from("d"))
+                .push(&ExpressionPointer::from(list_b))
+                .push(&ExpressionPointer::from("var")));
+
+            let list_e = SimplexList::new("List")
+                .push(&list_c)
+                .push(&list_c);
+
+            assert_eq!(list_e.as_str(), "List[List[d, List[c, List[x]], var], List[d, List[c, List[x]], var]]");
+
+            x.replace_symbol(&SimplexAtom::from("x"), &SimplexAtom::from("y"));
+
+            assert_eq!(list_e.as_str(), "List[List[d, List[c, List[y]], var], List[d, List[c, List[y]], var]]");
+        }
+
+        #[test]
+        fn it_composes_clones_with_complex_replacement() {
+            let mut x = ExpressionPointer::from("x");
+
+            let list_a = ExpressionPointer::from(SimplexList::new("List")
+                .push(&x));
+
+            let list_b = SimplexList::new("List")
+                .push(&ExpressionPointer::from("c"))
+                .push(&list_a);
+
+            let list_c = ExpressionPointer::from(SimplexList::new("List")
+                .push(&ExpressionPointer::from("d"))
+                .push(&ExpressionPointer::from(list_b))
+                .push(&ExpressionPointer::from("var")));
+
+            let list_e = SimplexList::new("List")
+                .push(&list_c)
+                .push(&list_c);
+
+            assert_eq!(list_e.as_str(), "List[List[d, List[c, List[x]], var], List[d, List[c, List[x]], var]]");
+
+            x.replace_symbol(&SimplexAtom::from("x"), &ExpressionPointer::from(SimplexList::new("List")));
+
+            assert_eq!(list_e.as_str(), "List[List[d, List[c, List[List[]]], var], List[d, List[c, List[List[]]], var]]");
+        }
     }
 
     mod test_evaluation {
@@ -226,17 +280,15 @@ mod test_intrinsics {
                 .push(&ExpressionPointer::from("c"))
                 .push(&ExpressionPointer::from(list_a));
 
-            let list_c = SimplexList::new("List")
+            let list_c = ExpressionPointer::from(SimplexList::new("List")
                 .push(&ExpressionPointer::from("d"))
                 .push(&ExpressionPointer::from(list_b))
-                .push(&ExpressionPointer::from("var"));
+                .push(&ExpressionPointer::from("var")));
 
-            let list_d = list_c.clone();
             let list_e = SimplexList::new("List")
                 .push(&ExpressionPointer::from("d"))
-                .push(&ExpressionPointer::from(list_c))
-                .push(&ExpressionPointer::from(list_d))
-
+                .push(&list_c)
+                .push(&list_c)
                 .replace_symbol(&ExpressionPointer::from("d"), &ExpressionPointer::from("2"));
 
             assert_eq!(list_e.as_str(), "List[2, List[2, List[c, List[x]], var], List[2, List[c, List[x]], var]]")
