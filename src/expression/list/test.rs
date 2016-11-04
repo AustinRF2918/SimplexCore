@@ -102,8 +102,6 @@ mod test_intrinsics {
         }
     }
 
-
-
     mod test_composition {
         use expression::list::structure::SimplexList;
         use expression::traits::BaseExpression;
@@ -238,6 +236,7 @@ mod test_intrinsics {
                 .push(&ExpressionPointer::from("d"))
                 .push(&ExpressionPointer::from(list_c))
                 .push(&ExpressionPointer::from(list_d))
+
                 .replace_symbol(&ExpressionPointer::from("d"), &ExpressionPointer::from("2"));
 
             assert_eq!(list_e.as_str(), "List[2, List[2, List[c, List[x]], var], List[2, List[c, List[x]], var]]")
