@@ -72,13 +72,13 @@ impl BaseExpression for SimplexList {
 
     fn get_rest(&self) -> Option<SimplexPointer> {
         println!("[get_rest] Begin..");
-        let mut new_list = self.clone();
-        new_list.expressions.pop_front();
+        let mut new_list = self.expressions.clone();
+        new_list.pop_front();
 
-        if new_list.expressions.len() == 0 {
+        if new_list.len() == 0 {
             None
         } else {
-            Some(SimplexPointer::from(new_list))
+            Some(SimplexPointer::from(SimplexList{head: SimplexAtom::from("List"), uniq_id: 0, expressions: new_list}))
         }
 
     }
