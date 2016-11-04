@@ -6,7 +6,6 @@ use atom::numbers::traits;
 
 use expression::traits::BaseExpression;
 use expression::structure::Expression;
-use expression::s_expression::structure::SExpression;
 
 use parsing::utilities::numerics::representable_numeric;
 use parsing::utilities::string::representable_string;

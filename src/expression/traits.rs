@@ -5,8 +5,6 @@ use std::sync::{Arc, Mutex};
 use atom::atom::SimplexAtom;
 
 use expression::structure::Expression;
-use expression::m_expression::structure::MExpression;
-use expression::s_expression::structure::SExpression;
 use std::borrow::Cow;
 
 pub trait BaseExpression {

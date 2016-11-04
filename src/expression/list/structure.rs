@@ -6,39 +6,39 @@ use expression::traits::BaseExpression;
 use expression::structure::Expression;
 
 use atom::atom::SimplexAtom;
-
 use parsing::utilities::symbols::representable_symbol;
 
+// SExpression == SimplexList
 #[derive(Clone, Debug)]
-pub struct SExpression {
+pub struct SimplexList {
     head: SimplexAtom,
     expressions: LinkedList<Expression>,
 }
 
-impl SExpression {
-    pub fn new(head_name: &str) -> SExpression {
+impl SimplexList {
+    pub fn new(head_name: &str) -> SimplexList {
         if representable_symbol(head_name) {
-            SExpression {
+            SimplexList {
                 head: SimplexAtom::from(head_name),
                 expressions: LinkedList::new(),
             }
         } else {
             // Implement Error Type 
-            panic!("Bad head name passed to SExpression.");
+            panic!("Bad head name passed to SimplexList.");
         }
     }
 
-    pub fn push_expression(mut self, e: Expression) -> SExpression {
+    pub fn push_expression(mut self, e: Expression) -> SimplexList {
         self.expressions.push_back(e);
         self
     }
 
-    pub fn push_pointer(mut self, e: &Expression) -> SExpression {
+    pub fn push_pointer(mut self, e: &Expression) -> SimplexList {
         self.expressions.push_back(e.clone());
         self
     }
 
-    pub fn replace_symbol(mut self, symbol: Expression, new: Expression) -> SExpression {
+    pub fn replace_symbol(mut self, symbol: Expression, new: Expression) -> SimplexList {
         match &mut self.head {
             &mut SimplexAtom::SimplexSymbol(_) => {
                 if self.head.as_str() == symbol.as_str() {
@@ -49,7 +49,7 @@ impl SExpression {
                 }
             }
             _ => {
-                panic!("Somehow a non-primitive was part of the SExpression head...");
+                panic!("Somehow a non-primitive was part of the SimplexList head...");
             }
         }
 
@@ -97,12 +97,12 @@ impl SExpression {
     }
 }
 
-impl BaseExpression for SExpression {
+impl BaseExpression for SimplexList {
     fn get_head(&self) -> Option<SimplexAtom> {
         Some(self.head.clone())
     }
 
-    fn get_rest(&self) -> Option<SExpression> {
+    fn get_rest(&self) -> Option<SimplexList> {
         let mut new_list = self.clone();
         new_list.expressions.pop_front();
 

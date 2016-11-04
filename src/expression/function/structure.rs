@@ -5,34 +5,34 @@ use std::collections::LinkedList;
 
 use expression::traits::BaseExpression;
 use expression::structure::Expression;
-use expression::s_expression::structure::SExpression;
+use expression::list::structure::SimplexList;
 
 use atom::atom::SimplexAtom;
 
 #[derive(Clone, Debug)]
-pub struct MExpression {
+pub struct SimplexFunction {
     head: SimplexAtom,
     reflexive: bool,
     meta_variables: LinkedList<SimplexAtom>,
-    s_expression: SExpression,
+    s_expression: SimplexList,
 }
 
-impl MExpression {
-    pub fn new(head_name: &str) -> MExpression {
-        MExpression {
+impl SimplexFunction {
+    pub fn new(head_name: &str) -> SimplexFunction {
+        SimplexFunction {
             head: SimplexAtom::from(head_name),
             reflexive: false,
             meta_variables: LinkedList::new(),
-            s_expression: SExpression::new("List") 
+            s_expression: SimplexList::new("List") 
         }
     }
 
-    pub fn push_expression(mut self, e: Expression) -> MExpression {
+    pub fn push_expression(mut self, e: Expression) -> SimplexFunction {
         self.s_expression = self.s_expression.push_expression(e);
         self
     }
 
-    pub fn push_meta_variable(mut self, e: Expression) -> MExpression {
+    pub fn push_meta_variable(mut self, e: Expression) -> SimplexFunction {
         match e {
             Expression::List(_) => {panic!("You attempted to place a non-atomic as a meta variable!")}
             Expression::Atomic(atom) => {
@@ -42,12 +42,12 @@ impl MExpression {
         self
     }
 
-    pub fn toggle_reflexive(mut self) -> MExpression {
+    pub fn toggle_reflexive(mut self) -> SimplexFunction {
         self.reflexive = !self.reflexive;
         self
     }
 
-    pub fn evaluate(&self, params: &Vec<&str>) -> SExpression {
+    pub fn evaluate(&self, params: &Vec<&str>) -> SimplexList {
         let mut new_s_expression = self.s_expression.clone();
 
         if self.reflexive {
@@ -89,15 +89,15 @@ impl MExpression {
     }
 }
 
-impl BaseExpression for MExpression {
+impl BaseExpression for SimplexFunction {
     fn get_head(&self) -> Option<SimplexAtom> {
         Some(self.head.clone())
     }
 
-    fn get_rest(&self) -> Option<MExpression> {
+    fn get_rest(&self) -> Option<SimplexFunction> {
         // TODO: Implement rest schema as follows:
         // First remove meta variable and associated RHS entries.
-        // Once RHS is removed, progressively remove RHS SExpression
+        // Once RHS is removed, progressively remove RHS SimplexList
         // values via its own get_rest().
 
         Some(self.clone())

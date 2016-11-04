@@ -2,24 +2,24 @@
 mod test {
     mod test_general_functions {
         use expression::structure::Expression;
-        use expression::s_expression::structure::SExpression;
+        use expression::list::structure::SimplexList;
         use expression::traits::BaseExpression;
         use expression::traits::Transmutable;
 
         #[test]
         fn it_instantiates() {
-            let s_exp = SExpression::new("List");
+            let s_exp = SimplexList::new("List");
         }
 
         #[test]
         fn it_shows_string() {
-            let s_exp = SExpression::new("List");
+            let s_exp = SimplexList::new("List");
             assert_eq!(s_exp.as_str(), "List[]");
         }
 
         #[test]
-        fn it_pushes_expressions() {
-            let s_exp = SExpression::new("List") 
+        fn it_pushelists() {
+            let s_exp = SimplexList::new("List") 
                 .push_expression(Expression::from("x"))
                 .push_expression(Expression::from("y"))
                 .push_expression(Expression::from("z"));
@@ -29,7 +29,7 @@ mod test {
 
         #[test]
         fn it_pushes_numbers() {
-            let s_exp = SExpression::new("List") 
+            let s_exp = SimplexList::new("List") 
                 .push_expression(Expression::from("1"))
                 .push_expression(Expression::from("2"))
                 .push_expression(Expression::from("3"));
@@ -40,13 +40,12 @@ mod test {
 
 mod test_intrinsics {
         use expression::structure::Expression;
-        use expression::s_expression::structure::SExpression;
-        use expression::m_expression::structure::MExpression;
+        use expression::list::structure::SimplexList;
         use expression::traits::BaseExpression;
 
         #[test]
         fn it_gets_rest() {
-            let m_exp = SExpression::new("List")
+            let m_exp = SimplexList::new("List")
                 .push_expression(Expression::from("a"))
                 .push_expression(Expression::from("x"))
                 .push_expression(Expression::from("y"))
@@ -56,7 +55,7 @@ mod test_intrinsics {
 
         #[test]
         fn it_gets_rest_recursively_once() {
-            let m_exp = SExpression::new("List")
+            let m_exp = SimplexList::new("List")
                 .push_expression(Expression::from("a"))
                 .push_expression(Expression::from("x"))
                 .push_expression(Expression::from("y"))
@@ -83,16 +82,16 @@ mod test_intrinsics {
 
     mod test_composition {
         use expression::structure::Expression;
-        use expression::s_expression::structure::SExpression;
+        use expression::list::structure::SimplexList;
         use expression::traits::BaseExpression;
 
         #[test]
         fn it_composes_LsLe() {
-            let list_a = SExpression::new("List") 
+            let list_a = SimplexList::new("List") 
                 .push_expression(Expression::from("z"))
                 .make_generic();
 
-            let list_b = SExpression::new("List") 
+            let list_b = SimplexList::new("List") 
                 .push_expression(list_a)
                 .make_generic();
 
@@ -101,15 +100,15 @@ mod test_intrinsics {
 
         #[test]
         fn it_composes_LsLLe() {
-            let list_a = SExpression::new("List") 
+            let list_a = SimplexList::new("List") 
                 .push_expression(Expression::from("z"))
                 .make_generic();
 
-            let list_b = SExpression::new("List")
+            let list_b = SimplexList::new("List")
                 .push_expression(Expression::from("x"))
                 .make_generic();
 
-            let list_c = SExpression::new("List")
+            let list_c = SimplexList::new("List")
                 .push_expression(list_a)
                 .push_expression(list_b)
                 .make_generic();
@@ -119,15 +118,15 @@ mod test_intrinsics {
 
         #[test]
         fn it_composes_LsLsLee() {
-            let list_a = SExpression::new("List")
+            let list_a = SimplexList::new("List")
                 .push_expression(Expression::from("x"))
                 .make_generic();
 
-            let list_b = SExpression::new("List")
+            let list_b = SimplexList::new("List")
                 .push_expression(list_a)
                 .make_generic();
 
-            let list_c = SExpression::new("List")
+            let list_c = SimplexList::new("List")
                 .push_expression(list_b)
                 .make_generic();
 
@@ -136,16 +135,16 @@ mod test_intrinsics {
 
         #[test]
         fn it_composes_LpsLpsLpee() {
-            let list_a = SExpression::new("List")
+            let list_a = SimplexList::new("List")
                 .push_expression(Expression::from("x"))
                 .make_generic();
 
-            let list_b = SExpression::new("List")
+            let list_b = SimplexList::new("List")
                 .push_expression(Expression::from("c"))
                 .push_expression(list_a)
                 .make_generic();
 
-            let list_c = SExpression::new("List")
+            let list_c = SimplexList::new("List")
                 .push_expression(Expression::from("d"))
                 .push_expression(list_b)
                 .make_generic();
@@ -155,16 +154,16 @@ mod test_intrinsics {
 
         #[test]
         fn it_composes_LpsLpsLpepe() {
-            let list_a = SExpression::new("List")
+            let list_a = SimplexList::new("List")
                 .push_expression(Expression::from("x"))
                 .make_generic();
 
-            let list_b = SExpression::new("List")
+            let list_b = SimplexList::new("List")
                 .push_expression(Expression::from("c"))
                 .push_expression(list_a)
                 .make_generic();
 
-            let list_c = SExpression::new("List")
+            let list_c = SimplexList::new("List")
                 .push_expression(Expression::from("d"))
                 .push_expression(list_b)
                 .push_expression(Expression::from("var"))
@@ -176,28 +175,28 @@ mod test_intrinsics {
 
     mod test_usability {
         use expression::structure::Expression;
-        use expression::s_expression::structure::SExpression;
+        use expression::list::structure::SimplexList;
         use expression::traits::BaseExpression;
 
         #[test]
         fn it_composes_clones() {
-            let list_a = SExpression::new("List")
+            let list_a = SimplexList::new("List")
                 .push_expression(Expression::from("x"))
                 .make_generic();
 
-            let list_b = SExpression::new("List")
+            let list_b = SimplexList::new("List")
                 .push_expression(Expression::from("c"))
                 .push_expression(list_a)
                 .make_generic();
 
-            let list_c = SExpression::new("List")
+            let list_c = SimplexList::new("List")
                 .push_expression(Expression::from("d"))
                 .push_expression(list_b)
                 .push_expression(Expression::from("var"))
                 .make_generic();
 
             let list_d = list_c.clone();
-            let list_e = SExpression::new("List")
+            let list_e = SimplexList::new("List")
                 .push_expression(list_c)
                 .push_expression(list_d);
 
@@ -207,28 +206,28 @@ mod test_intrinsics {
 
     mod test_evaluation {
         use expression::structure::Expression;
-        use expression::s_expression::structure::SExpression;
+        use expression::list::structure::SimplexList;
         use expression::traits::BaseExpression;
 
         #[test]
         fn it_substitutes_simple() {
-            let list_a = SExpression::new("List")
+            let list_a = SimplexList::new("List")
                 .push_expression(Expression::from("x"))
                 .make_generic();
 
-            let list_b = SExpression::new("List")
+            let list_b = SimplexList::new("List")
                 .push_expression(Expression::from("c"))
                 .push_expression(list_a)
                 .make_generic();
 
-            let list_c = SExpression::new("List")
+            let list_c = SimplexList::new("List")
                 .push_expression(Expression::from("d"))
                 .push_expression(list_b)
                 .push_expression(Expression::from("var"))
                 .make_generic();
 
             let list_d = list_c.clone();
-            let list_e = SExpression::new("List")
+            let list_e = SimplexList::new("List")
                 .push_expression(Expression::from("d"))
                 .push_expression(list_c)
                 .push_expression(list_d)
@@ -239,23 +238,23 @@ mod test_intrinsics {
 
         #[test]
         fn it_substitutes_less_simple() {
-            let list_a = SExpression::new("List")
+            let list_a = SimplexList::new("List")
                 .push_expression(Expression::from("x"))
                 .make_generic();
 
-            let list_b = SExpression::new("List")
+            let list_b = SimplexList::new("List")
                 .push_expression(Expression::from("c"))
                 .push_expression(list_a)
                 .make_generic();
 
-            let list_c = SExpression::new("List")
+            let list_c = SimplexList::new("List")
                 .push_expression(Expression::from("d"))
                 .push_expression(list_b)
                 .push_expression(Expression::from("var"))
                 .make_generic();
 
             let list_d = list_c.clone();
-            let list_e = SExpression::new("List")
+            let list_e = SimplexList::new("List")
                 .push_expression(Expression::from("d"))
                 .push_expression(list_c)
                 .push_expression(list_d)
@@ -267,23 +266,23 @@ mod test_intrinsics {
 
         #[test]
         fn it_substitutes_even_less_simple() {
-            let list_a = SExpression::new("List")
+            let list_a = SimplexList::new("List")
                 .push_expression(Expression::from("x"))
                 .make_generic();
 
-            let list_b = SExpression::new("List")
+            let list_b = SimplexList::new("List")
                 .push_expression(Expression::from("c"))
                 .push_expression(list_a)
                 .make_generic();
 
-            let list_c = SExpression::new("List")
+            let list_c = SimplexList::new("List")
                 .push_expression(Expression::from("d"))
                 .push_expression(list_b)
                 .push_expression(Expression::from("var"))
                 .make_generic();
 
             let list_d = list_c.clone();
-            let list_e = SExpression::new("List")
+            let list_e = SimplexList::new("List")
                 .push_expression(Expression::from("d"))
                 .push_expression(list_c)
                 .push_expression(list_d)
@@ -296,23 +295,23 @@ mod test_intrinsics {
 
         #[test]
         fn it_substitutes_multichar_symbol() {
-            let list_a = SExpression::new("List")
+            let list_a = SimplexList::new("List")
                 .push_expression(Expression::from("x"))
                 .make_generic();
 
-            let list_b = SExpression::new("List")
+            let list_b = SimplexList::new("List")
                 .push_expression(Expression::from("c"))
                 .push_expression(list_a)
                 .make_generic();
 
-            let list_c = SExpression::new("List")
+            let list_c = SimplexList::new("List")
                 .push_expression(Expression::from("d"))
                 .push_expression(list_b)
                 .push_expression(Expression::from("var"))
                 .make_generic();
 
             let list_d = list_c.clone();
-            let list_e = SExpression::new("List")
+            let list_e = SimplexList::new("List")
                 .push_expression(Expression::from("d"))
                 .push_expression(list_c)
                 .push_expression(list_d)
@@ -333,7 +332,7 @@ mod test_intrinsics {
         use atom::atom::SimplexAtom;
 
         use expression::structure::Expression;
-        use expression::s_expression::structure::SExpression;
+        use expression::list::structure::SimplexList;
         use expression::traits::{BaseExpression, Transmutable};
         
     }

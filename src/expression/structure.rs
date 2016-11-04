@@ -5,21 +5,21 @@ use std::sync::{Arc, Mutex};
 use atom::atom::SimplexAtom;
 
 use expression::traits::{BaseExpression, Transmutable};
-use expression::s_expression::structure::SExpression;
+use expression::list::structure::SimplexList;
 
 #[derive(Clone, Debug)]
 pub struct ExpressionPointer<T: BaseExpression> {
     internal_data: Arc<Mutex<T>>
 }
 
-impl BaseExpression for ExpressionPointer<SExpression> {
+impl BaseExpression for ExpressionPointer<SimplexList> {
     fn get_head(&self) -> Option<SimplexAtom> {
         // Fix unwrap anti-pattern.
         let lock = self.internal_data.lock().unwrap();
         lock.get_head()
     }
 
-    fn get_rest(&self) -> Option<ExpressionPointer<SExpression>> {
+    fn get_rest(&self) -> Option<ExpressionPointer<SimplexList>> {
         // Fix unwrap anti-pattern.
         let lock = self.internal_data.lock().unwrap();
         match lock.get_rest() {
@@ -43,7 +43,7 @@ impl BaseExpression for ExpressionPointer<SExpression> {
 
 #[derive(Clone, Debug)]
 pub enum Expression {
-    List(SExpression),
+    List(SimplexList),
     Atomic(SimplexAtom)
 }
 
@@ -113,8 +113,8 @@ impl From<SimplexAtom> for Expression {
     }
 }
 
-impl From<SExpression> for Expression {
-    fn from(s: SExpression) -> Expression {
+impl From<SimplexList> for Expression {
+    fn from(s: SimplexList) -> Expression {
         Expression::List(s)
     }
 }

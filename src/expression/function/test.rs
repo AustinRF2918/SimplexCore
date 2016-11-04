@@ -2,13 +2,13 @@
 mod test {
     mod test_intrinsics {
         use expression::structure::Expression;
-        use expression::s_expression::structure::SExpression;
-        use expression::m_expression::structure::MExpression;
+        use expression::list::structure::SimplexList;
+        use expression::function::structure::SimplexFunction;
         use expression::traits::BaseExpression;
 
         #[test]
         fn it_gets_rest() {
-            let m_exp = MExpression::new("Plus")
+            let m_exp = SimplexFunction::new("Plus")
                 .push_meta_variable(Expression::from("a"))
                 .push_meta_variable(Expression::from("b"))
                 .push_meta_variable(Expression::from("c"))
@@ -22,7 +22,7 @@ mod test {
 
         #[test]
         fn it_gets_rest_recursively_once() {
-            let m_exp = MExpression::new("Plus")
+            let m_exp = SimplexFunction::new("Plus")
                 .push_meta_variable(Expression::from("a"))
                 .push_meta_variable(Expression::from("b"))
                 .push_meta_variable(Expression::from("c"))
@@ -47,13 +47,13 @@ mod test {
 
     mod test_general_functions {
         use expression::structure::Expression;
-        use expression::s_expression::structure::SExpression;
-        use expression::m_expression::structure::MExpression;
+        use expression::list::structure::SimplexList;
+        use expression::function::structure::SimplexFunction;
         use expression::traits::BaseExpression;
 
         #[test]
         fn it_instantiates() {
-            let m_exp = MExpression::new("Plus")
+            let m_exp = SimplexFunction::new("Plus")
                 .push_meta_variable(Expression::from("a"))
                 .push_meta_variable(Expression::from("b"))
                 .push_meta_variable(Expression::from("c"))
@@ -67,7 +67,7 @@ mod test {
 
         #[test]
         fn it_evaluates_a() {
-            let m_exp = MExpression::new("Plus")
+            let m_exp = SimplexFunction::new("Plus")
                 .push_meta_variable(Expression::from("a"))
                 .push_meta_variable(Expression::from("b"))
                 .push_meta_variable(Expression::from("c"))
@@ -76,13 +76,13 @@ mod test {
                 .push_expression(Expression::from("y"))
                 .push_expression(Expression::from("z"));
 
-            let new_s_expression = m_exp.evaluate(&vec!["1", "2", "3"]);
-            assert_eq!(new_s_expression.as_str(), "List[1, x, y, z]");
+            let new_list = m_exp.evaluate(&vec!["1", "2", "3"]);
+            assert_eq!(new_list.as_str(), "List[1, x, y, z]");
         }
 
         #[test]
         fn it_evaluates_b() {
-            let m_exp = MExpression::new("Plus")
+            let m_exp = SimplexFunction::new("Plus")
                 .push_meta_variable(Expression::from("a"))
                 .push_meta_variable(Expression::from("b"))
                 .push_meta_variable(Expression::from("c"))
@@ -90,34 +90,34 @@ mod test {
                 .push_expression(Expression::from("b"))
                 .push_expression(Expression::from("c"));
 
-            let new_s_expression = m_exp.evaluate(&vec!["1", "2", "3"]);
-            assert_eq!(new_s_expression.as_str(), "List[1, 2, 3]");
+            let new_list = m_exp.evaluate(&vec!["1", "2", "3"]);
+            assert_eq!(new_list.as_str(), "List[1, 2, 3]");
         }
     }
 
     mod test_nesting_properties {
         use expression::structure::Expression;
-        use expression::s_expression::structure::SExpression;
-        use expression::m_expression::structure::MExpression;
+        use expression::list::structure::SimplexList;
+        use expression::function::structure::SimplexFunction;
         use expression::traits::BaseExpression;
 
         #[test]
         fn it_allows_nesting() {
-            let plus = MExpression::new("Plus")
+            let plus = SimplexFunction::new("Plus")
                 .push_meta_variable(Expression::from("a"))
                 .push_meta_variable(Expression::from("b"))
                 .push_expression(Expression::from("a"))
                 .push_expression(Expression::from("b"))
                 .toggle_reflexive();
 
-            let pow = MExpression::new("Pow")
+            let pow = SimplexFunction::new("Pow")
                 .push_meta_variable(Expression::from("a"))
                 .push_meta_variable(Expression::from("b"))
                 .push_expression(Expression::from("a"))
                 .push_expression(Expression::from("b"))
                 .toggle_reflexive();
 
-            let eq = MExpression::new("Equal")
+            let eq = SimplexFunction::new("Equal")
                 .push_meta_variable(Expression::from("a"))
                 .push_meta_variable(Expression::from("b"))
                 .push_expression(Expression::from("a"))
@@ -125,10 +125,10 @@ mod test {
                 .toggle_reflexive();
 
 
-            let pythag = MExpression::new("Pythag")
+            let pythag = SimplexFunction::new("Pythag")
                 .push_meta_variable(Expression::from("a"))
                 .push_meta_variable(Expression::from("b"))
-                .push_expression(Expression::from(MExpression::new("Plus")
+                .push_expression(Expression::from(SimplexFunction::new("Plus")
                     .toggle_reflexive()
                     .push_meta_variable(Expression::from("a"))
                     .push_meta_variable(Expression::from("b"))
@@ -141,21 +141,21 @@ mod test {
 
         #[test]
         fn it_evals_nesting() {
-            let plus = MExpression::new("Plus")
+            let plus = SimplexFunction::new("Plus")
                 .push_meta_variable(Expression::from("a"))
                 .push_meta_variable(Expression::from("b"))
                 .push_expression(Expression::from("a"))
                 .push_expression(Expression::from("b"))
                 .toggle_reflexive();
 
-            let pow = MExpression::new("Pow")
+            let pow = SimplexFunction::new("Pow")
                 .push_meta_variable(Expression::from("a"))
                 .push_meta_variable(Expression::from("b"))
                 .push_expression(Expression::from("a"))
                 .push_expression(Expression::from("b"))
                 .toggle_reflexive();
 
-            let eq = MExpression::new("Equal")
+            let eq = SimplexFunction::new("Equal")
                 .push_meta_variable(Expression::from("a"))
                 .push_meta_variable(Expression::from("b"))
                 .push_expression(Expression::from("a"))
@@ -163,10 +163,10 @@ mod test {
                 .toggle_reflexive();
 
 
-            let pythag = MExpression::new("Pythag")
+            let pythag = SimplexFunction::new("Pythag")
                 .push_meta_variable(Expression::from("a"))
                 .push_meta_variable(Expression::from("b"))
-                .push_expression(Expression::from(MExpression::new("Plus")
+                .push_expression(Expression::from(SimplexFunction::new("Plus")
                     .toggle_reflexive()
                     .push_meta_variable(Expression::from("a"))
                     .push_meta_variable(Expression::from("b"))
