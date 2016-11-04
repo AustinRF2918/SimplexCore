@@ -14,16 +14,18 @@ mod tests {
         fn it_shows_empty_expression_on_rest() {
             let s_atom = SimplexAtom::from(1.21);
             let x = s_atom.get_rest();
-            assert_eq!(x.as_str(), "List[]");
+            assert_eq!(x, None);
         }
 
         #[test]
         fn it_shows_recursive_empty_expression_on_rest() {
             let s_atom = SimplexAtom::from(1.21);
+
             let x = s_atom.get_rest();
-            assert_eq!(x.as_str(), "List[]");
+            assert_eq!(x, None);
+
             let y = s_atom.get_rest();
-            assert_eq!(y.as_str(), "List[]");
+            assert_eq!(y, None);
         }
     }
 

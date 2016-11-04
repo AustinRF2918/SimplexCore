@@ -51,7 +51,7 @@ mod test_intrinsics {
                 .push_expression(Expression::from("x"))
                 .push_expression(Expression::from("y"))
                 .push_expression(Expression::from("z"));
-            assert_eq!(m_exp.get_rest().as_str(), "List[x, y, z]");
+            assert_eq!(m_exp.get_rest().unwrap().as_str(), "List[x, y, z]");
         }
 
         #[test]
@@ -62,19 +62,19 @@ mod test_intrinsics {
                 .push_expression(Expression::from("y"))
                 .push_expression(Expression::from("z"));
 
-            let x  = m_exp.get_rest();
+            let x  = m_exp.get_rest().unwrap();
             assert_eq!(x.as_str(), "List[x, y, z]");
 
-            let y = x.get_rest();
+            let y = x.get_rest().unwrap();
             assert_eq!(y.as_str(), "List[y, z]");
 
-            let z = y.get_rest();
+            let z = y.get_rest().unwrap();
             assert_eq!(z.as_str(), "List[z]");
 
-            let a = z.get_rest();
+            let a = z.get_rest().unwrap();
             assert_eq!(a.as_str(), "List[]");
 
-            let b = a.get_rest();
+            let b = a.get_rest().unwrap();
             assert_eq!(b.as_str(), "List[]");
         }
     }
@@ -335,66 +335,6 @@ mod test_intrinsics {
         use expression::structure::Expression;
         use expression::s_expression::structure::SExpression;
         use expression::traits::{BaseExpression, Transmutable};
-
-        #[test]
-        fn basic() {
-            let (tx, rx) = channel();
-
-            let mut x = Arc::new(Mutex::new(Expression::from("x")));
-
-            {
-                let tx = tx.clone();
-                let a = x.clone();
-                thread::spawn(move || {
-                    let lock = a.lock().unwrap();
-                    let list_a = SExpression::new("List")
-                        .push_pointer(&lock)
-                        .make_generic();
-                    tx.send(list_a).unwrap();
-                });
-            }
-
-            match *x.lock().unwrap() {
-                Expression::Atomic(ref mut arc) => {
-                    let mut lock = arc.lock().unwrap();
-                    *lock = SimplexAtom::from("y");
-                }
-
-                Expression::List(_) => {
-                }
-            }
-
-            {
-                let tx = tx.clone();
-                thread::spawn(move || {
-                    let mut list_b = SExpression::new("List");
-                    let a = x.clone();
-                    let lock = a.lock().unwrap();
-                    list_b = list_b.push_pointer(&lock);
-                    tx.send(list_b.make_generic()).unwrap();
-                });
-            }
-
-            let list_a = rx.iter().next().unwrap();
-            let list_b = rx.iter().next().unwrap();
-
-            assert_eq!(list_a.to_string(), list_b.to_string())
-        }
-
-        #[test]
-        fn better_api() {
-            let mut x = Expression::from("x");
-            let _: Arc<Mutex<SimplexAtom>> = x.transmute(&Expression::from("y")).unwrap();
-            assert_eq!(x.to_string(), "y");
-
-            let other: Arc<Mutex<SExpression>> = x.transmute(&Expression::from(SExpression::new("List"))).unwrap();
-            let mut y = Expression::from(other);
-            assert_eq!(x.to_string(), "List[]");
-            assert_eq!(y.to_string(), "List[]");
-
-            let _: Arc<Mutex<SimplexAtom>> = y.transmute(&Expression::from("y")).unwrap();
-            assert_eq!(x.to_string(), "y");
-            assert_eq!(y.to_string(), "y");
-        }
+        
     }
 }

@@ -13,7 +13,7 @@ use atom::atom::SimplexAtom;
 pub struct MExpression {
     head: SimplexAtom,
     reflexive: bool,
-    meta_variables: LinkedList<Arc<Mutex<SimplexAtom>>>,
+    meta_variables: LinkedList<SimplexAtom>,
     s_expression: SExpression,
 }
 
@@ -36,14 +36,7 @@ impl MExpression {
         match e {
             Expression::List(_) => {panic!("You attempted to place a non-atomic as a meta variable!")}
             Expression::Atomic(atom) => {
-                match *atom.lock().unwrap() {
-                    SimplexAtom::SimplexSymbol(_) => {
-                        self.meta_variables.push_back(atom.clone());
-                    }
-                    _ => {
-                        panic!("You attempted to place a number or string as a meta-variable into a meta-expression.");
-                    }
-                }
+                self.meta_variables.push_back(atom.clone());
             }
         }
         self
@@ -58,7 +51,8 @@ impl MExpression {
         let mut new_s_expression = self.s_expression.clone();
 
         if self.reflexive {
-            let head_name = self.get_head().to_string();
+            // ANTI PATTERN
+            let head_name = self.get_head().unwrap().to_string();
             new_s_expression = new_s_expression.replace_symbol(Expression::from("List"), Expression::from(head_name.as_str()));
         }
 
@@ -67,7 +61,7 @@ impl MExpression {
         for (item_number, item) in self.meta_variables.iter().enumerate().rev() {
             match new_params.pop() {
                 Some(thing) => {
-                    new_s_expression = new_s_expression.replace_symbol(Expression::from(item.lock().unwrap().clone()), Expression::from(thing));
+                    new_s_expression = new_s_expression.replace_symbol(Expression::from(item.clone()), Expression::from(thing));
                 }
 
                 None => {
@@ -83,9 +77,7 @@ impl MExpression {
         let mut body = String::with_capacity(self.meta_variables.len() * 5);
 
         for (entry_number, entry) in self.meta_variables.iter().enumerate() {
-            // TODO: DONT UNWRAP!
-            let mut entry_locked = entry.lock().unwrap();
-            body.push_str(&entry_locked.as_str());
+            body.push_str(&entry.as_str());
             body.push('_');
 
             if entry_number != (self.meta_variables.len() - 1) {
@@ -98,20 +90,21 @@ impl MExpression {
 }
 
 impl BaseExpression for MExpression {
+    fn get_head(&self) -> Option<SimplexAtom> {
+        Some(self.head.clone())
+    }
+
+    fn get_rest(&self) -> Option<MExpression> {
+        // TODO: Implement rest schema as follows:
+        // First remove meta variable and associated RHS entries.
+        // Once RHS is removed, progressively remove RHS SExpression
+        // values via its own get_rest().
+
+        Some(self.clone())
+    }
+
     fn to_string(&self) -> String {
-        format!("{}[{}] := {}", self.get_head().as_str(), self.m_vars_to_string(), self.s_expression.to_string())
-    }
-
-    fn as_str<'a>(&self) -> Cow<'a, str> {
-        Cow::Owned(self.to_string())
-    }
-
-    fn get_head(&self) -> SimplexAtom {
-        self.head.clone()
-    }
-
-    fn get_rest(&self) -> Expression {
-        Expression::from(self.s_expression.clone())
+        format!("{}[{}] := {}", self.get_head().unwrap().as_str(), self.m_vars_to_string(), self.s_expression.to_string())
     }
 }
 

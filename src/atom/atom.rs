@@ -23,33 +23,29 @@ pub enum SimplexAtom {
 }
 
 impl BaseExpression for SimplexAtom {
+    fn get_head(&self) -> Option<SimplexAtom> {
+        match self {
+            &SimplexAtom::SimplexSymbol(_) => Some(self.clone()),
+
+            &SimplexAtom::SimplexString(_) => {
+                Some(SimplexAtom::SimplexSymbol(String::from("String")))
+            },
+
+            &SimplexAtom::SimplexNumeric(_) => {
+                Some(SimplexAtom::SimplexSymbol(String::from("Number")))
+            }
+        }
+    }
+
+    fn get_rest(&self) -> Option<SimplexAtom> {
+        None
+    }
+
     fn to_string(&self) -> String {
         match self {
             &SimplexAtom::SimplexNumeric(ref n) => n.to_string().clone(),
             &SimplexAtom::SimplexString(ref n) => n.clone(),
             &SimplexAtom::SimplexSymbol(ref n) => n.clone(),
         }
-    }
-
-    fn as_str<'a>(&'a self) -> Cow<'a, str> {
-        Cow::Owned(self.to_string())
-    }
-
-    fn get_head(&self) -> SimplexAtom {
-        match self {
-            &SimplexAtom::SimplexSymbol(_) => self.clone(),
-
-            &SimplexAtom::SimplexString(_) => {
-                SimplexAtom::SimplexSymbol(String::from("String"))
-            },
-
-            &SimplexAtom::SimplexNumeric(_) => {
-                SimplexAtom::SimplexSymbol(String::from("Number"))
-            }
-        }
-    }
-
-    fn get_rest(&self) -> Expression {
-        Expression::List(Arc::new(Mutex::new(SExpression::new("List"))))
     }
 }

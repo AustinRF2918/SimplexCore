@@ -8,69 +8,82 @@ use expression::traits::{BaseExpression, Transmutable};
 use expression::s_expression::structure::SExpression;
 
 #[derive(Clone, Debug)]
-pub enum Expression {
-    List(Arc<Mutex<SExpression>>),
-    Atomic(Arc<Mutex<SimplexAtom>>)
+pub struct ExpressionPointer<T: BaseExpression> {
+    internal_data: Arc<Mutex<T>>
 }
 
-impl Expression {
-    pub fn new_primitive(s: &str) -> Expression {
-        Expression::Atomic(Arc::new(Mutex::new(SimplexAtom::from(s))))
+impl BaseExpression for ExpressionPointer<SExpression> {
+    fn get_head(&self) -> Option<SimplexAtom> {
+        // Fix unwrap anti-pattern.
+        let lock = self.internal_data.lock().unwrap();
+        lock.get_head()
     }
 
-    pub fn new_list(l: SExpression) -> Expression {
-        Expression::List(Arc::new(Mutex::new(l)))
-    }
-
-    pub fn to_string(&self) -> String {
-        match self {
-            &Expression::List(ref list) => {
-                let mut item = list.lock().unwrap();
-                item.to_string().clone()
+    fn get_rest(&self) -> Option<ExpressionPointer<SExpression>> {
+        // Fix unwrap anti-pattern.
+        let lock = self.internal_data.lock().unwrap();
+        match lock.get_rest() {
+            Some(data) => {
+                Some(ExpressionPointer {
+                    internal_data: Arc::new(Mutex::new(data))
+                })
             }
-            &Expression::Atomic(ref atom) => {
-                // TODO: DONT UNWRAP
-                let mut item = atom.lock().unwrap();
-                item.to_string().clone()
-            },
+
+            None => {
+                None
+            }
         }
     }
 
-    pub fn as_str<'a>(&'a self) -> Cow<'a, str> {
-        Cow::Owned(self.to_string())
+    fn to_string(&self) -> String {
+        let lock = self.internal_data.lock().unwrap();
+        lock.to_string()
     }
 }
 
+#[derive(Clone, Debug)]
+pub enum Expression {
+    List(SExpression),
+    Atomic(SimplexAtom)
+}
 
 impl BaseExpression for Expression {
-    fn get_head(&self) -> SimplexAtom {
+    fn get_head(&self) -> Option<SimplexAtom> {
         match self {
             &Expression::List(ref internal) => {
-                // FIX UNWRAP ANTI-PATTERN;
-                let lock = internal.lock().unwrap();
-                lock.get_head()
-            }
-
-            &Expression::Atomic(ref  internal) => {
-                // FIX UNWRAP ANTI-PATTERN;
-                let lock = internal.lock().unwrap();
-                lock.get_head()
-            }
-        }
-    }
-
-    fn get_rest(&self) -> Expression {
-        match self {
-            &Expression::List(ref internal) => {
-                // FIX UNWRAP ANTI-PATTERN;
-                let lock = internal.lock().unwrap();
-                lock.get_rest()
+                internal.get_head()
             }
 
             &Expression::Atomic(ref internal) => {
-                // FIX UNWRAP ANTI-PATTERN;
-                let lock = internal.lock().unwrap();
-                lock.get_rest()
+                internal.get_head()
+            }
+        }
+    }
+
+    fn get_rest(&self) -> Option<Expression> {
+        match self {
+            &Expression::List(ref internal) => {
+                match internal.get_rest() {
+                    Some(data) => {
+                        Some(Expression::from(data))
+                    }
+
+                    None => {
+                        None
+                    }
+                }
+            }
+
+            &Expression::Atomic(ref internal) => {
+                match internal.get_rest() {
+                    Some(data) => {
+                        Some(Expression::from(data))
+                    }
+
+                    None => {
+                        None
+                    }
+                }
             }
         }
     }
@@ -78,106 +91,30 @@ impl BaseExpression for Expression {
     fn to_string(&self) -> String {
         match self {
             &Expression::List(ref internal) => {
-                // FIX UNWRAP ANTI-PATTERN;
-                let lock = internal.lock().unwrap();
-                lock.to_string()
+                internal.to_string()
             }
 
             &Expression::Atomic(ref internal) => {
-                // FIX UNWRAP ANTI-PATTERN;
-                let lock = internal.lock().unwrap();
-                lock.to_string()
+                internal.to_string()
             }
         }
     }
-
-    fn as_str<'a>(&'a self) -> Cow<'a, str>{
-        Cow::Owned(self.to_string())
-    }
-
-    
 }
 
 impl<'a> From<&'a str> for Expression {
     fn from(s: &str) -> Expression {
-        Expression::Atomic(Arc::new(Mutex::new(SimplexAtom::from(s))))
+        Expression::Atomic(SimplexAtom::from(s))
     }
 }
 
 impl From<SimplexAtom> for Expression {
     fn from(a: SimplexAtom) -> Expression {
-        Expression::Atomic(Arc::new(Mutex::new(a)))
+        Expression::Atomic(a)
     }
 }
 
 impl From<SExpression> for Expression {
     fn from(s: SExpression) -> Expression {
-        Expression::List(Arc::new(Mutex::new(s)))
-    }
-}
-
-impl From<Arc<Mutex<SimplexAtom>>> for Expression {
-    fn from(a: Arc<Mutex<SimplexAtom>>) -> Expression {
-        Expression::Atomic(a.clone())
-    }
-}
-
-impl From<Arc<Mutex<SExpression>>> for Expression {
-    fn from(s: Arc<Mutex<SExpression>>) -> Expression {
-        Expression::List(s.clone())
-    }
-}
-
-
-impl Transmutable<SExpression> for Expression{
-    fn get_internal_arc(&self) -> Option<Arc<Mutex<SExpression>>> {
-        match self {
-            &Expression::List(ref x) => {
-                Some(x.clone())
-            }
-            &Expression::Atomic(_) => {
-                None
-            }
-        }
-    }
-
-    fn transmute(&mut self, e: &Expression) -> Option<Arc<Mutex<SExpression>>> {
-        let internal_arc : Option<Arc<Mutex<SExpression>>> = e.get_internal_arc();
-        match *self {
-            Expression::List(x) => {
-                x = internal_arc.unwrap();
-                Some(x)
-            }
-            _ => {
-                None
-            }
-        }
-    }
-}
-
-impl Transmutable<SimplexAtom> for Expression{
-    fn get_internal_arc(&self) -> Option<Arc<Mutex<SimplexAtom>>> {
-        match self {
-            &Expression::List(_) => {
-                None
-            }
-            &Expression::Atomic(ref x) => {
-                Some(x.clone())
-            }
-        }
-    }
-
-    fn transmute(&mut self, e: &Expression) -> Option<Arc<Mutex<SimplexAtom>>> {
-        let internal_arc : Option<Arc<Mutex<SimplexAtom>>> = e.get_internal_arc();
-        match *self {
-            Expression::Atomic(ref mut x) => {
-                let z = internal_arc;
-                x = &mut z.unwrap();
-                Some(x.clone())
-            }
-            _ => {
-                None
-            }
-        }
+        Expression::List(s)
     }
 }

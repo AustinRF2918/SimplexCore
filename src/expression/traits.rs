@@ -7,15 +7,20 @@ use atom::atom::SimplexAtom;
 use expression::structure::Expression;
 use expression::m_expression::structure::MExpression;
 use expression::s_expression::structure::SExpression;
-
 use std::borrow::Cow;
 
 pub trait BaseExpression {
-    fn get_head(&self) -> SimplexAtom;
-    fn get_rest(&self) -> Expression;
+    fn get_head(&self) -> Option<SimplexAtom>;
+    fn get_rest(&self) -> Option<Self> where Self: Sized;
     fn to_string(&self) -> String;
-    fn as_str<'a>(&'a self) -> Cow<'a, str>;
+    fn as_str<'a>(&'a self) -> Cow<'a, str> { Cow::Owned(self.to_string())} 
 }
+
+// Great API for get_rest:
+// Make it generic across itself: Meaning an SExpression returns an SExpression, MExpression...
+// That idea is that with an SExpression, it is a simplex copy pop front, MExpression deletes
+// parameters, and then deletes constants, atom deletes its own head and then gives the next
+// data.. Optional as well would be smart.
 
 pub trait Transmutable<T: BaseExpression> {
     fn get_internal_arc(&self) -> Option<Arc<Mutex<T>>>;

@@ -61,10 +61,8 @@ impl SExpression {
                     }
                 }
 
-                &mut Expression::List(ref list) => {
-                    let mut x = list.clone();
-                    let mut lock = x.lock().unwrap();
-                    *lock = lock.clone().replace_symbol(symbol.clone(), new.clone());
+                &mut Expression::List(ref mut list) => {
+                    *list = list.clone().replace_symbol(symbol.clone(), new.clone());
                 }
             }
         }
@@ -73,11 +71,11 @@ impl SExpression {
     }
 
     pub fn to_generic(&self) -> Expression {
-        Expression::List(Arc::new(Mutex::new(self.clone())))
+        Expression::List(self.clone())
     }
 
     pub fn make_generic(self) -> Expression {
-        Expression::List(Arc::new(Mutex::new(self.clone())))
+        Expression::List(self.clone())
     }
 
     pub fn body_to_string(&self) -> String {
@@ -100,21 +98,23 @@ impl SExpression {
 }
 
 impl BaseExpression for SExpression {
-    fn to_string(&self) -> String {
-        format!("{}[{}]", self.get_head().as_str(), self.body_to_string())
+    fn get_head(&self) -> Option<SimplexAtom> {
+        Some(self.head.clone())
     }
 
-    fn as_str<'a>(&'a self) -> Cow<'a, str> {
-        Cow::Owned(self.to_string())
-    }
-
-    fn get_head(&self) -> SimplexAtom {
-        self.head.clone()
-    }
-
-    fn get_rest(&self) -> Expression {
+    fn get_rest(&self) -> Option<SExpression> {
         let mut new_list = self.clone();
         new_list.expressions.pop_front();
-        Expression::from(new_list)
+
+        if new_list.expressions.len() == 0 {
+            None
+        } else {
+            Some(new_list)
+        }
+    }
+
+    fn to_string(&self) -> String {
+        //Watch out!
+        format!("{}[{}]", self.get_head().unwrap().as_str(), self.body_to_string())
     }
 }
