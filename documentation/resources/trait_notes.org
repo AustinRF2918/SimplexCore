@@ -35,7 +35,7 @@
   Where ConvertTo is a trait that requires the implementation of convert. This
   is less general than the implementation of a purely generic function, but
   also allows us to do some interesting reasoning at compile time. Observe 
-  a further way to generalize sucha function:
+  a further way to generalize such a function:
 
   #+BEGIN_SRC Rust
     fn inverse<T, E>(x: E) -> T 
