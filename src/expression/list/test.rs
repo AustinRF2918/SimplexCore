@@ -36,6 +36,32 @@ mod test {
 
             assert_eq!(s_exp.as_str(), "List[1, 2, 3]");
         }
+
+        #[test]
+        fn it_shows_changes() {
+            let mut x = ExpressionPointer::from("2");
+
+            let list_a = SimplexList::new("List") 
+                .push(&x)
+                .push(&ExpressionPointer::from("2"))
+                .push(&ExpressionPointer::from("3"));
+
+            x.replace_symbol(&SimplexAtom::from("2"), &SimplexAtom::from("1"));
+
+            let list_b = SimplexList::new("List") 
+                .push(&x)
+                .push(&ExpressionPointer::from("2"))
+                .push(&ExpressionPointer::from("3"));
+
+
+            assert_eq!(list_a.as_str(), "List[1, 2, 3]");
+            assert_eq!(list_b.as_str(), "List[1, 2, 3]");
+
+            x.replace_symbol(&SimplexAtom::from("1"), &SimplexAtom::from("9"));
+
+            assert_eq!(list_a.as_str(), "List[9, 2, 3]");
+            assert_eq!(list_b.as_str(), "List[9, 2, 3]");
+        }
     }
 
 mod test_intrinsics {
