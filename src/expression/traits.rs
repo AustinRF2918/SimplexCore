@@ -3,7 +3,7 @@ use std::borrow::Cow;
 use expression::structure::SimplexPointer;
 use expression::atom::structure::SimplexAtom;
 
-pub trait BaseExpression {
+pub trait BaseExpression : Drop{
     fn get_head(&self) -> Option<SimplexAtom>;
     fn get_rest(&self) -> Option<SimplexPointer>;
 
@@ -11,4 +11,8 @@ pub trait BaseExpression {
 
     fn to_string(&self) -> String;
     fn as_str<'a>(&'a self) -> Cow<'a, str> { Cow::Owned(self.to_string())} 
+
+    fn uniq_id(&self) -> String;
+    fn set_uniq_id(&mut self, id: u64);
 }
+

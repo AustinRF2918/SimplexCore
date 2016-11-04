@@ -10,6 +10,12 @@ pub enum SimplexAtom {
     SimplexNumeric(Numeric),
 }
 
+impl Drop for SimplexAtom {
+    fn drop(&mut self) {
+        println!("[Heavyweight] Dropping Atom: {} which is copyable.", self.to_string());
+    }
+}
+
 impl BaseExpression for SimplexAtom {
     fn get_head(&self) -> Option<SimplexAtom> {
         match self {
@@ -43,5 +49,13 @@ impl BaseExpression for SimplexAtom {
         } 
 
         SimplexPointer::from(self.clone())
+    }
+
+    fn uniq_id(&self) -> String {
+        "Copyable".to_string()
+    }
+
+    fn set_uniq_id(&mut self, id: u64) {
+        panic!("This is a copyable primitive, it doesn't have a memory location visible because it is ALWAYS copied.");
     }
 }

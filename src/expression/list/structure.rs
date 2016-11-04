@@ -10,7 +10,16 @@ use parsing::utilities::symbols::representable_symbol;
 #[derive(Clone, Debug)]
 pub struct SimplexList {
     head: SimplexAtom,
+    uniq_id: u64,
     expressions: LinkedList<SimplexPointer>,
+}
+
+
+impl Drop for SimplexList {
+    fn drop(&mut self) {
+        self.expressions.clear();
+        println!("[Lightweight] Dropping List: {} with id: {}", self.as_str(), self.uniq_id());
+    }
 }
 
 impl SimplexList {
@@ -19,6 +28,7 @@ impl SimplexList {
             SimplexList {
                 head: SimplexAtom::from(head_name),
                 expressions: LinkedList::new(),
+                uniq_id: 0
             }
         } else {
             // Implement Error Type 
@@ -28,6 +38,11 @@ impl SimplexList {
 
     pub fn push(mut self, e: &SimplexPointer) -> SimplexList {
         self.expressions.push_back(e.clone());
+        self
+    }
+
+    pub fn pop(mut self) -> SimplexList {
+        self.expressions.pop_back();
         self
     }
 
@@ -56,6 +71,7 @@ impl BaseExpression for SimplexList {
     }
 
     fn get_rest(&self) -> Option<SimplexPointer> {
+        println!("[get_rest] Begin..");
         let mut new_list = self.clone();
         new_list.expressions.pop_front();
 
@@ -64,6 +80,7 @@ impl BaseExpression for SimplexList {
         } else {
             Some(SimplexPointer::from(new_list))
         }
+
     }
 
     fn to_string(&self) -> String {
@@ -81,5 +98,13 @@ impl BaseExpression for SimplexList {
         }
 
         SimplexPointer::from(self.clone())
+    }
+
+    fn uniq_id(&self) -> String {
+        self.uniq_id.to_string()
+    }
+
+    fn set_uniq_id(&mut self, id: u64) {
+        self.uniq_id = id;
     }
 }

@@ -8,9 +8,6 @@ extern crate decimal;
 #[macro_use]
 extern crate lazy_static;
 
-#[macro_use]
-use expression::macros;
-
 extern crate regex;
 
 use std::io::{self, BufRead};

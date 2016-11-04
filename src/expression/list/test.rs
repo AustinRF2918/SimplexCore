@@ -8,8 +8,10 @@ mod test {
 
         #[test]
         fn it_instantiates() {
+            {
             let s_exp = SimplexList::new("List");
             assert_eq!(s_exp.as_str(), "List[]");
+            }
         }
 
         #[test]
@@ -19,7 +21,7 @@ mod test {
         }
 
         #[test]
-        fn it_pushelists() {
+        fn it_pushes_lists() {
             let s_exp = SimplexList::new("List") 
                 .push(&SimplexPointer::from("x"))
                 .push(&SimplexPointer::from("y"))
@@ -77,28 +79,107 @@ mod test_intrinsics {
                 .push(&SimplexPointer::from("x"))
                 .push(&SimplexPointer::from("y"))
                 .push(&SimplexPointer::from("z"));
+
+            let y = m_exp.get_rest().unwrap();
             assert_eq!(m_exp.get_rest().unwrap().as_str(), "List[x, y, z]");
+            assert_eq!(y.get_rest().unwrap().as_str(), "List[y, z]");
         }
 
         #[test]
-        fn it_gets_rest_recursively_once() {
+        fn it_gets_rest_recursively_one_more() {
             let m_exp = SimplexList::new("List")
+                .push(&SimplexPointer::from("b"))
                 .push(&SimplexPointer::from("a"))
                 .push(&SimplexPointer::from("x"))
                 .push(&SimplexPointer::from("y"))
                 .push(&SimplexPointer::from("z"));
 
             let x  = m_exp.get_rest().unwrap();
-            assert_eq!(x.as_str(), "List[x, y, z]");
+            assert_eq!(x.as_str(), "List[a, x, y, z]");
 
             let y = x.get_rest().unwrap();
-            assert_eq!(y.as_str(), "List[y, z]");
+            assert_eq!(y.as_str(), "List[x, y, z]");
 
             let z = y.get_rest().unwrap();
-            assert_eq!(z.as_str(), "List[z]");
+            assert_eq!(z.as_str(), "List[y, z]");
 
-            let a = z.get_rest();
-            assert_eq!(a, None);
+            let a = z.get_rest().unwrap();
+            assert_eq!(a.as_str(), "List[z]");
+
+            let b = a.get_rest();
+            assert_eq!(b, None);
+        }
+
+        #[test]
+        fn it_gets_rest_recursively_normal() {
+
+            {
+                let mut m_exp = SimplexList::new("List")
+                    .push(&SimplexPointer::from("a"))
+                    .push(&SimplexPointer::from("x"))
+                    .push(&SimplexPointer::from("y"))
+                    .push(&SimplexPointer::from("z"));
+                m_exp.set_uniq_id(1);
+
+                let mut x  = m_exp.get_rest().unwrap();
+                assert_eq!(x.as_str(), "List[x, y, z]");
+                x.set_uniq_id(2);
+
+                let mut y = x.get_rest().unwrap();
+                assert_eq!(y.as_str(), "List[y, z]");
+                y.set_uniq_id(3);
+
+                let mut z = y.get_rest().unwrap();
+                assert_eq!(z.as_str(), "List[z]");
+                z.set_uniq_id(4);
+
+                let mut a = z.get_rest();
+                assert_eq!(a, None);
+            }
+
+        }
+
+        #[test]
+        fn it_gets_rest_recursively_one_less() {
+            let m_exp = SimplexList::new("List")
+                .push(&SimplexPointer::from("x"))
+                .push(&SimplexPointer::from("y"))
+                .push(&SimplexPointer::from("z"));
+
+            let x  = m_exp.get_rest().unwrap();
+            assert_eq!(x.as_str(), "List[y, z]");
+
+            let y = x.get_rest().unwrap();
+            assert_eq!(y.as_str(), "List[z]");
+
+            let z = y.get_rest();
+            assert_eq!(z, None);
+        }
+
+        #[test]
+        fn it_gets_rest_recursively_two_less() {
+            let mut m_exp = SimplexList::new("List")
+                .push(&SimplexPointer::from("y"))
+                .push(&SimplexPointer::from("z"));
+            m_exp.set_uniq_id(1);
+
+            let mut x  = m_exp.get_rest().unwrap();
+            x.set_uniq_id(2);
+            assert_eq!(x.as_str(), "List[z]");
+
+            let y = x.get_rest();
+            assert_eq!(y, None);
+
+            println!("Destructing All.");
+        }
+
+        #[test]
+        fn it_gets_rest_recursively_three_less() {
+            let m_exp = SimplexList::new("List")
+                .push(&SimplexPointer::from("y"));
+
+            let x  = m_exp.get_rest();
+            assert_eq!(x, None);
         }
     }
 
@@ -193,7 +274,7 @@ mod test_intrinsics {
         use expression::structure::SimplexPointer;
 
         #[test]
-        fn it_composes_clones() {
+        fn it_composes_clones_a() {
             let list_a = SimplexList::new("List")
                 .push(&SimplexPointer::from("x"));
 
@@ -239,33 +320,6 @@ mod test_intrinsics {
             x.replace_symbol(&SimplexAtom::from("x"), &SimplexAtom::from("y"));
 
             assert_eq!(list_e.as_str(), "List[List[d, List[c, List[y]], var], List[d, List[c, List[y]], var]]");
-        }
-
-        #[test]
-        fn it_composes_clones_with_complex_replacement() {
-            let mut x = SimplexPointer::from("x");
-
-            let list_a = SimplexPointer::from(SimplexList::new("List")
-                .push(&x));
-
-            let list_b = SimplexList::new("List")
-                .push(&SimplexPointer::from("c"))
-                .push(&list_a);
-
-            let list_c = SimplexPointer::from(SimplexList::new("List")
-                .push(&SimplexPointer::from("d"))
-                .push(&SimplexPointer::from(list_b))
-                .push(&SimplexPointer::from("var")));
-
-            let list_e = SimplexList::new("List")
-                .push(&list_c)
-                .push(&list_c);
-
-            assert_eq!(list_e.as_str(), "List[List[d, List[c, List[x]], var], List[d, List[c, List[x]], var]]");
-
-            x.replace_symbol(&SimplexAtom::from("x"), &SimplexPointer::from(SimplexList::new("List")));
-
-            assert_eq!(list_e.as_str(), "List[List[d, List[c, List[List[]]], var], List[d, List[c, List[List[]]], var]]");
         }
     }
 
