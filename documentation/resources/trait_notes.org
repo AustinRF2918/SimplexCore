@@ -1,0 +1,84 @@
+* Implementing Generic Traits
+  Implementation of structures allows us to bound an implementation to a 
+  trait bounded parameter. This means that for certain generic types,
+  we can implement certain functions. Here is an example
+
+  #+BEGIN_SRC Rust
+    impl <T: PartialEq> Rectangle<T> {
+      fn is_square(&self) -> bool {
+        self.width == self.height
+      }
+    }
+  #+END_SRC
+
+* Monomorphization
+  Generic trait bounded functions use monomorphization to dispatch. This means 
+  that the compiler can basically reason about the type being passed into a 
+  function when a program is compiled. Therefore these functions statically
+  dispatch.
+
+* Multiple Trait Bounds
+  If we need multiple traits, just use the +.
+  
+* Requiring Bounds
+  Bounds can be required for general types, as show above. It is also possible,
+  however, to allow static dispatch based on implementation of a general type
+  *in relation* to a non-general type. See the following:
+  
+  #+BEGIN_SRC Rust
+    fn inverse<T>(x: i32) -> T 
+       where i32: ConvertTo<T> { 
+       x.convert()
+    }
+  #+END_SRC
+  
+  Where ConvertTo is a trait that requires the implementation of convert. This
+  is less general than the implementation of a purely generic function, but
+  also allows us to do some interesting reasoning at compile time. Observe 
+  a further way to generalize sucha function:
+
+  #+BEGIN_SRC Rust
+    fn inverse<T, E>(x: E) -> T 
+       where E: ConvertTo<T> { 
+       x.convert()
+    }
+  #+END_SRC
+  
+  Note that this itself has trade-offs that we could only reason about if we 
+  were solving a problem: i32 might be a fixed type (Think of Expression in 
+  Simplex, for example) that we want to be the central "point of control" for
+  our API, in such a case, we may only want someone to implement further 
+  functionality on that, for example.
+  
+* Default Implementations
+  We can actually use trait attributes to create automatically defined 
+  functions: observe the following:
+  
+  #+BEGIN_SRC
+    trait Foo {
+      fn is_valid(&self) -> bool;
+      fn is_invalid(&self) -> bool { !self.is_valid() };
+    }
+  #+END_SRC
+  
+  This is how Rust allows us to easily define iterators which have higher 
+  order functions attached to them.
+
+* Inheritance
+  Just look at the code...
+  #+BEGIN_SRC
+    trait Foo {
+      fn foo(&self);
+    }
+
+    trait FooBar {
+      fn foobar(&self);
+    }
+  #+END_SRC
+
+* Deriving
+  Just look at the code...
+  #+BEGIN_SRC
+    #[derive(Debug)]
+    struct Foo;
+  #+END_SRC
