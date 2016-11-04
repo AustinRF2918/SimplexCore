@@ -5,7 +5,7 @@ use atom::numbers::number::Numeric;
 use atom::numbers::traits;
 
 use expression::traits::BaseExpression;
-use expression::structure::Expression;
+use expression::structure::ExpressionPointer;
 
 use parsing::utilities::numerics::representable_numeric;
 use parsing::utilities::string::representable_string;
@@ -36,7 +36,7 @@ impl BaseExpression for SimplexAtom {
         }
     }
 
-    fn get_rest(&self) -> Option<SimplexAtom> {
+    fn get_rest(&self) -> Option<ExpressionPointer> {
         None
     }
 
@@ -46,5 +46,13 @@ impl BaseExpression for SimplexAtom {
             &SimplexAtom::SimplexString(ref n) => n.clone(),
             &SimplexAtom::SimplexSymbol(ref n) => n.clone(),
         }
+    }
+
+    fn replace_symbol(&mut self, symbol: &BaseExpression, new: &BaseExpression) -> ExpressionPointer {
+        if self.to_string() == symbol.to_string() {
+            *self = SimplexAtom::from(new.to_string())
+        } 
+
+        ExpressionPointer::from(self.clone())
     }
 }

@@ -3,7 +3,7 @@ use std::collections::LinkedList;
 use std::sync::{Arc, Mutex};
 
 use expression::traits::BaseExpression;
-use expression::structure::Expression;
+use expression::structure::ExpressionPointer;
 
 use atom::atom::SimplexAtom;
 use parsing::utilities::symbols::representable_symbol;
@@ -12,7 +12,7 @@ use parsing::utilities::symbols::representable_symbol;
 #[derive(Clone, Debug)]
 pub struct SimplexList {
     head: SimplexAtom,
-    expressions: LinkedList<Expression>,
+    expressions: LinkedList<ExpressionPointer>,
 }
 
 impl SimplexList {
@@ -28,54 +28,9 @@ impl SimplexList {
         }
     }
 
-    pub fn push_expression(mut self, e: Expression) -> SimplexList {
-        self.expressions.push_back(e);
-        self
-    }
-
-    pub fn push_pointer(mut self, e: &Expression) -> SimplexList {
+    pub fn push(mut self, e: &ExpressionPointer) -> SimplexList {
         self.expressions.push_back(e.clone());
         self
-    }
-
-    pub fn replace_symbol(mut self, symbol: Expression, new: Expression) -> SimplexList {
-        match &mut self.head {
-            &mut SimplexAtom::SimplexSymbol(_) => {
-                if self.head.as_str() == symbol.as_str() {
-                    // TODO: Make static replacement possible by making trait
-                    // in expression non-cow. This would be considered an
-                    // optimization and will not be done for a while.
-                    self.head = SimplexAtom::from(new.to_string());
-                }
-            }
-            _ => {
-                panic!("Somehow a non-primitive was part of the SimplexList head...");
-            }
-        }
-
-        for i in &mut self.expressions {
-            match i {
-                &mut Expression::Atomic(_) => {
-                    if i.to_string() == symbol.to_string() {
-                        *i = new.clone();
-                    }
-                }
-
-                &mut Expression::List(ref mut list) => {
-                    *list = list.clone().replace_symbol(symbol.clone(), new.clone());
-                }
-            }
-        }
-
-        self
-    }
-
-    pub fn to_generic(&self) -> Expression {
-        Expression::List(self.clone())
-    }
-
-    pub fn make_generic(self) -> Expression {
-        Expression::List(self.clone())
     }
 
     pub fn body_to_string(&self) -> String {
@@ -89,7 +44,7 @@ impl SimplexList {
             body.push_str(&entry.as_str());
 
             if entry_number != (self.expressions.len() - 1) {
-              body.push_str(delimiter);
+                body.push_str(delimiter);
             }
         }
 
@@ -102,19 +57,31 @@ impl BaseExpression for SimplexList {
         Some(self.head.clone())
     }
 
-    fn get_rest(&self) -> Option<SimplexList> {
+    fn get_rest(&self) -> Option<ExpressionPointer> {
         let mut new_list = self.clone();
         new_list.expressions.pop_front();
 
         if new_list.expressions.len() == 0 {
             None
         } else {
-            Some(new_list)
+            Some(ExpressionPointer::from(new_list))
         }
     }
 
     fn to_string(&self) -> String {
         //Watch out!
         format!("{}[{}]", self.get_head().unwrap().as_str(), self.body_to_string())
+    }
+
+    fn replace_symbol(&mut self, symbol: &BaseExpression, new: &BaseExpression) -> ExpressionPointer {
+        if self.head.as_str() == symbol.as_str() {
+            self.head = SimplexAtom::from(new.to_string());
+        }
+
+        for i in &mut self.expressions {
+            // TODO: REIMPLEMENT LOGIC.
+        }
+
+        ExpressionPointer::from(self.clone())
     }
 }

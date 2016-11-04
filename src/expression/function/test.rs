@@ -1,9 +1,9 @@
 #[cfg(test)]
 mod test {
     mod test_intrinsics {
-        use expression::structure::Expression;
         use expression::list::structure::SimplexList;
         use expression::function::structure::SimplexFunction;
+        use atom::atom::SimplexAtom;
         use expression::traits::BaseExpression;
 
         #[test]
@@ -96,7 +96,6 @@ mod test {
     }
 
     mod test_nesting_properties {
-        use expression::structure::Expression;
         use expression::list::structure::SimplexList;
         use expression::function::structure::SimplexFunction;
         use expression::traits::BaseExpression;

@@ -1,10 +1,10 @@
 #[cfg(test)]
 mod test {
     mod test_general_functions {
-        use expression::structure::Expression;
         use expression::list::structure::SimplexList;
+        use atom::atom::SimplexAtom;
         use expression::traits::BaseExpression;
-        use expression::traits::Transmutable;
+        use expression::structure::ExpressionPointer;
 
         #[test]
         fn it_instantiates() {
@@ -20,9 +20,9 @@ mod test {
         #[test]
         fn it_pushelists() {
             let s_exp = SimplexList::new("List") 
-                .push_expression(Expression::from("x"))
-                .push_expression(Expression::from("y"))
-                .push_expression(Expression::from("z"));
+                .push(&ExpressionPointer::from("x"))
+                .push(&ExpressionPointer::from("y"))
+                .push(&ExpressionPointer::from("z"));
 
             assert_eq!(s_exp.as_str(), "List[x, y, z]");
         }
@@ -30,36 +30,37 @@ mod test {
         #[test]
         fn it_pushes_numbers() {
             let s_exp = SimplexList::new("List") 
-                .push_expression(Expression::from("1"))
-                .push_expression(Expression::from("2"))
-                .push_expression(Expression::from("3"));
+                .push(&ExpressionPointer::from("1"))
+                .push(&ExpressionPointer::from("2"))
+                .push(&ExpressionPointer::from("3"));
 
             assert_eq!(s_exp.as_str(), "List[1, 2, 3]");
         }
     }
 
 mod test_intrinsics {
-        use expression::structure::Expression;
         use expression::list::structure::SimplexList;
         use expression::traits::BaseExpression;
+        use atom::atom::SimplexAtom;
+        use expression::structure::ExpressionPointer;
 
         #[test]
         fn it_gets_rest() {
             let m_exp = SimplexList::new("List")
-                .push_expression(Expression::from("a"))
-                .push_expression(Expression::from("x"))
-                .push_expression(Expression::from("y"))
-                .push_expression(Expression::from("z"));
+                .push(&ExpressionPointer::from("a"))
+                .push(&ExpressionPointer::from("x"))
+                .push(&ExpressionPointer::from("y"))
+                .push(&ExpressionPointer::from("z"));
             assert_eq!(m_exp.get_rest().unwrap().as_str(), "List[x, y, z]");
         }
 
         #[test]
         fn it_gets_rest_recursively_once() {
             let m_exp = SimplexList::new("List")
-                .push_expression(Expression::from("a"))
-                .push_expression(Expression::from("x"))
-                .push_expression(Expression::from("y"))
-                .push_expression(Expression::from("z"));
+                .push(&ExpressionPointer::from("a"))
+                .push(&ExpressionPointer::from("x"))
+                .push(&ExpressionPointer::from("y"))
+                .push(&ExpressionPointer::from("z"));
 
             let x  = m_exp.get_rest().unwrap();
             assert_eq!(x.as_str(), "List[x, y, z]");
@@ -81,19 +82,18 @@ mod test_intrinsics {
 
 
     mod test_composition {
-        use expression::structure::Expression;
         use expression::list::structure::SimplexList;
         use expression::traits::BaseExpression;
+        use atom::atom::SimplexAtom;
+        use expression::structure::ExpressionPointer;
 
         #[test]
         fn it_composes_LsLe() {
             let list_a = SimplexList::new("List") 
-                .push_expression(Expression::from("z"))
-                .make_generic();
+                .push(&ExpressionPointer::from("z"));
 
             let list_b = SimplexList::new("List") 
-                .push_expression(list_a)
-                .make_generic();
+                .push(&ExpressionPointer::from(list_a));
 
             assert_eq!(list_b.as_str(), "List[List[z]]")
         }
@@ -101,17 +101,14 @@ mod test_intrinsics {
         #[test]
         fn it_composes_LsLLe() {
             let list_a = SimplexList::new("List") 
-                .push_expression(Expression::from("z"))
-                .make_generic();
+                .push(&ExpressionPointer::from("z"));
 
             let list_b = SimplexList::new("List")
-                .push_expression(Expression::from("x"))
-                .make_generic();
+                .push(&ExpressionPointer::from("x"));
 
             let list_c = SimplexList::new("List")
-                .push_expression(list_a)
-                .push_expression(list_b)
-                .make_generic();
+                .push(&ExpressionPointer::from(list_a))
+                .push(&ExpressionPointer::from(list_b));
 
             assert_eq!(list_c.as_str(), "List[List[z], List[x]]");
         }
@@ -119,16 +116,13 @@ mod test_intrinsics {
         #[test]
         fn it_composes_LsLsLee() {
             let list_a = SimplexList::new("List")
-                .push_expression(Expression::from("x"))
-                .make_generic();
+                .push(&ExpressionPointer::from("x"));
 
             let list_b = SimplexList::new("List")
-                .push_expression(list_a)
-                .make_generic();
+                .push(&ExpressionPointer::from(list_a));
 
             let list_c = SimplexList::new("List")
-                .push_expression(list_b)
-                .make_generic();
+                .push(&ExpressionPointer::from(list_b));
 
             assert_eq!(list_c.as_str(), "List[List[List[x]]]");
         }
@@ -136,18 +130,15 @@ mod test_intrinsics {
         #[test]
         fn it_composes_LpsLpsLpee() {
             let list_a = SimplexList::new("List")
-                .push_expression(Expression::from("x"))
-                .make_generic();
+                .push(&ExpressionPointer::from("x"));
 
             let list_b = SimplexList::new("List")
-                .push_expression(Expression::from("c"))
-                .push_expression(list_a)
-                .make_generic();
+                .push(&ExpressionPointer::from("c"))
+                .push(&ExpressionPointer::from(list_a));
 
             let list_c = SimplexList::new("List")
-                .push_expression(Expression::from("d"))
-                .push_expression(list_b)
-                .make_generic();
+                .push(&ExpressionPointer::from("d"))
+                .push(&ExpressionPointer::from(list_b));
 
             assert_eq!(list_c.as_str(), "List[d, List[c, List[x]]]");
         }
@@ -155,83 +146,76 @@ mod test_intrinsics {
         #[test]
         fn it_composes_LpsLpsLpepe() {
             let list_a = SimplexList::new("List")
-                .push_expression(Expression::from("x"))
-                .make_generic();
+                .push(&ExpressionPointer::from("x"));
 
             let list_b = SimplexList::new("List")
-                .push_expression(Expression::from("c"))
-                .push_expression(list_a)
-                .make_generic();
+                .push(&ExpressionPointer::from("c"))
+                .push(&ExpressionPointer::from(list_a));
 
             let list_c = SimplexList::new("List")
-                .push_expression(Expression::from("d"))
-                .push_expression(list_b)
-                .push_expression(Expression::from("var"))
-                .make_generic();
+                .push(&ExpressionPointer::from("d"))
+                .push(&ExpressionPointer::from(list_b))
+                .push(&ExpressionPointer::from("var"));
 
             assert_eq!(list_c.as_str(), "List[d, List[c, List[x]], var]")
         }
     }
 
     mod test_usability {
-        use expression::structure::Expression;
         use expression::list::structure::SimplexList;
         use expression::traits::BaseExpression;
+        use atom::atom::SimplexAtom;
+        use expression::structure::ExpressionPointer;
 
         #[test]
         fn it_composes_clones() {
             let list_a = SimplexList::new("List")
-                .push_expression(Expression::from("x"))
-                .make_generic();
+                .push(&ExpressionPointer::from("x"));
 
             let list_b = SimplexList::new("List")
-                .push_expression(Expression::from("c"))
-                .push_expression(list_a)
-                .make_generic();
+                .push(&ExpressionPointer::from("c"))
+                .push(&ExpressionPointer::from(list_a));
 
             let list_c = SimplexList::new("List")
-                .push_expression(Expression::from("d"))
-                .push_expression(list_b)
-                .push_expression(Expression::from("var"))
-                .make_generic();
+                .push(&ExpressionPointer::from("d"))
+                .push(&ExpressionPointer::from(list_b))
+                .push(&ExpressionPointer::from("var"));
 
             let list_d = list_c.clone();
             let list_e = SimplexList::new("List")
-                .push_expression(list_c)
-                .push_expression(list_d);
+                .push(&ExpressionPointer::from(list_c))
+                .push(&ExpressionPointer::from(list_d));
 
             assert_eq!(list_e.as_str(), "List[List[d, List[c, List[x]], var], List[d, List[c, List[x]], var]]")
         }
     }
 
     mod test_evaluation {
-        use expression::structure::Expression;
         use expression::list::structure::SimplexList;
         use expression::traits::BaseExpression;
+        use atom::atom::SimplexAtom;
+        use expression::structure::ExpressionPointer;
 
         #[test]
         fn it_substitutes_simple() {
             let list_a = SimplexList::new("List")
-                .push_expression(Expression::from("x"))
-                .make_generic();
+                .push(&ExpressionPointer::from("x"));
 
             let list_b = SimplexList::new("List")
-                .push_expression(Expression::from("c"))
-                .push_expression(list_a)
-                .make_generic();
+                .push(&ExpressionPointer::from("c"))
+                .push(&ExpressionPointer::from(list_a));
 
             let list_c = SimplexList::new("List")
-                .push_expression(Expression::from("d"))
-                .push_expression(list_b)
-                .push_expression(Expression::from("var"))
-                .make_generic();
+                .push(&ExpressionPointer::from("d"))
+                .push(&ExpressionPointer::from(list_b))
+                .push(&ExpressionPointer::from("var"));
 
             let list_d = list_c.clone();
             let list_e = SimplexList::new("List")
-                .push_expression(Expression::from("d"))
-                .push_expression(list_c)
-                .push_expression(list_d)
-                .replace_symbol(Expression::from("d"), Expression::from("2"));
+                .push(&ExpressionPointer::from("d"))
+                .push(&ExpressionPointer::from(list_c))
+                .push(&ExpressionPointer::from(list_d))
+                .replace_symbol(&ExpressionPointer::from("d"), &ExpressionPointer::from("2"));
 
             assert_eq!(list_e.as_str(), "List[2, List[2, List[c, List[x]], var], List[2, List[c, List[x]], var]]")
         }
@@ -239,27 +223,24 @@ mod test_intrinsics {
         #[test]
         fn it_substitutes_less_simple() {
             let list_a = SimplexList::new("List")
-                .push_expression(Expression::from("x"))
-                .make_generic();
+                .push(&ExpressionPointer::from("x"));
 
             let list_b = SimplexList::new("List")
-                .push_expression(Expression::from("c"))
-                .push_expression(list_a)
-                .make_generic();
+                .push(&ExpressionPointer::from("c"))
+                .push(&ExpressionPointer::from(list_a));
 
             let list_c = SimplexList::new("List")
-                .push_expression(Expression::from("d"))
-                .push_expression(list_b)
-                .push_expression(Expression::from("var"))
-                .make_generic();
+                .push(&ExpressionPointer::from("d"))
+                .push(&ExpressionPointer::from(list_b))
+                .push(&ExpressionPointer::from("var"));
 
             let list_d = list_c.clone();
             let list_e = SimplexList::new("List")
-                .push_expression(Expression::from("d"))
-                .push_expression(list_c)
-                .push_expression(list_d)
-                .replace_symbol(Expression::from("d"), Expression::from("2"))
-                .replace_symbol(Expression::from("c"), Expression::from("3"));
+                .push(&ExpressionPointer::from("d"))
+                .push(&ExpressionPointer::from(list_c))
+                .push(&ExpressionPointer::from(list_d))
+                .replace_symbol(&ExpressionPointer::from("d"), &ExpressionPointer::from("2"))
+                .replace_symbol(&ExpressionPointer::from("c"), &ExpressionPointer::from("3"));
 
             assert_eq!(list_e.as_str(), "List[2, List[2, List[3, List[x]], var], List[2, List[3, List[x]], var]]")
         }
@@ -267,28 +248,25 @@ mod test_intrinsics {
         #[test]
         fn it_substitutes_even_less_simple() {
             let list_a = SimplexList::new("List")
-                .push_expression(Expression::from("x"))
-                .make_generic();
+                .push(&ExpressionPointer::from("x"));
 
             let list_b = SimplexList::new("List")
-                .push_expression(Expression::from("c"))
-                .push_expression(list_a)
-                .make_generic();
+                .push(&ExpressionPointer::from("c"))
+                .push(&ExpressionPointer::from(list_a));
 
             let list_c = SimplexList::new("List")
-                .push_expression(Expression::from("d"))
-                .push_expression(list_b)
-                .push_expression(Expression::from("var"))
-                .make_generic();
+                .push(&ExpressionPointer::from("d"))
+                .push(&ExpressionPointer::from(list_b))
+                .push(&ExpressionPointer::from("var"));
 
             let list_d = list_c.clone();
             let list_e = SimplexList::new("List")
-                .push_expression(Expression::from("d"))
-                .push_expression(list_c)
-                .push_expression(list_d)
-                .replace_symbol(Expression::from("d"), Expression::from("2"))
-                .replace_symbol(Expression::from("c"), Expression::from("3"))
-                .replace_symbol(Expression::from("x"), Expression::from("\"Hello\""));
+                .push(&ExpressionPointer::from("d"))
+                .push(&ExpressionPointer::from(list_c))
+                .push(&ExpressionPointer::from(list_d))
+                .replace_symbol(&ExpressionPointer::from("d"), &ExpressionPointer::from("2"))
+                .replace_symbol(&ExpressionPointer::from("c"), &ExpressionPointer::from("3"))
+                .replace_symbol(&ExpressionPointer::from("x"), &ExpressionPointer::from("\"Hello\""));
 
             assert_eq!(list_e.as_str(), "List[2, List[2, List[3, List[\"Hello\"]], var], List[2, List[3, List[\"Hello\"]], var]]")
         }
@@ -296,44 +274,28 @@ mod test_intrinsics {
         #[test]
         fn it_substitutes_multichar_symbol() {
             let list_a = SimplexList::new("List")
-                .push_expression(Expression::from("x"))
-                .make_generic();
+                .push(&ExpressionPointer::from("x"));
 
             let list_b = SimplexList::new("List")
-                .push_expression(Expression::from("c"))
-                .push_expression(list_a)
-                .make_generic();
+                .push(&ExpressionPointer::from("c"))
+                .push(&ExpressionPointer::from(list_a));
 
             let list_c = SimplexList::new("List")
-                .push_expression(Expression::from("d"))
-                .push_expression(list_b)
-                .push_expression(Expression::from("var"))
-                .make_generic();
+                .push(&ExpressionPointer::from("d"))
+                .push(&ExpressionPointer::from(list_b))
+                .push(&ExpressionPointer::from("var"));
 
             let list_d = list_c.clone();
             let list_e = SimplexList::new("List")
-                .push_expression(Expression::from("d"))
-                .push_expression(list_c)
-                .push_expression(list_d)
-                .replace_symbol(Expression::from("d"), Expression::from("2"))
-                .replace_symbol(Expression::from("c"), Expression::from("3"))
-                .replace_symbol(Expression::from("x"), Expression::from("\"Hello\""))
-                .replace_symbol(Expression::from("var"), Expression::from("HelloWorld"));
+                .push(&ExpressionPointer::from("d"))
+                .push(&ExpressionPointer::from(list_c))
+                .push(&ExpressionPointer::from(list_d))
+                .replace_symbol(&ExpressionPointer::from("d"), &ExpressionPointer::from("2"))
+                .replace_symbol(&ExpressionPointer::from("c"), &ExpressionPointer::from("3"))
+                .replace_symbol(&ExpressionPointer::from("x"), &ExpressionPointer::from("\"Hello\""))
+                .replace_symbol(&ExpressionPointer::from("var"), &ExpressionPointer::from("HelloWorld"));
 
             assert_eq!(list_e.as_str(), "List[2, List[2, List[3, List[\"Hello\"]], HelloWorld], List[2, List[3, List[\"Hello\"]], HelloWorld]]")
         }
-    }
-
-    mod test_sharing {
-        use std::sync::mpsc::channel;
-        use std::thread;
-        use std::sync::{Arc, Mutex};
-
-        use atom::atom::SimplexAtom;
-
-        use expression::structure::Expression;
-        use expression::list::structure::SimplexList;
-        use expression::traits::{BaseExpression, Transmutable};
-        
     }
 }
