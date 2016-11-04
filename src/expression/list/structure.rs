@@ -34,21 +34,21 @@ impl SimplexList {
     }
 
     pub fn body_to_string(&self) -> String {
-        // TODO: This could be really nicely optimized by giving the BaseExpression trait
-        // that ability to calculate its own length and use that instead of an approximation.
+    // TODO: This could be really nicely optimized by giving the BaseExpression trait
+    // that ability to calculate its own length and use that instead of an approximation.
 
-        let delimiter = ", ";
-        let mut body = String::with_capacity(self.expressions.len() * 5);
+    let delimiter = ", ";
+    let mut body = String::with_capacity(self.expressions.len() * 5);
 
-        for (entry_number, entry) in self.expressions.iter().enumerate() {
-            body.push_str(&entry.as_str());
+    for (entry_number, entry) in self.expressions.iter().enumerate() {
+        body.push_str(&entry.as_str());
 
-            if entry_number != (self.expressions.len() - 1) {
-                body.push_str(delimiter);
-            }
+        if entry_number != (self.expressions.len() - 1) {
+            body.push_str(delimiter);
         }
+    }
 
-        body
+    body
     }
 }
 
@@ -79,7 +79,7 @@ impl BaseExpression for SimplexList {
         }
 
         for i in &mut self.expressions {
-            // TODO: REIMPLEMENT LOGIC.
+            i.replace_symbol(symbol, new);
         }
 
         ExpressionPointer::from(self.clone())

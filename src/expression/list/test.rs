@@ -71,11 +71,8 @@ mod test_intrinsics {
             let z = y.get_rest().unwrap();
             assert_eq!(z.as_str(), "List[z]");
 
-            let a = z.get_rest().unwrap();
-            assert_eq!(a.as_str(), "List[]");
-
-            let b = a.get_rest().unwrap();
-            assert_eq!(b.as_str(), "List[]");
+            let a = z.get_rest();
+            assert_eq!(a, None);
         }
     }
 
