@@ -1,8 +1,8 @@
 use std::borrow::Cow;
 use std::sync::{Arc, Mutex};
 
-use atom::numbers::number::Numeric;
-use atom::numbers::traits;
+use expression::atom::numbers::number::Numeric;
+use expression::atom::numbers::traits;
 
 use expression::traits::BaseExpression;
 use expression::structure::SimplexPointer;

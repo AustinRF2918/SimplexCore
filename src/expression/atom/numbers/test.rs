@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     mod parsing_tests {
-        use atom::numbers::number::Numeric;
+        use expression::atom::numbers::number::Numeric;
         #[test]
         fn it_parses_int() {
             let x = Numeric::from("55");
@@ -34,7 +34,7 @@ mod tests {
     }
 
     mod formatting_tests {
-        use atom::numbers::number::Numeric;
+        use expression::atom::numbers::number::Numeric;
         #[test]
         fn it_shows_int() {
             let x = Numeric::from("55");
@@ -49,7 +49,7 @@ mod tests {
     }
 
     mod low_sized_addition {
-        use atom::numbers::number::Numeric;
+        use expression::atom::numbers::number::Numeric;
         #[test]
         fn it_computes_add_int_int() {
             let x = Numeric::from("55");
@@ -80,7 +80,7 @@ mod tests {
     }
 
     mod low_sized_subtraction {
-        use atom::numbers::number::Numeric;
+        use expression::atom::numbers::number::Numeric;
         #[test]
         fn it_computes_add_int_int() {
             let x = Numeric::from("55");
@@ -111,7 +111,7 @@ mod tests {
     }
 
     mod low_sized_multiplication {
-        use atom::numbers::number::Numeric;
+        use expression::atom::numbers::number::Numeric;
         #[test]
         fn it_computes_mul_int_int() {
             let x = Numeric::from("50");
@@ -142,7 +142,7 @@ mod tests {
     }
 
     mod low_sized_division {
-        use atom::numbers::number::Numeric;
+        use expression::atom::numbers::number::Numeric;
         #[test]
         fn it_computes_mul_int_int() {
             let x = Numeric::from("50");
@@ -173,7 +173,7 @@ mod tests {
     }
 
     mod low_sized_equality {
-        use atom::numbers::number::Numeric;
+        use expression::atom::numbers::number::Numeric;
         #[test]
         fn it_computes_eq_int_int() {
             let x = Numeric::from("50");
@@ -204,7 +204,7 @@ mod tests {
     }
 
     mod low_sized_inequality {
-        use atom::numbers::number::Numeric;
+        use expression::atom::numbers::number::Numeric;
         #[test]
         fn it_computes_eq_int_int() {
             let x = Numeric::from("50");
@@ -235,7 +235,7 @@ mod tests {
     }
 
     mod larger_sized_tests {
-        use atom::numbers::number::Numeric;
+        use expression::atom::numbers::number::Numeric;
 
         #[test]
         fn it_computes_big_mul_real_real() {

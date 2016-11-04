@@ -4,10 +4,9 @@ use std::fmt;
 use std::sync::{Arc, Mutex};
 use std::cmp::Ordering;
 
-use atom::atom::SimplexAtom;
-
 use expression::traits::BaseExpression;
 use expression::list::structure::SimplexList;
+use expression::atom::structure::SimplexAtom;
 
 #[derive(Clone)]
 pub struct SimplexPointer {

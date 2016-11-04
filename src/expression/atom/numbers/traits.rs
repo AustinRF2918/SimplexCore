@@ -1,4 +1,4 @@
-use atom::numbers::number::Numeric;
+use expression::atom::numbers::number::Numeric;
 
 extern crate decimal;
 use decimal::d128;

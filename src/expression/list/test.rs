@@ -2,7 +2,7 @@
 mod test {
     mod test_general_functions {
         use expression::list::structure::SimplexList;
-        use atom::atom::SimplexAtom;
+        use expression::atom::structure::SimplexAtom;
         use expression::traits::BaseExpression;
         use expression::structure::SimplexPointer;
 
@@ -67,7 +67,7 @@ mod test {
 mod test_intrinsics {
         use expression::list::structure::SimplexList;
         use expression::traits::BaseExpression;
-        use atom::atom::SimplexAtom;
+        use expression::atom::structure::SimplexAtom;
         use expression::structure::SimplexPointer;
 
         #[test]
@@ -105,7 +105,7 @@ mod test_intrinsics {
     mod test_composition {
         use expression::list::structure::SimplexList;
         use expression::traits::BaseExpression;
-        use atom::atom::SimplexAtom;
+        use expression::atom::structure::SimplexAtom;
         use expression::structure::SimplexPointer;
 
         #[test]
@@ -185,7 +185,7 @@ mod test_intrinsics {
     mod test_usability {
         use expression::list::structure::SimplexList;
         use expression::traits::BaseExpression;
-        use atom::atom::SimplexAtom;
+        use expression::atom::structure::SimplexAtom;
         use expression::structure::SimplexPointer;
 
         #[test]
@@ -268,7 +268,7 @@ mod test_intrinsics {
     mod test_evaluation {
         use expression::list::structure::SimplexList;
         use expression::traits::BaseExpression;
-        use atom::atom::SimplexAtom;
+        use expression::atom::structure::SimplexAtom;
         use expression::structure::SimplexPointer;
 
         #[test]

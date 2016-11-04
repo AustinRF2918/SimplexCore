@@ -1,6 +1,6 @@
-use atom::numbers::number::Numeric;
+use expression::atom::numbers::number::Numeric;
 
-use atom::atom::SimplexAtom;
+use expression::atom::structure::SimplexAtom;
 
 use parsing::utilities::numerics::representable_numeric;
 use parsing::utilities::string::representable_string;

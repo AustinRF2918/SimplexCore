@@ -1,6 +1,5 @@
 mod parsing;
 mod expression;
-mod atom;
 mod arithmetic;
 
 #[macro_use]
@@ -16,7 +15,7 @@ extern crate regex;
 
 use std::io::{self, BufRead};
 use std::collections::HashMap;
-use atom::numbers::number::Numeric;
+use expression::atom::numbers::number::Numeric;
 use regex::Regex;
 
 struct State {

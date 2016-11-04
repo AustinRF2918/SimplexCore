@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     mod test_intrinsics {
-        use atom::atom::SimplexAtom;
+        use expression::atom::structure::SimplexAtom;
         use expression::traits::BaseExpression;
 
         extern crate decimal;
@@ -30,7 +30,7 @@ mod tests {
 
     mod test_basic_numbers {
         mod test_real_numbers {
-            use atom::atom::SimplexAtom;
+            use expression::atom::structure::SimplexAtom;
             use expression::traits::BaseExpression;
 
             extern crate decimal;
@@ -46,7 +46,7 @@ mod tests {
         }
 
         mod test_int_numbers {
-            use atom::atom::SimplexAtom;
+            use expression::atom::structure::SimplexAtom;
             use expression::traits::BaseExpression;
 
             #[test]
@@ -56,7 +56,7 @@ mod tests {
         }
 
         mod test_type_deduction {
-            use atom::atom::SimplexAtom;
+            use expression::atom::structure::SimplexAtom;
             use expression::traits::BaseExpression;
 
             #[test]

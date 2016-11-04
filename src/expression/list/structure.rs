@@ -5,7 +5,7 @@ use std::sync::{Arc, Mutex};
 use expression::traits::BaseExpression;
 use expression::structure::SimplexPointer;
 
-use atom::atom::SimplexAtom;
+use expression::atom::structure::SimplexAtom;
 use parsing::utilities::symbols::representable_symbol;
 
 // SExpression == SimplexList
