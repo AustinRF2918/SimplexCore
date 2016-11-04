@@ -3,7 +3,7 @@ use std::collections::LinkedList;
 use std::sync::{Arc, Mutex};
 
 use expression::traits::BaseExpression;
-use expression::structure::ExpressionPointer;
+use expression::structure::SimplexPointer;
 
 use atom::atom::SimplexAtom;
 use parsing::utilities::symbols::representable_symbol;
@@ -12,7 +12,7 @@ use parsing::utilities::symbols::representable_symbol;
 #[derive(Clone, Debug)]
 pub struct SimplexList {
     head: SimplexAtom,
-    expressions: LinkedList<ExpressionPointer>,
+    expressions: LinkedList<SimplexPointer>,
 }
 
 impl SimplexList {
@@ -28,7 +28,7 @@ impl SimplexList {
         }
     }
 
-    pub fn push(mut self, e: &ExpressionPointer) -> SimplexList {
+    pub fn push(mut self, e: &SimplexPointer) -> SimplexList {
         self.expressions.push_back(e.clone());
         self
     }
@@ -57,14 +57,14 @@ impl BaseExpression for SimplexList {
         Some(self.head.clone())
     }
 
-    fn get_rest(&self) -> Option<ExpressionPointer> {
+    fn get_rest(&self) -> Option<SimplexPointer> {
         let mut new_list = self.clone();
         new_list.expressions.pop_front();
 
         if new_list.expressions.len() == 0 {
             None
         } else {
-            Some(ExpressionPointer::from(new_list))
+            Some(SimplexPointer::from(new_list))
         }
     }
 
@@ -73,7 +73,7 @@ impl BaseExpression for SimplexList {
         format!("{}[{}]", self.get_head().unwrap().as_str(), self.body_to_string())
     }
 
-    fn replace_symbol(&mut self, symbol: &BaseExpression, new: &BaseExpression) -> ExpressionPointer {
+    fn replace_symbol(&mut self, symbol: &BaseExpression, new: &BaseExpression) -> SimplexPointer {
         if self.head.as_str() == symbol.as_str() {
             self.head = SimplexAtom::from(new.to_string());
         }
@@ -82,6 +82,6 @@ impl BaseExpression for SimplexList {
             i.replace_symbol(symbol, new);
         }
 
-        ExpressionPointer::from(self.clone())
+        SimplexPointer::from(self.clone())
     }
 }
