@@ -1,7 +1,3 @@
-extern crate decimal;
-use decimal::d128;
-use std::sync::{Arc, Mutex};
-
 use std::borrow::Cow;
 
 use expression::structure::SimplexPointer;

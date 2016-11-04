@@ -1,8 +1,5 @@
-use std::mem;
-use std::borrow::Cow;
 use std::fmt;
 use std::sync::{Arc, Mutex};
-use std::cmp::Ordering;
 
 use expression::traits::BaseExpression;
 use expression::list::structure::SimplexList;

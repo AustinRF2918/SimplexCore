@@ -1,6 +1,4 @@
-use std::borrow::Cow;
 use std::collections::LinkedList;
-use std::sync::{Arc, Mutex};
 
 use expression::traits::BaseExpression;
 use expression::structure::SimplexPointer;

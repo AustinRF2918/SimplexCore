@@ -9,6 +9,7 @@ mod test {
         #[test]
         fn it_instantiates() {
             let s_exp = SimplexList::new("List");
+            assert_eq!(s_exp.as_str(), "List[]");
         }
 
         #[test]
@@ -67,7 +68,6 @@ mod test {
 mod test_intrinsics {
         use expression::list::structure::SimplexList;
         use expression::traits::BaseExpression;
-        use expression::atom::structure::SimplexAtom;
         use expression::structure::SimplexPointer;
 
         #[test]
@@ -105,9 +105,9 @@ mod test_intrinsics {
     mod test_composition {
         use expression::list::structure::SimplexList;
         use expression::traits::BaseExpression;
-        use expression::atom::structure::SimplexAtom;
         use expression::structure::SimplexPointer;
 
+        #[allow(non_snake_case)]
         #[test]
         fn it_composes_LsLe() {
             let list_a = SimplexList::new("List") 
@@ -119,6 +119,7 @@ mod test_intrinsics {
             assert_eq!(list_b.as_str(), "List[List[z]]")
         }
 
+        #[allow(non_snake_case)]
         #[test]
         fn it_composes_LsLLe() {
             let list_a = SimplexList::new("List") 
@@ -134,6 +135,7 @@ mod test_intrinsics {
             assert_eq!(list_c.as_str(), "List[List[z], List[x]]");
         }
 
+        #[allow(non_snake_case)]
         #[test]
         fn it_composes_LsLsLee() {
             let list_a = SimplexList::new("List")
@@ -148,6 +150,7 @@ mod test_intrinsics {
             assert_eq!(list_c.as_str(), "List[List[List[x]]]");
         }
 
+        #[allow(non_snake_case)]
         #[test]
         fn it_composes_LpsLpsLpee() {
             let list_a = SimplexList::new("List")
@@ -164,6 +167,7 @@ mod test_intrinsics {
             assert_eq!(list_c.as_str(), "List[d, List[c, List[x]]]");
         }
 
+        #[allow(non_snake_case)]
         #[test]
         fn it_composes_LpsLpsLpepe() {
             let list_a = SimplexList::new("List")
@@ -268,7 +272,6 @@ mod test_intrinsics {
     mod test_evaluation {
         use expression::list::structure::SimplexList;
         use expression::traits::BaseExpression;
-        use expression::atom::structure::SimplexAtom;
         use expression::structure::SimplexPointer;
 
         #[test]
