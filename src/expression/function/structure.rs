@@ -12,9 +12,19 @@ use atom::atom::SimplexAtom;
 #[derive(Clone, Debug)]
 pub struct SimplexFunction {
     head: SimplexAtom,
+    uniq_id: u64,
     reflexive: bool,
     meta_variables: LinkedList<SimplexAtom>,
     s_expression: SimplexList,
+}
+
+impl Drop for SimplexFunction {
+    fn drop(&mut self) {
+        self.head.clear();
+        self.meta_variables.clear();
+        self.s_expression.expressions.clear();
+        println!("[Lightweight] Dropping List: {} with id: {}", self.as_str(), self.uniq_id());
+    }
 }
 
 impl SimplexFunction {
@@ -51,7 +61,6 @@ impl SimplexFunction {
         let mut new_s_expression = self.s_expression.clone();
 
         if self.reflexive {
-            // ANTI PATTERN
             let head_name = self.get_head().unwrap().to_string();
             new_s_expression = new_s_expression.replace_symbol(Expression::from("List"), Expression::from(head_name.as_str()));
         }
@@ -61,7 +70,7 @@ impl SimplexFunction {
         for (item_number, item) in self.meta_variables.iter().enumerate().rev() {
             match new_params.pop() {
                 Some(thing) => {
-                    new_s_expression = new_s_expression.replace_symbol(Expression::from(item.clone()), Expression::from(thing));
+                    new_s_expression.replace_symbol(Expression::from(item.clone()), Expression::from(thing));
                 }
 
                 None => {
@@ -69,7 +78,7 @@ impl SimplexFunction {
             }
         }
 
-        new_s_expression
+        SimplexPointer::from(new_s_expression)
     }
 
     pub fn m_vars_to_string(&self) -> String {
@@ -94,7 +103,7 @@ impl BaseExpression for SimplexFunction {
         Some(self.head.clone())
     }
 
-    fn get_rest(&self) -> Option<SimplexFunction> {
+    fn get_rest(&self) -> Option<SimplexPointer> {
         // TODO: Implement rest schema as follows:
         // First remove meta variable and associated RHS entries.
         // Once RHS is removed, progressively remove RHS SimplexList
@@ -106,5 +115,16 @@ impl BaseExpression for SimplexFunction {
     fn to_string(&self) -> String {
         format!("{}[{}] := {}", self.get_head().unwrap().as_str(), self.m_vars_to_string(), self.s_expression.to_string())
     }
-}
 
+    fn replace_symbol(&mut self, symbol: &BaseExpression, new: &BaseExpression) -> SimplexPointer {
+        SimplexPointer::from(self.clone())
+    }
+
+    fn uniq_id(&self) -> String {
+        self.uniq_id.to_string()
+    }
+
+    fn set_uniq_id(&mut self, id: u64) {
+        self.uniq_id = id;
+    }
+}

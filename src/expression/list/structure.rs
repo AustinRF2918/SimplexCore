@@ -71,7 +71,7 @@ impl BaseExpression for SimplexList {
     }
 
     fn get_rest(&self) -> Option<SimplexPointer> {
-        println!("[get_rest] Begin..");
+        println!("[Get Rest] Begin..");
         let mut new_list = self.expressions.clone();
         new_list.pop_front();
 

@@ -1,6 +1,6 @@
 pub mod atom;
 pub mod list;
-//pub mod function;
+pub mod function;
 
 pub mod traits;
 pub mod structure;
