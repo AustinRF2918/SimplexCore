@@ -4,10 +4,9 @@ use std::sync::{Arc, Mutex};
 use std::collections::LinkedList;
 
 use expression::traits::BaseExpression;
-use expression::structure::Expression;
+use expression::structure::SimplexPointer;
 use expression::list::structure::SimplexList;
-
-use atom::atom::SimplexAtom;
+use expression::atom::structure::SimplexAtom;
 
 #[derive(Clone, Debug)]
 pub struct SimplexFunction {
@@ -18,37 +17,25 @@ pub struct SimplexFunction {
     s_expression: SimplexList,
 }
 
-impl Drop for SimplexFunction {
-    fn drop(&mut self) {
-        self.head.clear();
-        self.meta_variables.clear();
-        self.s_expression.expressions.clear();
-        println!("[Lightweight] Dropping List: {} with id: {}", self.as_str(), self.uniq_id());
-    }
-}
-
 impl SimplexFunction {
     pub fn new(head_name: &str) -> SimplexFunction {
         SimplexFunction {
             head: SimplexAtom::from(head_name),
             reflexive: false,
             meta_variables: LinkedList::new(),
-            s_expression: SimplexList::new("List") 
+            s_expression: SimplexList::new("List"),
+            uniq_id: 0
         }
     }
 
-    pub fn push_expression(mut self, e: Expression) -> SimplexFunction {
-        self.s_expression = self.s_expression.push_expression(e);
+    pub fn push(mut self, p: &SimplexPointer) -> SimplexFunction {
+        let mut new_self = self.clone();
+        new_self.push(&p.clone());
         self
     }
 
-    pub fn push_meta_variable(mut self, e: Expression) -> SimplexFunction {
-        match e {
-            Expression::List(_) => {panic!("You attempted to place a non-atomic as a meta variable!")}
-            Expression::Atomic(atom) => {
-                self.meta_variables.push_back(atom.clone());
-            }
-        }
+    pub fn push_meta_variable(mut self, a: SimplexAtom) -> SimplexFunction {
+        self.meta_variables.push_back(a.clone());
         self
     }
 
@@ -61,8 +48,6 @@ impl SimplexFunction {
         let mut new_s_expression = self.s_expression.clone();
 
         if self.reflexive {
-            let head_name = self.get_head().unwrap().to_string();
-            new_s_expression = new_s_expression.replace_symbol(Expression::from("List"), Expression::from(head_name.as_str()));
         }
 
         let mut new_params = params.clone();
@@ -70,7 +55,7 @@ impl SimplexFunction {
         for (item_number, item) in self.meta_variables.iter().enumerate().rev() {
             match new_params.pop() {
                 Some(thing) => {
-                    new_s_expression.replace_symbol(Expression::from(item.clone()), Expression::from(thing));
+                    new_s_expression.replace_symbol(&SimplexPointer::from(item.clone()), &SimplexPointer::from(thing));
                 }
 
                 None => {
@@ -78,7 +63,7 @@ impl SimplexFunction {
             }
         }
 
-        SimplexPointer::from(new_s_expression)
+        new_s_expression
     }
 
     pub fn m_vars_to_string(&self) -> String {
@@ -109,7 +94,7 @@ impl BaseExpression for SimplexFunction {
         // Once RHS is removed, progressively remove RHS SimplexList
         // values via its own get_rest().
 
-        Some(self.clone())
+        Some(SimplexPointer::from(self.clone()))
     }
 
     fn to_string(&self) -> String {

@@ -17,7 +17,6 @@ pub struct SimplexList {
 
 impl Drop for SimplexList {
     fn drop(&mut self) {
-        self.expressions.clear();
         println!("[Lightweight] Dropping List: {} with id: {}", self.as_str(), self.uniq_id());
     }
 }

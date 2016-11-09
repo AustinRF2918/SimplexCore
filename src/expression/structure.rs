@@ -3,6 +3,7 @@ use std::sync::{Arc, RwLock};
 
 use expression::traits::BaseExpression;
 use expression::list::structure::SimplexList;
+use expression::function::structure::SimplexFunction;
 use expression::atom::structure::SimplexAtom;
 
 #[derive(Clone)]
@@ -152,3 +153,11 @@ impl From<SimplexList> for SimplexPointer {
     }
 }
 
+impl From<SimplexFunction> for SimplexPointer {
+    fn from(s: SimplexFunction) -> SimplexPointer {
+        SimplexPointer {
+            internal_data: Arc::new(RwLock::new(s)),
+            uniq_id: 0,
+        }
+    }
+}

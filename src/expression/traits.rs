@@ -3,7 +3,7 @@ use std::borrow::Cow;
 use expression::structure::SimplexPointer;
 use expression::atom::structure::SimplexAtom;
 
-pub trait BaseExpression : Drop{
+pub trait BaseExpression {
     fn get_head(&self) -> Option<SimplexAtom>;
     fn get_rest(&self) -> Option<SimplexPointer>;
 
