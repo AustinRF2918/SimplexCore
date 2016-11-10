@@ -88,20 +88,13 @@ impl BaseExpression for SimplexList {
         format!("{}[{}]", self.get_head().unwrap().as_str(), self.body_to_string())
     }
 
-    fn replace_symbol(&mut self, symbol: &BaseExpression, new: &BaseExpression) -> SimplexPointer {
-        if self.head.as_str() == symbol.as_str() {
-            self.head = SimplexAtom::from(new.to_string());
-        }
-
-        for i in &mut self.expressions {
-            let mut changed = i.clone();
-            changed.replace_symbol(symbol, new);
-            if changed.as_str() != "NonAtomic" {
-                *i = changed;
-            } 
-        }
-
-        SimplexPointer::from(self.clone())
+    fn replace_symbol(&self, symbol: &BaseExpression, new: &BaseExpression) -> SimplexPointer {
+        SimplexPointer::from(
+            SimplexList {
+                head: self.head.clone(),
+                expressions: self.expressions.iter().map(|x| x.replace_symbol(symbol, new)).collect::<LinkedList<SimplexPointer>>(),
+            }
+        )
     }
 
     fn evaluate(&self, v: &Vec<SimplexPointer>) -> SimplexPointer {
@@ -109,10 +102,8 @@ impl BaseExpression for SimplexList {
 
         for i in &mut new_list.expressions {
             let mut changed = i.clone();
-            changed.evaluate(v);
-            if changed.as_str() == "NonAtomic" {
-                *i = changed;
-            }
+            changed = changed.evaluate(v);
+            *i = changed;
         }
 
         SimplexPointer::from(new_list)

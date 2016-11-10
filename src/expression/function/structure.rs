@@ -45,8 +45,6 @@ impl SimplexFunction {
         }
     }
 
-    
-
     pub fn m_vars_to_string(&self) -> String {
         let delimiter = ", ";
         let mut body = String::with_capacity(self.meta_variables.len() * 5);
@@ -88,24 +86,30 @@ impl BaseExpression for SimplexFunction {
         format!("{}[{}] := {}", self.get_head().unwrap().as_str(), self.m_vars_to_string(), self.s_expression.to_string())
     }
 
-    fn replace_symbol(&mut self, symbol: &BaseExpression, new: &BaseExpression) -> SimplexPointer {
-        SimplexPointer::from(self.clone())
+    fn replace_symbol(&self, symbol: &BaseExpression, new: &BaseExpression) -> SimplexPointer {
+        let new = self.s_expression.replace_symbol(symbol, new);
+        SimplexPointer::from(new)
     }
 
     fn evaluate(&self, v: &Vec<SimplexPointer>) -> SimplexPointer {
-        let mut new_s_expression = self.s_expression.clone();
+        println!("Eval_Before: {}", self.as_str());
+        let mut new_s_expression = SimplexPointer::from(self.s_expression.clone());
         let mut new_params = v.clone();
 
-        for (item_number, item) in self.meta_variables.iter().enumerate().rev() {
+        for item in self.meta_variables.iter().rev() {
             match new_params.pop() {
                 Some(thing) => {
-                    new_s_expression.replace_symbol(&SimplexPointer::from(item.clone()), &SimplexPointer::from(thing.clone()));
+                    println!("Parsing Param: {}", item.as_str());
+                    println!("Parsing To: {}", thing.as_str());
+                    new_s_expression = new_s_expression.replace_symbol(&SimplexPointer::from(item.clone()), &SimplexPointer::from(thing.clone()));
+                    println!("Eval_After Op: {}", new_s_expression.as_str());
                 }
 
                 _ => {}
             }
         }
 
-        SimplexPointer::from(new_s_expression)
+        println!("Eval_After: {}", new_s_expression.as_str());
+        new_s_expression
     }
 }

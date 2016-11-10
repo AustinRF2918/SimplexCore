@@ -321,6 +321,7 @@ mod test_intrinsics {
         use expression::list::structure::SimplexList;
         use expression::traits::BaseExpression;
         use expression::structure::SimplexPointer;
+        use expression::atom::structure::SimplexAtom;
 
         #[test]
         fn it_substitutes_simple() {
@@ -336,13 +337,14 @@ mod test_intrinsics {
                 .push(&SimplexPointer::from(list_b))
                 .push(&SimplexPointer::from("var")));
 
-            let list_e = SimplexList::new("List")
+            let list_e = SimplexPointer::from(SimplexList::new("List")
                 .push(&SimplexPointer::from("d"))
                 .push(&list_c)
-                .push(&list_c)
-                .replace_symbol(&SimplexPointer::from("d"), &SimplexPointer::from("2"));
+                .push(&list_c));
 
-            assert_eq!(list_e.as_str(), "List[2, List[2, List[c, List[x]], var], List[2, List[c, List[x]], var]]")
+            let e = list_e.replace_symbol(&SimplexAtom::from("d"), &SimplexAtom::from("2"));
+
+            assert_eq!(e.as_str(), "List[2, List[2, List[c, List[x]], var], List[2, List[c, List[x]], var]]")
         }
 
         #[test]
@@ -384,16 +386,16 @@ mod test_intrinsics {
                 .push(&SimplexPointer::from(list_b))
                 .push(&SimplexPointer::from("var"));
 
-            let list_d = list_c.clone();
             let list_e = SimplexList::new("List")
                 .push(&SimplexPointer::from("d"))
-                .push(&SimplexPointer::from(list_c))
-                .push(&SimplexPointer::from(list_d))
-                .replace_symbol(&SimplexPointer::from("d"), &SimplexPointer::from("2"))
-                .replace_symbol(&SimplexPointer::from("c"), &SimplexPointer::from("3"))
-                .replace_symbol(&SimplexPointer::from("x"), &SimplexPointer::from("\"Hello\""));
+                .push(&SimplexPointer::from(list_c.clone()))
+                .push(&SimplexPointer::from(list_c.clone()));
 
-            assert_eq!(list_e.as_str(), "List[2, List[2, List[3, List[\"Hello\"]], var], List[2, List[3, List[\"Hello\"]], var]]")
+            let mut r = list_e.replace_symbol(&SimplexPointer::from("d"), &SimplexPointer::from("2"));
+            r = r.replace_symbol(&SimplexPointer::from("c"), &SimplexPointer::from("3"));
+            r = r.replace_symbol(&SimplexPointer::from("x"), &SimplexPointer::from("\"Hello\""));
+
+            assert_eq!(r.as_str(), "List[2, List[2, List[3, List[\"Hello\"]], var], List[2, List[3, List[\"Hello\"]], var]]")
         }
 
         #[test]

@@ -38,12 +38,14 @@ impl BaseExpression for SimplexAtom {
         }
     }
 
-    fn replace_symbol(&mut self, symbol: &BaseExpression, new: &BaseExpression) -> SimplexPointer {
+    fn replace_symbol(&self, symbol: &BaseExpression, new: &BaseExpression) -> SimplexPointer {
         if self.to_string() == symbol.to_string() {
-            *self = SimplexAtom::from(new.to_string());
-        }  
-
-        SimplexPointer::from(self.clone())
+            println!("Swapping atomic {} from {} to {}", self.as_str(), symbol.as_str(), new.as_str());
+            SimplexPointer::from(new.to_string())
+        }  else {
+            println!("Not Swapping atomic {} from {} to {}", self.as_str(), symbol.as_str(), new.as_str());
+            SimplexPointer::from(self.clone())
+        }
     }
 
     fn evaluate(&self, v: &Vec<SimplexPointer>) -> SimplexPointer {

@@ -96,7 +96,7 @@ impl BaseExpression for SimplexPointer {
         write.to_string()
     }
 
-    fn replace_symbol(&mut self, symbol: &BaseExpression, new: &BaseExpression) -> SimplexPointer {
+    fn replace_symbol(&self, symbol: &BaseExpression, new: &BaseExpression) -> SimplexPointer {
         let mut write = self.internal_data.write();
         match write {
             Ok(mut lock) => {

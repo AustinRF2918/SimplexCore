@@ -96,7 +96,6 @@ mod test {
 
         #[test]
         fn it_evaluates_b() {
-            println!("It evaluates b.");
             let m_exp = SimplexFunction::new("Plus")
                 .push_meta_variable(SimplexAtom::from("a"))
                 .push_meta_variable(SimplexAtom::from("b"))
@@ -104,7 +103,6 @@ mod test {
                 .push(&SimplexPointer::from("a"))
                 .push(&SimplexPointer::from("b"))
                 .push(&SimplexPointer::from("c"));
-            println!("Created struct.");
 
             let new_list = m_exp.evaluate(&vec![SimplexPointer::from("1"), SimplexPointer::from("2"), SimplexPointer::from("3")]);
             assert_eq!(new_list.as_str(), "List[1, 2, 3]");
@@ -117,6 +115,25 @@ mod test {
         use expression::function::structure::SimplexFunction;
         use expression::traits::BaseExpression;
         use expression::atom::structure::SimplexAtom;
+
+        #[test]
+        fn it_allows_simple_nesting() {
+            let mut plus = SimplexFunction::new("Plus")
+                .push_meta_variable(SimplexAtom::from("a"))
+                .push_meta_variable(SimplexAtom::from("b"))
+                .push(&SimplexPointer::from("a"))
+                .push(&SimplexPointer::from("b"));
+
+            plus.toggle_base_evaluation();
+
+            let simple = SimplexFunction::new("Simple")
+                .push_meta_variable(SimplexAtom::from("a"))
+                .push_meta_variable(SimplexAtom::from("b"))
+                .push(&SimplexPointer::from(plus.evaluate(&vec![])));
+                    
+
+            assert_eq!(simple.as_str(), "Simple[a_, b_] := List[Plus[a, b]]");
+        }
 
         #[test]
         fn it_allows_nesting() {
@@ -145,12 +162,26 @@ mod test {
             let pythag = SimplexFunction::new("Pythag")
                 .push_meta_variable(SimplexAtom::from("a"))
                 .push_meta_variable(SimplexAtom::from("b"))
-                .push(&SimplexPointer::from(plus.clone().evaluate(
-                    &vec![ SimplexPointer::from(pow.clone().evaluate(
-                        &vec![SimplexPointer::from("a"), SimplexPointer::from("2")]
-                    ))]
-                )));
-                    
+                .push(&SimplexPointer::from(
+                    plus.evaluate(
+                        &vec![
+                            pow.evaluate(
+                                &vec![
+                                    SimplexPointer::from("a"),
+                                    SimplexPointer::from("2"),
+                                ]
+                            ),
+
+                            pow.evaluate(
+                                &vec![
+                                    SimplexPointer::from("b"),
+                                    SimplexPointer::from("2"),
+                                ]
+                            )
+                            ]
+                        )
+                    )
+                );
 
             assert_eq!(pythag.as_str(), "Pythag[a_, b_] := List[Plus[Pow[a, 2], Pow[b, 2]]]");
         }
