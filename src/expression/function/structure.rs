@@ -11,26 +11,23 @@ use expression::atom::structure::SimplexAtom;
 #[derive(Clone, Debug)]
 pub struct SimplexFunction {
     head: SimplexAtom,
-    uniq_id: u64,
-    reflexive: bool,
     meta_variables: LinkedList<SimplexAtom>,
     s_expression: SimplexList,
+    base_evaluation: bool
 }
 
 impl SimplexFunction {
     pub fn new(head_name: &str) -> SimplexFunction {
         SimplexFunction {
             head: SimplexAtom::from(head_name),
-            reflexive: false,
             meta_variables: LinkedList::new(),
             s_expression: SimplexList::new("List"),
-            uniq_id: 0
+            base_evaluation: false,
         }
     }
 
     pub fn push(mut self, p: &SimplexPointer) -> SimplexFunction {
-        let mut new_self = self.clone();
-        new_self.push(&p.clone());
+        self.s_expression  = self.s_expression.push(&p.clone());
         self
     }
 
@@ -39,32 +36,16 @@ impl SimplexFunction {
         self
     }
 
-    pub fn toggle_reflexive(mut self) -> SimplexFunction {
-        self.reflexive = !self.reflexive;
-        self
+    pub fn toggle_base_evaluation(&mut self) {
+        self.base_evaluation = !self.base_evaluation;
+        if self.base_evaluation {
+            self.s_expression.head = SimplexAtom::from(self.head.to_string());
+        } else {
+            self.s_expression.head = SimplexAtom::from("List");
+        }
     }
 
-    pub fn evaluate(&self, params: &Vec<&str>) -> SimplexList {
-        let mut new_s_expression = self.s_expression.clone();
-
-        if self.reflexive {
-        }
-
-        let mut new_params = params.clone();
-
-        for (item_number, item) in self.meta_variables.iter().enumerate().rev() {
-            match new_params.pop() {
-                Some(thing) => {
-                    new_s_expression.replace_symbol(&SimplexPointer::from(item.clone()), &SimplexPointer::from(thing));
-                }
-
-                None => {
-                }
-            }
-        }
-
-        new_s_expression
-    }
+    
 
     pub fn m_vars_to_string(&self) -> String {
         let delimiter = ", ";
@@ -89,12 +70,18 @@ impl BaseExpression for SimplexFunction {
     }
 
     fn get_rest(&self) -> Option<SimplexPointer> {
-        // TODO: Implement rest schema as follows:
-        // First remove meta variable and associated RHS entries.
-        // Once RHS is removed, progressively remove RHS SimplexList
-        // values via its own get_rest().
+        let mut new_fn = self.clone();
 
-        Some(SimplexPointer::from(self.clone()))
+        // Watch out for this logic.
+        if ( self.meta_variables.len() != 0 ) {
+            new_fn.meta_variables.pop_front();
+            Some(SimplexPointer::from(new_fn))
+        } else if (self.s_expression.len() != 1 ) {
+            new_fn.s_expression = new_fn.s_expression.pop_front();
+            Some(SimplexPointer::from(new_fn))
+        } else {
+            Some(SimplexPointer::from(self.get_head().unwrap().to_string()))
+        }
     }
 
     fn to_string(&self) -> String {
@@ -105,11 +92,20 @@ impl BaseExpression for SimplexFunction {
         SimplexPointer::from(self.clone())
     }
 
-    fn uniq_id(&self) -> String {
-        self.uniq_id.to_string()
-    }
+    fn evaluate(&self, v: &Vec<SimplexPointer>) -> SimplexPointer {
+        let mut new_s_expression = self.s_expression.clone();
+        let mut new_params = v.clone();
 
-    fn set_uniq_id(&mut self, id: u64) {
-        self.uniq_id = id;
+        for (item_number, item) in self.meta_variables.iter().enumerate().rev() {
+            match new_params.pop() {
+                Some(thing) => {
+                    new_s_expression.replace_symbol(&SimplexPointer::from(item.clone()), &SimplexPointer::from(thing.clone()));
+                }
+
+                _ => {}
+            }
+        }
+
+        SimplexPointer::from(new_s_expression)
     }
 }

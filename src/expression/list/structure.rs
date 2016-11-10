@@ -9,17 +9,10 @@ use parsing::utilities::symbols::representable_symbol;
 // SExpression == SimplexList
 #[derive(Clone, Debug)]
 pub struct SimplexList {
-    head: SimplexAtom,
-    uniq_id: u64,
+    pub head: SimplexAtom,
     expressions: LinkedList<SimplexPointer>,
 }
 
-
-impl Drop for SimplexList {
-    fn drop(&mut self) {
-        println!("[Lightweight] Dropping List: {} with id: {}", self.as_str(), self.uniq_id());
-    }
-}
 
 impl SimplexList {
     pub fn new(head_name: &str) -> SimplexList {
@@ -27,7 +20,6 @@ impl SimplexList {
             SimplexList {
                 head: SimplexAtom::from(head_name),
                 expressions: LinkedList::new(),
-                uniq_id: 0
             }
         } else {
             // Implement Error Type 
@@ -40,8 +32,17 @@ impl SimplexList {
         self
     }
 
-    pub fn pop(mut self) -> SimplexList {
+    pub fn len(&self) -> usize {
+        self.expressions.len()
+    }
+
+    pub fn pop_back(mut self) -> SimplexList {
         self.expressions.pop_back();
+        self
+    }
+
+    pub fn pop_front(mut self) -> SimplexList {
+        self.expressions.pop_front();
         self
     }
 
@@ -77,7 +78,7 @@ impl BaseExpression for SimplexList {
         if new_list.len() == 0 {
             None
         } else {
-            Some(SimplexPointer::from(SimplexList{head: SimplexAtom::from("List"), uniq_id: 0, expressions: new_list}))
+            Some(SimplexPointer::from(SimplexList{head: SimplexAtom::from("List"), expressions: new_list}))
         }
 
     }
@@ -93,17 +94,27 @@ impl BaseExpression for SimplexList {
         }
 
         for i in &mut self.expressions {
-            i.replace_symbol(symbol, new);
+            let mut changed = i.clone();
+            changed.replace_symbol(symbol, new);
+            if changed.as_str() != "NonAtomic" {
+                *i = changed;
+            } 
         }
 
         SimplexPointer::from(self.clone())
     }
 
-    fn uniq_id(&self) -> String {
-        self.uniq_id.to_string()
-    }
+    fn evaluate(&self, v: &Vec<SimplexPointer>) -> SimplexPointer {
+        let mut new_list = self.clone();
 
-    fn set_uniq_id(&mut self, id: u64) {
-        self.uniq_id = id;
+        for i in &mut new_list.expressions {
+            let mut changed = i.clone();
+            changed.evaluate(v);
+            if changed.as_str() == "NonAtomic" {
+                *i = changed;
+            }
+        }
+
+        SimplexPointer::from(new_list)
     }
 }

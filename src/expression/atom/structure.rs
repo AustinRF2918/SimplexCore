@@ -1,19 +1,14 @@
 use expression::atom::numbers::number::Numeric;
-
-use expression::traits::BaseExpression;
+use expression::traits::{BaseExpression, CompileableExpression};
 use expression::structure::SimplexPointer;
+// Remove pointers: Only API that should use pointer is pointer itself:
+// ESPECIALLY NOT ATOMICS!!!
 
 #[derive(Clone, Eq, PartialEq, Debug)]
 pub enum SimplexAtom {
     SimplexSymbol(String),
     SimplexString(String),
     SimplexNumeric(Numeric),
-}
-
-impl Drop for SimplexAtom {
-    fn drop(&mut self) {
-        println!("[Heavyweight] Dropping Atom: {} which is copyable.", self.to_string());
-    }
 }
 
 impl BaseExpression for SimplexAtom {
@@ -45,17 +40,13 @@ impl BaseExpression for SimplexAtom {
 
     fn replace_symbol(&mut self, symbol: &BaseExpression, new: &BaseExpression) -> SimplexPointer {
         if self.to_string() == symbol.to_string() {
-            *self = SimplexAtom::from(new.to_string())
-        } 
+            *self = SimplexAtom::from(new.to_string());
+        }  
 
         SimplexPointer::from(self.clone())
     }
 
-    fn uniq_id(&self) -> String {
-        "Copyable".to_string()
-    }
-
-    fn set_uniq_id(&mut self, id: u64) {
-        panic!("This is a copyable primitive, it doesn't have a memory location visible because it is ALWAYS copied.");
+    fn evaluate(&self, v: &Vec<SimplexPointer>) -> SimplexPointer {
+        SimplexPointer::from(self.clone())
     }
 }

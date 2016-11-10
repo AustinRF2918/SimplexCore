@@ -119,19 +119,15 @@ mod test_intrinsics {
                     .push(&SimplexPointer::from("x"))
                     .push(&SimplexPointer::from("y"))
                     .push(&SimplexPointer::from("z"));
-                m_exp.set_uniq_id(1);
 
                 let mut x  = m_exp.get_rest().unwrap();
                 assert_eq!(x.as_str(), "List[x, y, z]");
-                x.set_uniq_id(2);
 
                 let mut y = x.get_rest().unwrap();
                 assert_eq!(y.as_str(), "List[y, z]");
-                y.set_uniq_id(3);
 
                 let mut z = y.get_rest().unwrap();
                 assert_eq!(z.as_str(), "List[z]");
-                z.set_uniq_id(4);
 
                 let mut a = z.get_rest();
                 assert_eq!(a, None);
@@ -161,10 +157,8 @@ mod test_intrinsics {
             let mut m_exp = SimplexList::new("List")
                 .push(&SimplexPointer::from("y"))
                 .push(&SimplexPointer::from("z"));
-            m_exp.set_uniq_id(1);
 
             let mut x  = m_exp.get_rest().unwrap();
-            x.set_uniq_id(2);
             assert_eq!(x.as_str(), "List[z]");
 
             let y = x.get_rest();

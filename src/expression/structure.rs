@@ -9,13 +9,6 @@ use expression::atom::structure::SimplexAtom;
 #[derive(Clone)]
 pub struct SimplexPointer {
     internal_data: Arc<RwLock<BaseExpression>>,
-    uniq_id: u64
-}
-
-impl Drop for SimplexPointer {
-    fn drop(&mut self) {
-        println!("[Lightweight] Dropping Pointer: {} with id: {}", self.as_str(), self.uniq_id());
-    }
 }
 
 impl fmt::Debug for SimplexPointer {
@@ -88,7 +81,6 @@ impl BaseExpression for SimplexPointer {
             Some(data) => {
                 Some(SimplexPointer {
                     internal_data: Arc::new(RwLock::new(data)),
-                    uniq_id: 0
 
                 })
             }
@@ -117,12 +109,17 @@ impl BaseExpression for SimplexPointer {
         self.clone()
     }
 
-    fn uniq_id(&self) -> String {
-        self.uniq_id.to_string()
-    }
-
-    fn set_uniq_id(&mut self, id: u64) {
-        self.uniq_id = id;
+    fn evaluate(&self, v: &Vec<SimplexPointer>) -> SimplexPointer {
+        let mut write = self.internal_data.write();
+        match write {
+            Ok(mut lock) => {
+                lock.evaluate(v);
+            }
+            Err(poisoned) => {
+                poisoned.into_inner().evaluate(v);
+            }
+        }
+        self.clone()
     }
 }
 
@@ -130,7 +127,14 @@ impl<'a> From<&'a str> for SimplexPointer {
     fn from(s: &str) -> SimplexPointer {
         SimplexPointer {
             internal_data: Arc::new(RwLock::new(SimplexAtom::from(s))),
-            uniq_id: 0,
+        }
+    }
+}
+
+impl From<String> for SimplexPointer {
+    fn from(s: String) -> SimplexPointer {
+        SimplexPointer {
+            internal_data: Arc::new(RwLock::new(SimplexAtom::from(s))),
         }
     }
 }
@@ -139,7 +143,6 @@ impl From<SimplexAtom> for SimplexPointer {
     fn from(a: SimplexAtom) -> SimplexPointer {
         SimplexPointer {
             internal_data: Arc::new(RwLock::new(a)),
-            uniq_id: 0,
         }
     }
 }
@@ -148,7 +151,6 @@ impl From<SimplexList> for SimplexPointer {
     fn from(s: SimplexList) -> SimplexPointer {
         SimplexPointer {
             internal_data: Arc::new(RwLock::new(s)),
-            uniq_id: 0,
         }
     }
 }
@@ -157,7 +159,6 @@ impl From<SimplexFunction> for SimplexPointer {
     fn from(s: SimplexFunction) -> SimplexPointer {
         SimplexPointer {
             internal_data: Arc::new(RwLock::new(s)),
-            uniq_id: 0,
         }
     }
 }

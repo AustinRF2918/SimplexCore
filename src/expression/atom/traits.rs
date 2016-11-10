@@ -27,8 +27,7 @@ impl<'a> From<&'a str> for SimplexAtom {
         } else if representable_symbol(s) {
             SimplexAtom::SimplexSymbol(s.to_string())
         } else {
-            // TODO: USE DYNAMIC ERROR TYPE HERE.
-            panic!("Some invalid input was passed into BaseExpression, maybe develop none case?");
+            SimplexAtom::SimplexSymbol("NonAtomic".to_string())
         }
     }
 }
@@ -43,8 +42,7 @@ impl From<String> for SimplexAtom {
         } else if representable_symbol(s.as_str()) {
             SimplexAtom::SimplexSymbol(s)
         } else {
-            // TODO: USE DYNAMIC ERROR TYPE HERE.
-            panic!("Some invalid input was passed into BaseExpression, maybe develop none case?");
+            SimplexAtom::SimplexSymbol("NonAtomic".to_string())
         }
-    }
+}
 }
