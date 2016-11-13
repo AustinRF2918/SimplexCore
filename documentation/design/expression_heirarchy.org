@@ -47,7 +47,7 @@
   could be made into simple traits that auto-implement functionality and allow
   custom implementations of eval at run-time, something like this:
 
-  #+BEGIN_SRC
+  #+BEGIN_SRC rust
     list_ds!(Add) {
       eval {
 	expressions.fold(|x, y| {
