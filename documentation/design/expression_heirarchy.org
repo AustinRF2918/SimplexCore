@@ -1,0 +1,102 @@
+* Traits
+** BaseExpression
+   Contains various fields that should be callable from ANY expression.
+
+** ExpressionPointer
+   Contains some pointer to a base expression: This could be a expression
+   that can be sent across threads, or a non-sendable expression.
+
+* Wrappers
+** Expression
+    A wrapper on all of the dynamic expressions (list, function, atomic, etc)
+    that allows a generic wrapper around everything: It is not multithreaded
+    nor reference counted.
+  
+** LocalExpression
+    An expression local to the current thread: Is used sequential. Wraps an
+    expression and turns it into a reference counted type that can be borrowed
+    into multiple items.
+
+** ParallelExpression
+    An expression that can be sent across threads and locks itself on read/
+    write. Implemented using a Arc<RWLock<T>>.
+  
+* Data Types
+** Atomic
+   Atomic expressions are basically primitives: arbitrary precision 
+   numerics, strings, and atoms that represent either themselves
+   or variables on the runtime symbol table.
+
+** List
+   Dynamic container for general expressions. Allows us to place in
+   local expressions, parallel expressions, etc.
+   
+*** Rules
+    Rules can be applied to a list and then evaluated for: This can
+    range from simple flat map, flat reduce, flat filters to more
+    sophisticated functions.
+   
+** Function
+   An M-Expression that takes parameters and returns an S-Expression,
+   aka a list. Has local fields for LHS parameters, can have it's own
+   pointers for expressions on the RHS or can be shared with other 
+   data structures (potentially across threads)
+   
+* Refination Possiblities
+  Its possible once these have been created and have well structured APIs that these
+  could be made into simple traits that auto-implement functionality and allow
+  custom implementations of eval at run-time, something like this:
+
+  #+BEGIN_SRC
+    list_ds!(Add) {
+      eval {
+	expressions.fold(|x, y| {
+	    x + y
+	})
+      }
+    }
+
+    list_ds!(Minus) {
+      eval {
+	expressions.fold(|x, y| {
+	    x - y
+	})
+      }
+    }
+
+    list_ds!(Divide) {
+      eval {
+	expressions.fold(|x, y| {
+	    x / y
+	})
+      }
+    }
+
+    list_ds!(Times) {
+      state {
+        curr: Option<BaseExpression>,
+      }
+      eval {
+	expressions.fold(|x, y| {
+	    if curr == None {
+	      curr = Some(x);
+	    } else {
+	      curr = curr * x;
+	    }
+	});
+	
+	curr
+      }
+    }
+    
+    let x = Add::new(d_expr![1, 2, 3, par_exp!(z)]);
+    println!("{}", x);
+    // => 1 + 2 + 3 + z
+    println!("{}", z);
+    // => z
+    z = Sub::new(d_expr![1, 2, 3, 4])
+    println!("{}", z);
+    // => -10
+    println!("{}", x);
+    // => -4
+  #+END_SRC
