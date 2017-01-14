@@ -1,8 +1,6 @@
 use expression::atom::numbers::number::Numeric;
 use expression::traits::{BaseExpression, CompileableExpression};
 use expression::structure::SimplexPointer;
-// Remove pointers: Only API that should use pointer is pointer itself:
-// ESPECIALLY NOT ATOMICS!!!
 
 #[derive(Clone, Eq, PartialEq, Debug)]
 pub enum SimplexAtom {
@@ -12,18 +10,8 @@ pub enum SimplexAtom {
 }
 
 impl BaseExpression for SimplexAtom {
-    fn get_head(&self) -> Option<SimplexAtom> {
-        match self {
-            &SimplexAtom::SimplexSymbol(_) => Some(self.clone()),
-
-            &SimplexAtom::SimplexString(_) => {
-                Some(SimplexAtom::SimplexSymbol(String::from("String")))
-            },
-
-            &SimplexAtom::SimplexNumeric(_) => {
-                Some(SimplexAtom::SimplexSymbol(String::from("Number")))
-            }
-        }
+    fn get_head(&self) -> Option<SimplexPointer> {
+        Some(SimplexPointer::from(self.clone()))
     }
 
     fn get_rest(&self) -> Option<SimplexPointer> {

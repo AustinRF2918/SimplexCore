@@ -66,8 +66,8 @@ impl SimplexList {
 }
 
 impl BaseExpression for SimplexList {
-    fn get_head(&self) -> Option<SimplexAtom> {
-        Some(self.head.clone())
+    fn get_head(&self) -> Option<SimplexPointer> {
+        Some(SimplexPointer::from(self.head.clone()))
     }
 
     fn get_rest(&self) -> Option<SimplexPointer> {

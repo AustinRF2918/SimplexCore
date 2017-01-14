@@ -69,10 +69,8 @@ impl PartialEq for SimplexPointer{
 }
 
 impl BaseExpression for SimplexPointer {
-    fn get_head(&self) -> Option<SimplexAtom> {
-        // Fix unwrap anti-pattern.
-        let write = self.internal_data.write().unwrap();
-        write.get_head()
+    fn get_head(&self) -> Option<SimplexPointer> {
+        Some(self.clone())
     }
 
     fn get_rest(&self) -> Option<SimplexPointer> {

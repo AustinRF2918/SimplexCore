@@ -4,7 +4,7 @@ use expression::structure::SimplexPointer;
 use expression::atom::structure::SimplexAtom;
 
 pub trait BaseExpression {
-    fn get_head(&self) -> Option<SimplexAtom>;
+    fn get_head(&self) -> Option<SimplexPointer>;
     fn get_rest(&self) -> Option<SimplexPointer>;
 
     fn replace_symbol(&self, symbol: &BaseExpression, new: &BaseExpression) -> SimplexPointer;
