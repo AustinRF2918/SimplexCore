@@ -15,7 +15,6 @@ pub struct SimplexFunction {
     head: SimplexAtom,
     meta_variables: LinkedList<SimplexAtom>,
     s_expression: SimplexList,
-    base_evaluation: bool
 }
 
 impl fmt::Debug for SimplexFunction {
@@ -31,7 +30,6 @@ impl SimplexFunction {
             head: SimplexAtom::from(head_name),
             meta_variables: LinkedList::new(),
             s_expression: SimplexList::new("List"),
-            base_evaluation: false,
         }
     }
 
@@ -43,15 +41,6 @@ impl SimplexFunction {
     pub fn push_meta_variable(mut self, a: SimplexAtom) -> SimplexFunction {
         self.meta_variables.push_back(a.clone());
         self
-    }
-
-    pub fn toggle_base_evaluation(&mut self) {
-        self.base_evaluation = !self.base_evaluation;
-        if self.base_evaluation {
-            self.s_expression.head = SimplexAtom::from(self.head.to_string());
-        } else {
-            self.s_expression.head = SimplexAtom::from("List");
-        }
     }
 
     pub fn m_vars_to_string(&self) -> String {

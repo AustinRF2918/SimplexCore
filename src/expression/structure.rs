@@ -15,11 +15,25 @@ impl fmt::Debug for SimplexPointer {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self.internal_data.read() {
             Ok(guard) => {
-                write!(f, "Write: {}", guard.as_str())
+                write!(f, "SimplexPointer: {}", guard.as_str())
             }
 
             Err(poisoned) => {
-                write!(f, "Poisoned: {}", poisoned.into_inner().as_str())
+                write!(f, "SimplexPointer: {} (POISONED)", poisoned.into_inner().as_str())
+            }
+        }
+    }
+}
+
+impl fmt::Display for SimplexPointer {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self.internal_data.read() {
+            Ok(guard) => {
+                write!(f, "{}", guard.as_str())
+            }
+
+            Err(poisoned) => {
+                write!(f, "{}", poisoned.into_inner().as_str())
             }
         }
     }
