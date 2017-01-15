@@ -1,3 +1,4 @@
+use std::fmt;
 use std::collections::LinkedList;
 
 use expression::traits::BaseExpression;
@@ -7,12 +8,17 @@ use expression::atom::structure::SimplexAtom;
 use parsing::utilities::symbols::representable_symbol;
 
 // SExpression == SimplexList
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct SimplexList {
     pub head: SimplexAtom,
     expressions: LinkedList<SimplexPointer>,
 }
 
+impl fmt::Debug for SimplexList {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "SimplexList: {:?}", self.head)
+    }
+}
 
 impl SimplexList {
     pub fn new(head_name: &str) -> SimplexList {

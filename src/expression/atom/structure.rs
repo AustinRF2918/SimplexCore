@@ -15,15 +15,15 @@ impl fmt::Debug for SimplexAtom {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             &SimplexAtom::SimplexSymbol(ref s) => {
-                write!(f, "{}", s)
+                write!(f, "SimplexSymbol: {}", s)
             }
 
             &SimplexAtom::SimplexString(ref s) => {
-                write!(f, "'{}'", s)
+                write!(f, "SimplexString: '{}'", s)
             }
 
             &SimplexAtom::SimplexNumeric(ref n) => {
-                write!(f, "'{}'", n.as_str())
+                write!(f, "SimplexNumeric: '{}'", n.as_str())
             }
         }
     }

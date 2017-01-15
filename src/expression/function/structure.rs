@@ -1,3 +1,5 @@
+use std::fmt;
+
 use std::borrow::Cow;
 use std::sync::{Arc, Mutex};
 
@@ -8,12 +10,19 @@ use expression::structure::SimplexPointer;
 use expression::list::structure::SimplexList;
 use expression::atom::structure::SimplexAtom;
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct SimplexFunction {
     head: SimplexAtom,
     meta_variables: LinkedList<SimplexAtom>,
     s_expression: SimplexList,
     base_evaluation: bool
+}
+
+impl fmt::Debug for SimplexFunction {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // TODO: REIMPLMENT WITH S_EXPRESSION FOR META_VARIABLES.
+        write!(f, "SimplexFunction: {:?}", self.head)
+    }
 }
 
 impl SimplexFunction {
