@@ -1,12 +1,32 @@
+use std::fmt;
+
 use expression::atom::numbers::number::Numeric;
 use expression::traits::{BaseExpression, CompileableExpression};
 use expression::structure::SimplexPointer;
 
-#[derive(Clone, Eq, PartialEq, Debug)]
+#[derive(Clone, Eq, PartialEq)]
 pub enum SimplexAtom {
     SimplexSymbol(String),
     SimplexString(String),
     SimplexNumeric(Numeric),
+}
+
+impl fmt::Debug for SimplexAtom {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            &SimplexAtom::SimplexSymbol(ref s) => {
+                write!(f, "{}", s)
+            }
+
+            &SimplexAtom::SimplexString(ref s) => {
+                write!(f, "'{}'", s)
+            }
+
+            &SimplexAtom::SimplexNumeric(ref n) => {
+                write!(f, "'{}'", n.as_str())
+            }
+        }
+    }
 }
 
 impl BaseExpression for SimplexAtom {

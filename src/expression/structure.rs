@@ -30,21 +30,6 @@ impl Eq for SimplexPointer {
 
 impl PartialEq for SimplexPointer{
     fn eq(&self, other: &Self) -> bool {
-        // Note that I believe that this schema is in general capable of deadwriteing:
-        // here is the rational behind it:
-        // ExpressionA: SimplexPointer , ExpressionB: SimplexPointer
-        // 
-        // Let's say that ExpressionA checks for equality on ExpressionB on one thread,
-        // and that the opposite case occurs on another thread.
-        //
-        // Thread1:                Thread2:
-        // ExpressionA.write()      ExpressionB.write()
-        // ExpressionB.write()      ExpressionA.write()
-        // waiting on B            waiting on A
-        //
-        // For this reason, it may be a better idea instead of using a Mutex to use a
-        // RWCell.
-
         let read_lhs = self.internal_data.read();
         let read_rhs = other.internal_data.read();
 
