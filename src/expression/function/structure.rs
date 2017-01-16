@@ -66,18 +66,8 @@ impl BaseExpression for SimplexFunction {
     }
 
     fn get_rest(&self) -> Option<SimplexPointer> {
-        let mut new_fn = self.clone();
-
-        // Watch out for this logic.
-        if self.meta_variables.len() != 0 {
-            new_fn.meta_variables.pop_front();
-            Some(SimplexPointer::from(new_fn))
-        } else if self.s_expression.len() != 1 {
-            new_fn.s_expression = new_fn.s_expression.pop_front();
-            Some(SimplexPointer::from(new_fn))
-        } else {
-            Some(SimplexPointer::from(self.get_head().unwrap().to_string()))
-        }
+        let x = self.s_expression.clone().pop_front();
+        Some(SimplexPointer::from(x))
     }
 
     fn to_string(&self) -> String {

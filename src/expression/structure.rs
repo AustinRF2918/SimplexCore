@@ -23,13 +23,13 @@ impl SimplexPointer {
 
 impl fmt::Debug for SimplexPointer {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "SimplexPointer: {}", (*self.internal_data.borrow()).as_str());
+        write!(f, "SimplexPointer: {}", (*self.internal_data.borrow()).as_str())
     }
 }
 
 impl fmt::Display for SimplexPointer {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", (*self.internal_data.borrow()).as_str());
+        write!(f, "{}", (*self.internal_data.borrow()).as_str())
     }
 }
 
