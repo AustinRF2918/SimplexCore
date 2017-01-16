@@ -1,5 +1,7 @@
 use std::fmt;
 use std::sync::{Arc, RwLock};
+use std::cell::RefCell;
+use std::rc::Rc;
 
 use expression::traits::BaseExpression;
 use expression::list::structure::SimplexList;
@@ -8,34 +10,26 @@ use expression::atom::structure::SimplexAtom;
 
 #[derive(Clone)]
 pub struct SimplexPointer {
-    internal_data: Arc<RwLock<BaseExpression>>,
+    internal_data: Rc<RefCell<Box<BaseExpression>>>,
+}
+
+impl SimplexPointer {
+    fn new(e: Box<BaseExpression>) -> SimplexPointer {
+        SimplexPointer {
+            internal_data: Rc::new(RefCell::new(e))
+        }
+    }
 }
 
 impl fmt::Debug for SimplexPointer {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self.internal_data.read() {
-            Ok(guard) => {
-                write!(f, "SimplexPointer: {}", guard.as_str())
-            }
-
-            Err(poisoned) => {
-                write!(f, "SimplexPointer: {} (POISONED)", poisoned.into_inner().as_str())
-            }
-        }
+        write!(f, "SimplexPointer: {}", (*self.internal_data.borrow()).as_str());
     }
 }
 
 impl fmt::Display for SimplexPointer {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self.internal_data.read() {
-            Ok(guard) => {
-                write!(f, "{}", guard.as_str())
-            }
-
-            Err(poisoned) => {
-                write!(f, "{}", poisoned.into_inner().as_str())
-            }
-        }
+        write!(f, "{}", (*self.internal_data.borrow()).as_str());
     }
 }
 
@@ -44,86 +38,36 @@ impl Eq for SimplexPointer {
 
 impl PartialEq for SimplexPointer{
     fn eq(&self, other: &Self) -> bool {
-        let read_lhs = self.internal_data.read();
-        let read_rhs = other.internal_data.read();
-
-        match (read_lhs, read_rhs) {
-            (Ok(guard_lhs), Ok(guard_rhs)) => {
-                *guard_lhs.to_string() == *guard_rhs.to_string()
-            }
-
-            (Err(poisoned_lhs), Ok(guard_rhs)) => {
-                *(poisoned_lhs.into_inner()).to_string() == *guard_rhs.to_string()
-            }
-
-            (Ok(guard_lhs), Err(poisoned_rhs)) => {
-                *guard_lhs.to_string() == *(poisoned_rhs.into_inner()).to_string()
-            }
-
-            (Err(poisoned_lhs), Err(poisoned_rhs)) => {
-                *(poisoned_lhs.into_inner()).to_string() == *(poisoned_rhs.into_inner()).to_string()
-            }
-        }
+        *self.internal_data.borrow().to_string() == *other.internal_data.borrow().to_string()
     }
 }
 
 impl BaseExpression for SimplexPointer {
     fn get_head(&self) -> Option<SimplexPointer> {
-        Some(self.clone())
+        (*self.internal_data.borrow()).get_head()
     }
 
     fn get_rest(&self) -> Option<SimplexPointer> {
-        let read = self.internal_data.read().unwrap();
-        match read.get_rest() {
-            Some(data) => {
-                Some(SimplexPointer {
-                    internal_data: Arc::new(RwLock::new(data)),
-
-                })
-            }
-
-            None => {
-                None
-            }
-        }
+        (*self.internal_data.borrow()).get_rest()
     }
 
     fn to_string(&self) -> String {
-        let write = self.internal_data.read().unwrap();
-        write.to_string()
+        (*self.internal_data.borrow()).to_string()
     }
 
     fn replace_symbol(&self, symbol: &BaseExpression, new: &BaseExpression) -> SimplexPointer {
-        let mut write = self.internal_data.write();
-        match write {
-            Ok(mut lock) => {
-                lock.replace_symbol(symbol, new);
-            }
-            Err(poisoned) => {
-                poisoned.into_inner().replace_symbol(symbol, new);
-            }
-        }
-        self.clone()
+        (*self.internal_data.borrow()).replace_symbol(symbol, new)
     }
 
     fn evaluate(&self, v: &Vec<SimplexPointer>) -> SimplexPointer {
-        let mut write = self.internal_data.write();
-        match write {
-            Ok(mut lock) => {
-                lock.evaluate(v);
-            }
-            Err(poisoned) => {
-                poisoned.into_inner().evaluate(v);
-            }
-        }
-        self.clone()
+        (*self.internal_data.borrow()).evaluate(v)
     }
 }
 
 impl<'a> From<&'a str> for SimplexPointer {
     fn from(s: &str) -> SimplexPointer {
         SimplexPointer {
-            internal_data: Arc::new(RwLock::new(SimplexAtom::from(s))),
+            internal_data: Rc::new(RefCell::new(Box::new(SimplexAtom::from(s)))),
         }
     }
 }
@@ -131,7 +75,7 @@ impl<'a> From<&'a str> for SimplexPointer {
 impl From<String> for SimplexPointer {
     fn from(s: String) -> SimplexPointer {
         SimplexPointer {
-            internal_data: Arc::new(RwLock::new(SimplexAtom::from(s))),
+            internal_data: Rc::new(RefCell::new(Box::new(SimplexAtom::from(s)))),
         }
     }
 }
@@ -139,7 +83,7 @@ impl From<String> for SimplexPointer {
 impl From<SimplexAtom> for SimplexPointer {
     fn from(a: SimplexAtom) -> SimplexPointer {
         SimplexPointer {
-            internal_data: Arc::new(RwLock::new(a)),
+            internal_data: Rc::new(RefCell::new(Box::new(a))),
         }
     }
 }
@@ -147,7 +91,7 @@ impl From<SimplexAtom> for SimplexPointer {
 impl From<SimplexList> for SimplexPointer {
     fn from(s: SimplexList) -> SimplexPointer {
         SimplexPointer {
-            internal_data: Arc::new(RwLock::new(s)),
+            internal_data: Rc::new(RefCell::new(Box::new(s))),
         }
     }
 }
@@ -155,7 +99,7 @@ impl From<SimplexList> for SimplexPointer {
 impl From<SimplexFunction> for SimplexPointer {
     fn from(s: SimplexFunction) -> SimplexPointer {
         SimplexPointer {
-            internal_data: Arc::new(RwLock::new(s)),
+            internal_data: Rc::new(RefCell::new(Box::new(s))),
         }
     }
 }
